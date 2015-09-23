@@ -1,12 +1,31 @@
 'use strict';
 
-// Declare app level module which depends on views, and components
-angular.module('myApp', [
-  'ngRoute',
-  'myApp.view1',
-  'myApp.view2',
-  'myApp.version'
-]).
-config(['$routeProvider', function($routeProvider) {
-  $routeProvider.otherwise({redirectTo: '/view1'});
-}]);
+var crsApp = angular.module('crsApp', [
+  'ui.router',
+  'ui.bootstrap'
+]);
+
+crsApp.config(function($stateProvider, $urlRouterProvider){
+  $urlRouterProvider.otherwise('/');
+  $stateProvider.state('crsApp',{
+    url: '',
+    views: {
+      header: {
+        templateUrl: '/header/header.html',
+        controller: '/header/HeaderController.js'
+      },
+      menu:{
+        templateUrl: '/menu/menu.html',
+        controller: '/menu/MenuController.js'
+      },
+      content: {
+        templateUrl: '',
+        controller: ''
+      },
+      footer: {
+        templateUrl: ''
+      }
+    }
+  });
+
+});
