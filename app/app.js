@@ -8,22 +8,16 @@ var crsApp = angular.module('crsApp', [
 crsApp.config(function($stateProvider, $urlRouterProvider){
   $urlRouterProvider.otherwise('/');
   $stateProvider.state('crsApp',{
-    url: '',
+    url: '/',
     views: {
       header: {
-        templateUrl: '/header/header.html',
-        controller: '/header/HeaderController.js'
+        templateUrl: 'partials/header/header.html'
       },
       menu:{
-        templateUrl: '/menu/menu.html',
-        controller: '/menu/MenuController.js'
+        templateUrl: 'partials/menu/menu.html'
       },
       content: {
-        templateUrl: '',
-        controller: ''
-      },
-      footer: {
-        templateUrl: ''
+        templateUrl: 'partials/content/content.html'
       }
     }
   });
