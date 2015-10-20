@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+</head>
+<body>
+<div class="container-fluid" ng-controller="CursosController">
+    <div class="row" style="text-align: center"><h2>Cursos {{semestre.nombre}}</h2></div>
+    <div class="row">
+        <table class="table table-hover table-striped">
+            <tr>
+                <th>Nombre</th>
+                <th>Total estudiantes</th>
+                <th>% Párticipación</th>
+            </tr>
+                <tr ng-repeat="curso in semestre.cursos">
+
+                    <td>{{curso.nombre}}</td>
+                    <td>5</td>
+                    <td>10</td>
+                </tr>
+        </table>
+    </div>
+</div>
+</body>
+</html>

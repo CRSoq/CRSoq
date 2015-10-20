@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+</head>
+<body>
+<div class="container-fluid">
+    <div class="row">
+        <div id="tablaSesion" class="table-responsive" ng-controller="SesionController">
+            <h1>Clase: {{tituloClase}}</h1>
+            <h2>Módulo: {{tituloModulo}}</h2>
+            <button type="button" class="btn btn-primary" ng-click="newRow()">
+                <i class="fa fa-plus-circle"></i> Crear Pregunta
+            </button>
+            <div id="listaPreguntas" ag-grid="gridOptions" class="ag-fresh listaPreguntas" style="width: 100%;"></div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

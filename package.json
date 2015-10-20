@@ -1,9 +1,9 @@
 {
-  "name": "angular-seed",
+  "name": "CRS",
   "private": true,
   "version": "0.0.0",
-  "description": "A starter project for AngularJS",
-  "repository": "https://github.com/angular/angular-seed",
+  "description": "Variante CRS",
+  "repository": "https://uta.cl",
   "license": "MIT",
   "devDependencies": {
     "bower": "^1.3.1",
@@ -21,7 +21,7 @@
     "postinstall": "bower install",
 
     "prestart": "npm install",
-    "start": "http-server -a localhost -p 8000 -c-1",
+    "start": "http-server -a localhost -p 3000 -c-1",
 
     "pretest": "npm install",
     "test": "karma start karma.conf.js",
