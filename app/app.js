@@ -39,7 +39,7 @@ crsApp.config(function($stateProvider, $urlRouterProvider) {
             authenticate:false
         })
         .state('crsApp.cursosSemestre', {
-            url: '/cursos/:semestre',
+            url: 'cursos/:semestre',
             views: {
                 'main@crsApp': {
                     templateUrl: 'partials/content/semestre/cursos.html'
@@ -111,11 +111,17 @@ crsApp.config(function($stateProvider, $urlRouterProvider) {
             authenticate:true
         });
 });
-crsApp.run(function($rootScope, $state){
+crsApp.run(function($rootScope, $state, SessionService){
     $rootScope.$on('$stateChangeStart', function(event, toState){
         if(toState.authenticate){
-            event.preventDefault();
-            $state.transitionTo("crsApp.login");
+            SessionService.checkToken().then(function (data) {
+                if(data.credencial){
+                    //$state.transitionTo("crsApp");
+                }else{
+                    event.preventDefault();
+                    $state.transitionTo("crsApp.login");
+                }
+            });
         }
     });
 });

@@ -16,9 +16,9 @@ router.post('/', function(req, res){
                     var token = crypto.randomBytes(64).toString('hex');
                     output = {
                         token: token,
-                        usuario: rows[0].USUARIO
+                        usuario: rows[0].usuario
                     };
-                    connection.query('UPDATE administrador SET token = ? WHERE ID_USER = ?', [token, rows[0].ID_USER], function(error, rows, fields){
+                    connection.query('UPDATE administrador SET token = ? WHERE id_user = ?', [token, rows[0].id_user], function(error, rows, fields){
                         if(error){
                             res.send('Error update');
                         }
@@ -44,8 +44,22 @@ router.post('/checkToken', function (req, res) {
     if (!req.body){
         return res.sendStatus(400);
     }else{
-        connection.query('',function(err, rows, fields){
-
+        connection.query('SELECT * FROM administrador WHERE token = ? AND usuario = ?',[req.body.token,req.body.usuario],function(err, rows, fields){
+            if(!err){
+                if(rows.length==1){
+                    output = {
+                        credencial : true
+                    };
+                    res.json(output);
+                }else{
+                    output = {
+                        credencial : false
+                    };
+                    res.json(output);
+                }
+            }else{
+                res.send('Error');
+            }
         });
     }
 });
