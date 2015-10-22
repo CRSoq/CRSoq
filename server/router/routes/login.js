@@ -18,9 +18,16 @@ router.post('/', function(req, res){
                         token: token,
                         usuario: rows[0].usuario
                     };
-                    connection.query('UPDATE administrador SET token = ? WHERE id_user = ?', [token, rows[0].id_user], function(error, rows, fields){
+                    console.log(token);
+                    connection.query('UPDATE administrador SET token = ? WHERE id_user = ?', [token, rows[0].ID_USER], function(error, rows, fields){
                         if(error){
                             res.send('Error update');
+                        }else{
+                            var output = {
+                                credencial : true
+                            };
+                            console.log("true");
+                            res.json(output);
                         }
                     });
                     res.json(output);
@@ -50,11 +57,13 @@ router.post('/checkToken', function (req, res) {
                     output = {
                         credencial : true
                     };
+                    console.log("true");
                     res.json(output);
                 }else{
                     output = {
                         credencial : false
                     };
+                    console.log("false");
                     res.json(output);
                 }
             }else{
