@@ -81,5 +81,5 @@
     };
     $scope.getClass = function(semestre, curso){
         console.log("clases de.."+curso+" para el semestre "+semestre);
-    }
+    };
 });

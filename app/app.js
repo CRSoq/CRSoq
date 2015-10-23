@@ -23,6 +23,9 @@ crsApp.config(function($stateProvider, $urlRouterProvider) {
                 "menu@crsApp": {
                     templateUrl: 'partials/content/menu/menu.html'
                 }
+                /*"main@crsApp": {
+                    templateUrl: 'partials/content/content.html'
+                }*/
             },
             authenticate:true
         })

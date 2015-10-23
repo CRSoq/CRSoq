@@ -5,35 +5,74 @@ var db          = require('./config');
 var crypto      = require('crypto');
 var connection  = mysql.createConnection(db.database);
 
+
 router.post('/', function(req, res){
     var output = {};
     if (!req.body){
         return res.sendStatus(400);
     }else {
-        connection.query('SELECT * from administrador WHERE USUARIO = ? AND CLAVE = ?',[req.body.usuario,req.body.clave], function (err, rows, fields) {
-            if (!err) {
+        var select_admin = 'SELECT * FROM administrador WHERE usuario = ? AND clave = ?';
+        var select_estud = 'SELECT * FROM estudiante WHERE usuario = ? AND clave = ?';
+        var select_profe = 'SELECT * FROM profesor WHERE usuario = ? AND clave = ?';
+        connection.query(select_estud,[req.body.usuario, req.body.clave], function (error, rows) {
+            if(!error){
                 if(rows.length==1){
                     var token = crypto.randomBytes(64).toString('hex');
                     output = {
                         token: token,
-                        usuario: rows[0].usuario
+                        usuario: rows[0].usuario,
+                        tipo: 'estudiante'
                     };
-                    connection.query('UPDATE administrador SET token = ? WHERE id_user = ?', [token, rows[0].id_user], function(error, rows, fields){
+                    connection.query('UPDATE estudiante SET token = ? WHERE id_user = ?', [token, rows[0].id_user], function(error, rows, fields){
                         if(error){
                             res.send('Error update');
+                        }else{
+                            res.json(output);
                         }
                     });
-                    res.json(output);
                 }else{
-                    output = {
-                        token: ""
-                    };
-                    res.json(output);
+                    connection.query(select_profe,[req.body.usuario, req.body.clave], function (error, rows) {
+                        if(!error){
+                            if(rows.length==1){
+                                var token = crypto.randomBytes(64).toString('hex');
+                                output = {
+                                    token: token,
+                                    usuario: rows[0].usuario,
+                                    tipo: 'profesor'
+                                };
+                                connection.query('UPDATE profesor SET token = ? WHERE id_user = ?', [token, rows[0].id_user], function(error, rows, fields){
+                                    if(error){
+                                        res.send('Error update');
+                                    }else{
+                                        res.json(output);
+                                    }
+                                });
+                            }else{
+                                connection.query(select_admin,[req.body.usuario, req.body.clave], function (error, rows) {
+                                    if(!error){
+                                        if(rows.length==1){
+                                            var token = crypto.randomBytes(64).toString('hex');
+                                            output = {
+                                                token: token,
+                                                usuario: rows[0].usuario,
+                                                tipo: 'administrador'
+                                            };
+                                            connection.query('UPDATE administrador SET token = ? WHERE id_user = ?', [token, rows[0].id_user], function(error, rows, fields){
+                                                if(error){
+                                                    res.send('Error update');
+                                                }else{
+                                                    res.json(output);
+                                                }
+                                            });
+                                        }else{
+                                            res.send('error');
+                                        }
+                                    }
+                                });
+                            }
+                        }
+                    });
                 }
-
-            }
-            else {
-                res.send('Error select');
             }
         });
     }
@@ -41,10 +80,15 @@ router.post('/', function(req, res){
 
 router.post('/checkToken', function (req, res) {
     var output = {};
+    var input = {};
     if (!req.body){
         return res.sendStatus(400);
     }else{
-        connection.query('SELECT * FROM administrador WHERE token = ? AND usuario = ?',[req.body.token,req.body.usuario],function(err, rows, fields){
+        input = {
+            token : req.body.token,
+            usuario: req.body.usuario
+        };
+        connection.query('SELECT * FROM administrador WHERE token = ? AND usuario = ?',[input.token,input.usuario],function(err, rows, fields){
             if(!err){
                 if(rows.length==1){
                     output = {
@@ -63,4 +107,5 @@ router.post('/checkToken', function (req, res) {
         });
     }
 });
+
 module.exports = router;
