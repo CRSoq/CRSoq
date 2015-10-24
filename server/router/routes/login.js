@@ -86,9 +86,10 @@ router.post('/checkToken', function (req, res) {
     }else{
         input = {
             token : req.body.token,
-            usuario: req.body.usuario
+            usuario: req.body.usuario,
+            tipo: req.body.tipo
         };
-        connection.query('SELECT * FROM administrador WHERE token = ? AND usuario = ?',[input.token,input.usuario],function(err, rows, fields){
+        connection.query('SELECT * FROM ?? WHERE token = ? AND usuario = ?',[input.tipo,input.token,input.usuario],function(err, rows, fields){
             if(!err){
                 if(rows.length==1){
                     output = {

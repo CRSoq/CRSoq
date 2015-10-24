@@ -15,22 +15,27 @@
             </button>
             <a class="navbar-brand" href="#">CRSoq</a>
         </div>
+        <!--
+        <ul ng-if="data()" class="nav navbar-nav navbar-right">
+            <li><a href="#">{{data.usuario}} ({{data.tipo}}) | salir</a></li>
+        </ul>
+        -->
         <!-- Collect the nav links, forms, and other content for toggling -->
         <div class="collapse navbar-collapse" collapse="navCollapsed">
             <ul class="nav navbar-nav" ng-if="!navCollapsed">
-                    <li ng-repeat="opc in menu" ng-init="parentIndex = $index">
-                        <div ng-if="!buscarSemestre($index)">
-                            <a ui-sref="crsApp.cursosSemestre({semestre: opc.nombre})" ng-click="mostrarSemestre($index)">
-                                <span class="font-bold">{{opc.nombre}}</span>
-                                <span class="pull-right text-muted"><i class="fa fa-fw fa-angle-right text"></i></span>
-                            </a>
-                        </div>
-                        <div ng-if="buscarSemestre($index)">
-                            <a ng-click="mostrarSemestre($index)">
-                                <span class="font-bold">{{opc.nombre}}</span>
-                                <span class="pull-right text-muted"><i class="fa fa-fw fa-angle-right text"></i></span>
-                            </a>
-                        </div>
+                <li ng-repeat="opc in menu" ng-init="parentIndex = $index">
+                    <div ng-if="!buscarSemestre($index)">
+                        <a ui-sref="crsApp.cursosSemestre({semestre: opc.nombre})" ng-click="mostrarSemestre($index)">
+                            <span class="font-bold">{{opc.nombre}}</span>
+                            <span class="pull-right text-muted"><i class="fa fa-fw fa-angle-right text"></i></span>
+                        </a>
+                    </div>
+                    <div ng-if="buscarSemestre($index)">
+                        <a ng-click="mostrarSemestre($index)">
+                            <span class="font-bold">{{opc.nombre}}</span>
+                            <span class="pull-right text-muted"><i class="fa fa-fw fa-angle-right text"></i></span>
+                        </a>
+                    </div>
                         <ul class="nav nav-sidebar" ng-if="buscarSemestre($index)">
                             <li ng-repeat="curso in opc.cursos">
                                 <div ng-if="!buscarCurso(parentIndex,$index)">
@@ -79,7 +84,7 @@
                                 </ul>
                             </li>
                         </ul>
-                    </li>
+                </li>
             </ul>
         </div>
         <!-- /.navbar-collapse -->

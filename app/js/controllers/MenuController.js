@@ -1,4 +1,4 @@
-﻿crsApp.controller('MenuController', function($scope, $filter){
+﻿crsApp.controller('MenuController', function($scope, $filter, $localStorage){
     $scope.menu = [
         {
             "nombre" : "2015 II",
@@ -63,7 +63,6 @@
     };
     $scope.mostrarCursosLista = [];
     $scope.mostrarCurso = function (padre,indice){
-
         var item = {
             parent : padre,
             id     : indice
@@ -81,5 +80,17 @@
     };
     $scope.getClass = function(semestre, curso){
         console.log("clases de.."+curso+" para el semestre "+semestre);
+    };
+    $scope.data = function(){
+        var data = {
+            usuario : $localStorage.usuario,
+            tipo: $localStorage.tipo
+        };
+        if ($localStorage.usuario !='' && $localStorage.tipo != '' ){
+            return data;
+        }else{
+            return false;
+        }
+
     };
 });

@@ -1,4 +1,4 @@
-crsApp.controller('CursosController', function($scope, $filter, $stateParams) {
+crsApp.controller('CursosController', function($scope, $filter, $stateParams, $uibModal) {
     $scope.menu = [
         {
             "nombre" : "2015 II",
@@ -51,5 +51,11 @@ crsApp.controller('CursosController', function($scope, $filter, $stateParams) {
     if(!angular.isUndefined(found)) {
         $scope.semestre = found;
     }
+
+    $scope.crearCurso = function () {
+        //levantar modal
+    };
+    //addCurso
+    //eliminarCurso?
 
 });

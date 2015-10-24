@@ -7,7 +7,8 @@ crsApp.controller('LoginController', function($scope, LoginService, SessionServi
         };
         LoginService.logIn(usuario).then(function(data){
             if(data.token != ""){
-                SessionService.setToken(data.token, data.usuario);
+                SessionService.setToken(data.token, data.usuario, data.tipo);
+                //DataService.setData(data);
                 $state.transitionTo("crsApp");
             }else{
                 $state.transitionTo("crsApp.login");

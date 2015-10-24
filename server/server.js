@@ -10,7 +10,6 @@ var appRootFolder = function(dir,level){
     arr.splice(arr.length - level,level);
     var rootFolder = arr.join('/');
     return rootFolder;
-
 };
 
 //windows
@@ -19,7 +18,6 @@ var appRootFolder = function(dir,level){
     arr.splice(arr.length - level,level);
     var rootFolder = arr.join('\\');
     return rootFolder;
-
 };*/
 
 app.use(bodyParser.json());
