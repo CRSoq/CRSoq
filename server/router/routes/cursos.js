@@ -19,3 +19,4 @@ router.post('/obtenerCursos', function (req, res) {
         connection.query();
     }
 });
+module.exports = router;

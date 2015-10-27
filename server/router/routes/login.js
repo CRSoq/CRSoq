@@ -89,23 +89,29 @@ router.post('/checkToken', function (req, res) {
             usuario: req.body.usuario,
             tipo: req.body.tipo
         };
-        connection.query('SELECT * FROM ?? WHERE token = ? AND usuario = ?',[input.tipo,input.token,input.usuario],function(err, rows, fields){
-            if(!err){
-                if(rows.length==1){
-                    output = {
-                        credencial : true
-                    };
-                    res.json(output);
-                }else{
-                    output = {
-                        credencial : false
-                    };
-                    res.json(output);
+
+        if( typeof input.token !== 'undefined'){
+            connection.query('SELECT * FROM ?? WHERE token = ? AND usuario = ?',[input.tipo,input.token,input.usuario],function(err, rows, fields) {
+                if (!err) {
+                    if (rows.length == 1) {
+                        output = {
+                            credencial: true
+                        };
+                        res.json(output);
+                    } else {
+                        output = {
+                            credencial: false
+                        };
+                        res.json(output);
+                    }
+                } else {
+                    res.send('Error');
                 }
-            }else{
-                res.send('Error');
-            }
-        });
+            });
+
+        }else{
+            res.send('no data');
+        }
     }
 });
 

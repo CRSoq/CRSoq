@@ -5,20 +5,20 @@ var bodyParser = require('body-parser');
 var app = express();
 
 //mac os x
-var appRootFolder = function(dir,level){
+/*var appRootFolder = function(dir,level){
     var arr = dir.split("/");
     arr.splice(arr.length - level,level);
     var rootFolder = arr.join('/');
     return rootFolder;
-};
+};*/
 
 //windows
-/*var appRootFolder = function(dir,level){
+var appRootFolder = function(dir,level){
     var arr = dir.split("\\");
     arr.splice(arr.length - level,level);
     var rootFolder = arr.join('\\');
     return rootFolder;
-};*/
+};
 
 app.use(bodyParser.json());
 var root = appRootFolder(__dirname,1);

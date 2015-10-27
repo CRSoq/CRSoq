@@ -1,4 +1,4 @@
-crsApp.controller('CursosController', function($scope, $filter, $stateParams, $uibModal) {
+crsApp.controller('CursosController', function($scope, $filter, $stateParams, $modal) {
     $scope.menu = [
         {
             "nombre" : "2015 II",
@@ -46,7 +46,6 @@ crsApp.controller('CursosController', function($scope, $filter, $stateParams, $u
         }
     ];
 
-
     var found = $filter('filter')($scope.menu,  {'nombre':$stateParams.semestre}, true)[0];
     if(!angular.isUndefined(found)) {
         $scope.semestre = found;
@@ -54,8 +53,33 @@ crsApp.controller('CursosController', function($scope, $filter, $stateParams, $u
 
     $scope.crearCurso = function () {
         //levantar modal
+        var modalInstance = $modal.open({
+            animation   : true,
+            templateUrl : '/partials/content/main/crearCursoModal.html',
+            controller  : 'ModalCrearCursoController',
+            size        : 'lg',
+            backdrop    : 'static',
+            resolve     : {
+                /*items: function () {
+                    return
+                }*/
+            }
+        });
+
+        modalInstance.result.then(function (){
+
+        });
     };
     //addCurso
     //eliminarCurso?
+});
 
+crsApp.controller('ModalCrearCursoController', function ($scope, $modalInstance) {
+
+    $scope.aceptar = function () {
+        $modalInstance.close();
+    };
+    $scope.cancelar = function () {
+        $modalInstance.dismiss();
+    }
 });

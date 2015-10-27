@@ -45,7 +45,7 @@ crsApp.config(function($stateProvider, $urlRouterProvider) {
             url: 'cursos/:semestre',
             views: {
                 'main@crsApp': {
-                    templateUrl: 'partials/content/semestre/cursos.html'
+                    templateUrl: 'partials/content/semestre/cursosSemestre.html'
                 }
             },
             authenticate:true
@@ -54,7 +54,7 @@ crsApp.config(function($stateProvider, $urlRouterProvider) {
             url: '/:curso',
             views: {
                 'main@crsApp': {
-                    templateUrl: 'partials/content/curso/curso.html'
+                    templateUrl: 'partials/content/curso/cursoGeneral.html'
                 }
             },
             authenticate:true
@@ -72,7 +72,7 @@ crsApp.config(function($stateProvider, $urlRouterProvider) {
             url: '/sesion',
             views: {
                 'main@crsApp': {
-                    templateUrl: 'partials/content/sesion/sesionPartial.html'
+                    templateUrl: 'partials/content/clases/sesion/sesionPartial.html'
                 }
             },
             authenticate:true
