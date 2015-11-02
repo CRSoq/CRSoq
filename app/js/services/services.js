@@ -23,18 +23,15 @@ crsApp.factory('LoginService', function ($http, $q) {
 });
 crsApp.factory('SessionService', function($http, $q, $localStorage){
     return{
-        setToken: function(token, usuario, tipo){
-            $localStorage.token = token;
-            $localStorage.usuario  = usuario;
-            $localStorage.tipo = tipo;
+        setToken: function(data){
+            $localStorage.token = data.token;
+            $localStorage.usuario  = data.usuario;
+            $localStorage.tipo = data.tipo;
+            $localStorage.id_user = data.id_user;
             return true;
         },
         checkToken: function(){
-            var data = {
-                usuario: $localStorage.usuario,
-                token: $localStorage.token,
-                tipo: $localStorage.tipo
-            };
+            var data = this.getSessionData();
             var defered = $q.defer();
             var promise = defered.promise;
             $http.post('/login/checkToken', data)
@@ -50,23 +47,17 @@ crsApp.factory('SessionService', function($http, $q, $localStorage){
             delete  $localStorage.token;
             delete  $localStorage.usuario;
             delete  $localStorage.tipo;
+            delete  $localStorage.id_user;
             return true;
-        }
-    }
-});
-
-crsApp.factory('DataService', function () {
-    var info = {
-        usuario : '',
-        tipo : ''
-    };
-
-    return {
-        getData: function () {
-            return info;
         },
-        setData: function ($scope, data) {
-            info = data;
+        getSessionData: function () {
+            var data = {
+                token : $localStorage.token,
+                usuario: $localStorage.usuario,
+                tipo: $localStorage.tipo,
+                id_user: $localStorage.id_user
+            };
+            return data;
         }
     }
 });
@@ -85,14 +76,17 @@ crsApp.factory('CursosServies', function ($http, $q) {
                 });
             return promise;
         },
-        obtenerCursos: function () {
-            $http.get('/cursos/obtenerCursos')
+        obtenerCursos: function (data) {
+            var defered = $q.defer();
+            var promise = defered.promise;
+            $http.post('/cursos/obtenerCursos', data)
                 .success(function (response) {
-                    return response;
+                    defered.resolve(response);
                 })
                 .error(function (error) {
-                    return error;
+                    defered.reject(error);
                 });
+            return promise;
         }
     }
 });

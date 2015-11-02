@@ -19,9 +19,10 @@ router.post('/', function(req, res){
                 if(rows.length==1){
                     var token = crypto.randomBytes(64).toString('hex');
                     output = {
-                        token: token,
-                        usuario: rows[0].usuario,
-                        tipo: 'estudiante'
+                        token   : token,
+                        usuario : rows[0].usuario,
+                        tipo    : 'estudiante',
+                        id_user : rows[0].id_user
                     };
                     connection.query('UPDATE estudiante SET token = ? WHERE id_user = ?', [token, rows[0].id_user], function(error, rows, fields){
                         if(error){
@@ -38,7 +39,8 @@ router.post('/', function(req, res){
                                 output = {
                                     token: token,
                                     usuario: rows[0].usuario,
-                                    tipo: 'profesor'
+                                    tipo: 'profesor',
+                                    id_user : rows[0].id_user
                                 };
                                 connection.query('UPDATE profesor SET token = ? WHERE id_user = ?', [token, rows[0].id_user], function(error, rows, fields){
                                     if(error){
@@ -55,7 +57,8 @@ router.post('/', function(req, res){
                                             output = {
                                                 token: token,
                                                 usuario: rows[0].usuario,
-                                                tipo: 'administrador'
+                                                tipo: 'administrador',
+                                                id_user : rows[0].id_user
                                             };
                                             connection.query('UPDATE administrador SET token = ? WHERE id_user = ?', [token, rows[0].id_user], function(error, rows, fields){
                                                 if(error){

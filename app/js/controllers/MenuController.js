@@ -1,5 +1,5 @@
-﻿crsApp.controller('MenuController', function($scope, $filter, $localStorage){
-    $scope.menu = [
+﻿crsApp.controller('MenuController', function($scope, $filter, $localStorage,CursosServies,SessionService){
+    /*$scope.menu = [
         {
             "nombre" : "2015 II",
             "cursos" : [
@@ -44,7 +44,13 @@
                 }
             ]
         }
-    ];
+    ];*/
+    $scope.listaCursos = [];
+    CursosServies.obtenerCursos(SessionService.getSessionData()).then(function (data) {
+        //$scope.listaCursos=data;
+        $scope.menu=data;
+    });
+
     $scope.mostrarSemestreLista = [];
     $scope.mostrarSemestre = function (variable){
         var item = {
