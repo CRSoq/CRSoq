@@ -35,9 +35,7 @@ router.post('/obtenerCursos', function (req, res) {
                         .map(function(current){
                             return _.object(_.zip(["nombre","cursos"], current));
                         });
-                    var algo = lista;
-                    _(algo).reverse().value();
-                    res.json(_(algo).reverse().value());
+                    res.json(_.sortByOrder(_(lista).reverse().value(),['nombre'],['desc']));
                 }
             });
         }
