@@ -114,10 +114,10 @@ crsApp.config(function($stateProvider, $urlRouterProvider) {
             authenticate:true
         });
 });
-crsApp.run(function($rootScope, $state, SessionService){
+crsApp.run(function($rootScope, $state, SessionServices){
     $rootScope.$on('$stateChangeStart', function(event, toState){
         if(toState.authenticate){
-            SessionService.checkToken().then(function (data) {
+            SessionServices.checkToken().then(function (data) {
                 if(data.credencial){
                     //$state.transitionTo("crsApp");
                 }else{

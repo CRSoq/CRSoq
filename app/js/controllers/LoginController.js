@@ -1,4 +1,4 @@
-crsApp.controller('LoginController', function($scope, LoginService, SessionService, $state){
+crsApp.controller('LoginController', function($scope, LoginService, SessionServices, $state){
     'use strict';
     $scope.login = function() {
         var usuario = {
@@ -7,7 +7,7 @@ crsApp.controller('LoginController', function($scope, LoginService, SessionServi
         };
         LoginService.logIn(usuario).then(function(data){
             if(data.token != ""){
-                SessionService.setToken(data);
+                SessionServices.setToken(data);
                 $state.transitionTo("crsApp");
             }else{
                 $state.transitionTo("crsApp.login");
@@ -16,7 +16,7 @@ crsApp.controller('LoginController', function($scope, LoginService, SessionServi
 
     };
     $scope.logOut = function(){
-        SessionService.destroyToken();
+        SessionServices.destroyToken();
         $state.transitionTo("crsApp");
     };
 });

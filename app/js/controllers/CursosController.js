@@ -1,70 +1,18 @@
-crsApp.controller('CursosController', function($scope, $filter, $stateParams, $modal, CursosServies, SessionService) {
-    $scope.menu = [
-        {
-            "nombre" : "2015 II",
-            "cursos" : [
-                {
-                    "nombre" : "Programación II"
-                },
-                {
-                    "nombre" : "I. Negocios"
-                }
-            ]
-        },
-        {
-            "nombre" : "2015 I",
-            "cursos" : [
-                {
-                    "nombre" : "Calculo II"
-                },
-                {
-                    "nombre" : "Algebra II"
-                }
-            ]
-        },
-        {
-            "nombre" : "2014 II",
-            "cursos" : [
-                {
-                    "nombre" : "Programacion I"
-                },
-                {
-                    "nombre" : "Base de Datos"
-                }
-            ]
-        },
-        {
-            "nombre" : "2014 I",
-            "cursos" : [
-                {
-                    "nombre" : "Cálculo I"
-                },
-                {
-                    "nombre" : "Algebra I"
-                }
-            ]
+crsApp.controller('CursosController', function($scope, $filter, $stateParams, $modal, CursosServices, SessionServices) {
+   /* CursosServies.obtenerCursos(SessionService.getSessionData()).then(function (data) {
+        //$scope.listaCursos=data;
+        $scope.menu=data;
+        var found = $filter('filter')($scope.menu,  {'nombre':$stateParams.semestre}, true)[0];
+        if(!angular.isUndefined(found)) {
+            $scope.semestre = found;
         }
-    ];
-    $scope.cursos = [
-        {'id_curso' : '1', 'id_user': '1', 'nombre_curso': 'bd', 'semestre':'I', 'ano': '2015'},
-        {'id_curso' : '3', 'id_user': '1', 'nombre_curso': 'bd1', 'semestre':'II', 'ano': '2015'},
-        {'id_curso' : '2', 'id_user': '1', 'nombre_curso': 'bd2', 'semestre':'I', 'ano': '2015'},
-        {'id_curso' : '8', 'id_user': '1', 'nombre_curso': 'bd3', 'semestre':'II', 'ano': '2014'},
-        {'id_curso' : '7', 'id_user': '1', 'nombre_curso': 'bd4', 'semestre':'I', 'ano': '2014'},
-        {'id_curso' : '6', 'id_user': '1', 'nombre_curso': 'bd5', 'semestre':'I', 'ano': '2013'},
-        {'id_curso' : '4', 'id_user': '1', 'nombre_curso': 'bd6', 'semestre':'II', 'ano': '2012'}
-    ];
-    $scope.test = [];
+    });*/
 
-
-    //CursosServies.obtenerCursos(SessionService.getSessionData()).then(function(data){
-    //    console.log(data);
-    //});
+    $scope.menu = CursosServices.getAllCursos();
     var found = $filter('filter')($scope.menu,  {'nombre':$stateParams.semestre}, true)[0];
     if(!angular.isUndefined(found)) {
         $scope.semestre = found;
     }
-
     $scope.crearCurso = function () {
         //levantar modal
         var modalInstance = $modal.open({
@@ -81,7 +29,7 @@ crsApp.controller('CursosController', function($scope, $filter, $stateParams, $m
         });
 
         modalInstance.result.then(function (curso){
-            CursosServies.crearCurso(curso).then(function (data) {
+            CursosServices.crearCurso(curso).then(function (data) {
                 console.log(data);
             });
         });
@@ -89,9 +37,9 @@ crsApp.controller('CursosController', function($scope, $filter, $stateParams, $m
     //eliminarCurso?
 });
 
-crsApp.controller('ModalCrearCursoController', function ($scope, $modalInstance, SessionService) {
+crsApp.controller('ModalCrearCursoController', function ($scope, $modalInstance, SessionServices) {
     $scope.aceptar = function () {
-        var dataUsuario = SessionService.getSessionData();
+        var dataUsuario = SessionServices.getSessionData();
         var curso = {
             nombre      : $scope.nombre,
             ano         : $scope.ano,
@@ -103,4 +51,20 @@ crsApp.controller('ModalCrearCursoController', function ($scope, $modalInstance,
     $scope.cancelar = function () {
         $modalInstance.dismiss();
     }
+});
+
+crsApp.controller('CursoGralInfoController', function ($scope, $stateParams, $location, CursosServices) {
+    var ano_semestre=$location.path();
+    ano_semestre=ano_semestre.substring(8,ano_semestre.length);
+    ano_semestre=ano_semestre.substring(0,ano_semestre.indexOf('/'));
+    var algo =CursosServices.getCursoPorNombre(ano_semestre,$stateParams.curso);
+    //comprueba si el curso se encuentra o no configurado
+    if(!algo.isUndefined){
+        $scope.estado = algo.estado;
+    }
+
+    //var pos = ;
+    //console.log(algo[]);
+
+
 });

@@ -9,6 +9,7 @@ crsApp.controller('ClasesController', function($scope, $stateParams){
     ];
 */
     $scope.titulo = $stateParams.curso;
+    //get clases para el curso x
     var columnDefs = [
         {
             headerName: "Id",

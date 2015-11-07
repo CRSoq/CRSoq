@@ -1,52 +1,6 @@
-﻿crsApp.controller('MenuController', function($scope, $filter, $localStorage,CursosServies,SessionService){
-    /*$scope.menu = [
-        {
-            "nombre" : "2015 II",
-            "cursos" : [
-                {
-                    "nombre" : "Programación II"
-                },
-                {
-                    "nombre" : "I. Negocios"
-                }
-            ]
-        },
-        {
-            "nombre" : "2015 I",
-            "cursos" : [
-                {
-                    "nombre" : "Calculo II"
-                },
-                {
-                    "nombre" : "Algebra II"
-                }
-            ]
-        },
-        {
-            "nombre" : "2014 II",
-            "cursos" : [
-                {
-                    "nombre" : "Programacion I"
-                },
-                {
-                    "nombre" : "Base de Datos"
-                }
-            ]
-        },
-        {
-            "nombre" : "2014 I",
-            "cursos" : [
-                {
-                    "nombre" : "Cálculo I"
-                },
-                {
-                    "nombre" : "Algebra I"
-                }
-            ]
-        }
-    ];*/
+﻿crsApp.controller('MenuController', function($scope, $filter, $localStorage,CursosServices,SessionServices){
     $scope.listaCursos = [];
-    CursosServies.obtenerCursos(SessionService.getSessionData()).then(function (data) {
+    CursosServices.obtenerCursos(SessionServices.getSessionData()).then(function (data) {
         //$scope.listaCursos=data;
         $scope.menu=data;
     });
@@ -60,6 +14,8 @@
         if(!angular.isUndefined(found)){
             $scope.mostrarSemestreLista.splice($scope.mostrarSemestreLista.indexOf(found), 1);
         }else{
+            //splice para borrar el que habia antes de agregar el nuevo
+            $scope.mostrarSemestreLista.splice(0, 1);
             $scope.mostrarSemestreLista.push(item);
         }
     };
@@ -77,6 +33,8 @@
         if(!angular.isUndefined(found)){
             $scope.mostrarCursosLista.splice($scope.mostrarCursosLista.indexOf(found), 1);
         }else{
+            //splice para borrar el que habia antes de agregar el nuevo
+            $scope.mostrarCursosLista.splice(0, 1);
             $scope.mostrarCursosLista.push(item);
         }
     };
