@@ -1,4 +1,4 @@
-﻿crsApp.controller('MenuController', function($scope, $filter, $localStorage,CursosServices,SessionServices){
+﻿crsApp.controller('MenuController', function($scope, $rootScope, $filter, $localStorage,CursosServices,SessionServices){
     $scope.listaCursos = [];
     CursosServices.obtenerCursos(SessionServices.getSessionData()).then(function (data) {
         //$scope.listaCursos=data;
@@ -57,4 +57,12 @@
         }
 
     };
+
+    $rootScope.$on('actualizarControladores', function () {
+        cargarMenu();
+    });
+
+    function cargarMenu(){
+        $scope.menu = CursosServices.getAllCursos();
+    }
 });

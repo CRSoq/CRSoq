@@ -41,4 +41,75 @@ router.post('/obtenerCursos', function (req, res) {
         }
     }
 });
+
+router.post('/obtenerModulos', function (req, res) {
+    if(!req.body){
+        return res.sendStatus(400);
+    }else{
+        connection.query('SELECT * FROM modulo WHERE id_curso = ?',[req.body.id_curso], function (error, rows) {
+            if(!error && rows.length>0){
+                return res.json(rows);
+            }else{
+                return res.json(false);
+            }
+        })
+    }
+});
+
+router.post('/guardarModulos', function (req, res) {
+    if(!req.body){
+        return res.sendStatus(400);
+    }else{
+        var result = [
+            {'insert': []},
+            {'update': []},
+            {'delete': []}
+        ];
+        var i = j = 0;
+        while(i<req.body[1].modulos.length) {
+            if(_.isUndefined(req.body[1].modulos[i].id_modulo)){
+                connection.query('INSERT INTO modulo (id_curso, nombre_modulo, posicion) VALUES (?,?,?)', [req.body[0].id_curso,req.body[1].modulos[i].nombre_modulo,req.body[1].modulos[i].posicion], function (error) {
+                    if (error) {
+                        console.log(error);
+                        result[j].insert.push({'nombre':req.body[1].modulos[i].nombre_modulo});
+                        j++;
+                    }
+                });
+            }else{
+                connection.query('UPDATE modulo SET nombre_modulo = ?, posicion = ? WHERE id_modulo = ?', [req.body[1].modulos[i].nombre_modulo,req.body[1].modulos[i].posicion,req.body[1].modulos[i].id_modulo], function (error) {
+                    if (error) {
+                        console.log(error);
+                        result[j].update.push({'nombre':req.body[1].modulos[i].nombre_modulo});
+                        j++;
+                    }
+                });
+            }
+            i++;
+        }
+        var i=j=0;
+        while(i<req.body[2].modulosEliminados.length){
+            connection.query('DELETE FROM modulo WHERE id_modulo = ?', [req.body[2].modulosEliminados[i].id_modulo], function (error) {
+                if (error) {
+                    console.log(error);
+                    result[j].delete.push({'nombre':req.body[1].modulosEliminados[i].nombre_modulo});
+                    j++;
+                }
+            });
+            i++;
+        }
+        return res.json(result);
+    }
+});
+
+router.post('/cambiarEstado', function (req, res) {
+    if(!req.body){
+        return res.sendStatus(400);
+    }else{
+        connection.query('UPDATE curso SET estado = ? WHERE id_curso = ?',[req.body.estado, req.body.id_curso], function (error) {
+            if(!error){
+                return res.json(true);
+            }
+        });
+    }
+});
 module.exports = router;

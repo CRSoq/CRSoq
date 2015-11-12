@@ -23,7 +23,7 @@
         <ul class="nav nav-sidebar" ng-if="buscarSemestre($index)">
             <li ng-repeat="curso in opc.cursos">
                 <div ng-if="!buscarCurso(parentIndex,$index)">
-                <a ui-sref="crsApp.cursosSemestre.curso({curso: curso.nombre_curso, estado: curso.estado})" ng-click="mostrarCurso(parentIndex,$index)">
+                <a ui-sref="crsApp.cursosSemestre.curso({curso: curso.nombre_curso})" ng-click="mostrarCurso(parentIndex,$index)">
                     <span class="font-bold">{{curso.nombre_curso}}</span>
                     <span class="pull-right text-muted"><i class="fa fa-fw fa-angle-right text"></i></span>
                 </a>
