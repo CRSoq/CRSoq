@@ -1,79 +1,124 @@
-crsApp.controller('ClasesController', function($scope, $stateParams){
-    /*
-    var columnDefs = [
-        {headerName: "Default String", field: "defaultString", width: 150, editable: true},
-        {headerName: "Upper Case Only", field: "upperCaseOnly", width: 150, editable: true, newValueHandler: upperCaseNewValueHandler},
-        {headerName: "Number", valueGetter: 'data.number', width: 150, editable: true, newValueHandler: numberNewValueHandler},
-        {headerName: "Custom With Angular", field: "setAngular", width: 175, cellRenderer: customEditorUsingAngular},
-        {headerName: "Custom No Angular", field: "setNoAngular", width: 175, cellRenderer: customEditorNoAngular}
-    ];
-*/
+crsApp.controller('ClasesController', function($scope, $rootScope, $modal, $stateParams, $filter, ClasesServices, ModulosServices, CursosServices){
     $scope.titulo = $stateParams.curso;
-    //get clases para el curso x
-    var columnDefs = [
-        {
-            headerName: "Id",
-            field: "id",
-            width: 30,
+    $scope.listaClases = [];
 
-            editable: false
-        },
-        {headerName: "Fecha", field: "fecha", width: 80, editable: true},
-        {headerName: "Descripción", field: "descripcion", width: 400, editable: true},
-        {headerName: "Módulo", field: "modulo", width: 200, editable: true},
-        {
-            headerName: "Sesión",
-            field: "sesion",
-            width: 120,
-            cellStyle: {height: '40'},
-            editable: false,
-            cellRenderer: sesionCellRendererFunc}
-    ];
-    var data = [
-        {id: '1', fecha: '10/10/15', descripcion: 'Clase de presentación del programa', modulo: 'Introducción'},
-        {id: '2', fecha: '13/10/15', descripcion: 'Que es algo...', modulo: 'Introducción'}
-    ];
-    $scope.gridOptions = {
-        columnDefs: columnDefs,
-        rowData: data,
-        rowHeight: 40,
-        angularCompileRows: true,
-        enableColResize: true
-    };
+    var curso = CursosServices.getCursoPorNombre($stateParams.semestre, $stateParams.curso);
+    ModulosServices.obtenerModulos(curso).then(function (data) {
+        $scope.listaModulos= _.cloneDeep(data);
+        $scope.listaModulos= _.map(_.sortByOrder($scope.listaModulos,['posicion'],['asc']));
+        ClasesServices.obtenerClases($scope.listaModulos).then(function (data) {
+            $scope.listaClases = _.cloneDeep(data);
+            _.forEach($scope.listaClases, function(n){
+                var posModulo = _.findIndex($scope.listaModulos,{'id_modulo': n.id_modulo});
+                n.modulo = $scope.listaModulos[posModulo].nombre_modulo;
+            });
+        });
+    });
 
-    $scope.newRow = function(){
-        console.log("new");
-        var row =
-        {
-
+    $scope.agregarClase = function () {
+        var clase = {
+            'fecha': new Date(),
+            'descripcion': null,
+            'id_modulo':null,
+            'modulo': null,
+            'edicion':true,
+            'nuevo': true
         };
-        data.push(row);
-        $scope.gridOptions.api.setRowData(data);
+        $scope.listaClases.push(clase);
     };
+    //
+    $scope.editarClase = function (clase) {
+        if(_.isNull(clase.fecha)){
+            clase.fecha = new Date();
+        }else{
+            clase.fecha = new Date(clase.fecha);
+        }
+        clase.edicion=true;
+    };
+    $scope.guardarClase = function (clase) {
+        if(clase.modulo!=null) {
+            if(_.isUndefined(clase.nuevo)){
+                var posicionClase = _.findIndex($scope.listaClases, {'id_clase': clase.id_clase});
+                var posModulo = _.findIndex($scope.listaModulos,{'nombre_modulo':clase.modulo});
+                $scope.listaClases[posicionClase].id_modulo = $scope.listaModulos[posModulo].id_modulo;
+                ClasesServices.actualizarClase($scope.listaClases[posicionClase]).then(function (data) {
+                    if(data.error){
+                        //console.log(data.error);
+                    }else{
+                        $scope.listaClases[posicionClase].edicion = false;
+                    }
+                });
+            }else{
+                var posicionClase = _.findIndex($scope.listaClases, {'$$hashKey': clase.$$hashKey});
+                delete $scope.listaClases[posicionClase]['nuevo'];
+                var posModulo = _.findIndex($scope.listaModulos,{'nombre_modulo':clase.modulo});
+                $scope.listaClases[posicionClase].id_modulo = $scope.listaModulos[posModulo].id_modulo;
+                ClasesServices.crearClase($scope.listaClases[posicionClase]).then(function (data) {
+                    if(data.error){
+                        //console.log(data.error);
+                    }else{
+                        $scope.listaClases[posicionClase].edicion = false;
+                        $scope.listaClases[posicionClase].id_clase = data.id_clase;
+                    }
+                });
+            }
+        }else{
+            console.log('debe seleccionar un modulo para guardar la clase.');
+        }
+    };
+    $scope.cancelarClase = function (clase) {
 
-    function sesionCellRendererFunc(params) {
-        params.$scope.play = play;
-        params.$scope.del = del;
-        return '' +
-            '<div style="text-align: center; font-size: 11px">' +
-            '<span  class="fa-stack fa-lg">' +
-            '<i class="fa fa-play-circle fa-2x" style="color:#4CC417" ui-sref="crsApp.cursosSemestre.clases.sesion()"></i>' +
-            '</span>' +
-            '<span class="fa-stack fa-lg">' +
-            '<i class="fa fa-circle fa-stack-2x"></i>' +
-            '<i class="fa fa-pencil fa-stack-1x fa-inverse"></i>' +
-            '</span>' +
-            '<span  class="fa-stack fa-lg">' +
-            '<i class="fa fa-minus-circle fa-2x" style="color:#FF0000" ng-click="del()"></i>' +
-            '</span>' +
-            '</div>';
-    }
+        if(clase.modulo == null){
+            $scope.listaClases.splice(_.findIndex($scope.listaClases,{'id_clase':clase.id_clase}), 1);
+        }else{
+            if(!_.isUndefined(clase.nuevo)){
+                //no se guardaran los cambios
+                $scope.listaClases.splice(_.findIndex($scope.listaClases,{'id_clase':clase.id_clase}), 1);
+            }else{
+                //no se guardaran los cambios
+                clase.edicion = false;
+            }
+        }
+    };
+    $scope.eliminarClase = function (clase) {
+        var modalEliminarClaseInstance = $modal.open({
+            animation: true,
+            templateUrl: '/partials/content/clases/modalEliminarClase.html',
+            controller: 'ModalEliminarClaseController',
+            backdrop: 'static',
+            size: 'sm',
+            resolve: {
+                titulo: function () {
+                    return "esta seguro de eliminar la siguiente clase?";
+                },
+                clase: function(){
+                    return clase;
+                }
+            }
+        });
 
-    function play(id) {
-        window.alert("Play !!"+id);
-    }
+        modalEliminarClaseInstance.result.then(function (clase) {
+            ClasesServices.eliminarClase(clase).then(function (data) {
+                if(data.error){
+                    //console.log("error");
+                }else{
+                    $scope.listaClases.splice(_.findIndex($scope.listaClases,{'id_clase':clase.id_clase}), 1);
+                }
+            });
+        });
 
-    function del() {
-        window.alert("Delete !!");
-    }
+    };
+    $scope.iniciarSesion = function (clase) {
+        console.log('nueva sesion para: '+clase.id_clase);
+    };
+});
+
+crsApp.controller('ModalEliminarClaseController',function($scope, $modalInstance, titulo,clase){
+    $scope.modalTitulo=titulo;
+    $scope.cerrarModal = function(){
+        $modalInstance.dismiss();
+    };
+    $scope.aceptarModal = function(){
+        $modalInstance.close(clase);
+    };
 });

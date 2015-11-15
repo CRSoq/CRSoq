@@ -1,6 +1,6 @@
 'use strict';
 
-crsApp.factory('CursosServices', function ($http, $q, $rootScope, SessionServices) {
+crsApp.factory('CursosServices', function ($http, $q) {
     var cursos = [];
     function setCursos(listaCursos){
         cursos = listaCursos;

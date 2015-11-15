@@ -4,15 +4,61 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 </head>
 <body>
-<div ng-controller="ClasesController" style="height: 700px;">
+<div ng-controller="ClasesController">
     <h1>Clases - {{titulo}}</h1>
-    <button type="button" class="btn btn-primary" ng-click="newRow()">
+    <button type="button" class="btn btn-primary" ng-click="agregarClase()">
         <i class="fa fa-plus-circle"></i> Agregar Clase
     </button>
-    <!--
-    <div ag-grid="gridOptions" class="ag-fresh" style="width: 100%; height: 100%;"></div>
-    -->
-    
+    <div class="table-responsive">
+        <table class="table table-hover table-condensed table-bordered">
+            <thead>
+                <tr>
+                    <th>
+                        Fecha
+                        <i class="fa fa-caret-down"></i>
+                    </th>
+                    <th>Descripción</th>
+                    <th>Módulo</th>
+                    <th class="centrado">Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="clase in listaClases">
+                    <td ng-if="clase.edicion!=true" class="col-md-1">
+                        {{clase.fecha | date:'dd-MM-yyyy' }}
+                    </td>
+                    <td ng-if="clase.edicion==true" class="col-md-1">
+                        <p class="input-group">
+                            <input type="date" class="form-control" ng-model="clase.fecha" ng-required="true" />
+                        </p>
+                    </td>
+                    <td ng-if="clase.edicion!=true">{{clase.descripcion}}</td>
+                    <td ng-if="clase.edicion==true">
+                        <input type="text" name="descripcionClase" id="inputDescripcion" class="form-control" title="Descripción" required="required" ng-model="clase.descripcion">
+                    </td>
+                    <td ng-if="clase.edicion!=true">{{clase.modulo}}</td>
+                    <td ng-if="clase.edicion==true">
+                        <select name="modulo" id="inputModulo" class="form-control" ng-model="clase.modulo">
+                        <option value=""></option>
+                        <option ng-repeat="modulo in listaModulos" value="{{modulo.nombre_modulo}}">{{modulo.nombre_modulo}}</option>
+                        </select>
+                    </td>
+                    <td class="col-md-2 centrado" ng-if="clase.edicion!=true">
+                        <button class="btn btn-primary" ng-click="iniciarSesion(clase)"><i class="fa fa-play"></i></button>
+                        <button class="btn btn-primary" ng-click="editarClase(clase)"><i class="fa fa-pencil"></i></button>
+                        <button class="btn btn-primary" ng-click="eliminarClase(clase)"><i class="fa fa-times"></i></button>
+                    </td>
+                    <td class="col-md-2 centrado" ng-if="clase.edicion==true">
+                        <button class="btn btn-primary" ng-click="guardarClase(clase)"><i class="fa fa-floppy-o"></i></button>
+                        <button class="btn btn-primary" ng-click="cancelarClase(clase)"><i class="fa fa-times"></i></button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <pre>
+        {{listaClases |json}}
+    </pre>
 </div>
 </body>
 </html>

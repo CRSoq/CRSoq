@@ -50,7 +50,7 @@ router.post('/obtenerModulos', function (req, res) {
             if(!error && rows.length>0){
                 return res.json(rows);
             }else{
-                return res.json(false);
+                return res.json(rows);
             }
         })
     }

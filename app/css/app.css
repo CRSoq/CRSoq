@@ -117,3 +117,12 @@ ul.ng-enter {
 .titulo{
     text-align: center;
 }
+.centrado{
+    text-align: center;
+}
+
+.table,
+.table tr,
+.table td {
+    background-color: white !important;
+}
