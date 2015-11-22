@@ -27,6 +27,18 @@ crsApp.factory('ClasesServices', function ($http, $q) {
                 });
             return promise;
         },
+        obtenerClasePorIDSesion: function (sesion) {
+            var defered = $q.defer();
+            var promise = defered.promise;
+            $http.post('/clases/obtenerClasePorIDSesion', sesion)
+                .success(function (response) {
+                    defered.resolve(response);
+                })
+                .error(function (error) {
+                    defered.reject(error);
+                });
+            return promise;
+        },
         actualizarClase: function (clase) {
             var defered = $q.defer();
             var promise = defered.promise;

@@ -11,17 +11,23 @@
         <h3 class="modal-title">Crear curso</h3>
     </div>
     <div class="modal-body">
+        <div class="row">
+            <div class="col-md-12">
+                Todos los campos son obligatorios.
+                <br><br>
+            </div>
+        </div>
         <form class="form-horizontal">
             <div class="form-group">
                 <label for="inputNombre" class="col-sm-2 control-label">Nombre</label>
                 <div class="col-sm-10">
-                    <input type="text" class="form-control" id="inputNombre" placeholder="Nombre del curso" ng-model="nombre">
+                    <input type="text" class="form-control" id="inputNombre" placeholder="Nombre del curso" ng-model="nombre" required>
                 </div>
             </div>
             <div class="form-group">
                 <label for="inputAño" class="col-sm-2 control-label">Año</label>
                 <div class="col-sm-10">
-                    <select class="form-control" id="inputAño" ng-model="ano">
+                    <select class="form-control" id="inputAño" ng-model="ano" required>
                         <option value="2015">2015</option>
                         <option value="2014">2014</option>
                         <option value="2013">2013</option>
@@ -31,19 +37,23 @@
             <div class="form-group">
                 <label for="inputSemestre" class="col-sm-2 control-label">Nombre</label>
                 <div class="col-sm-10">
-                    <select class="form-control" id="inputSemestre" ng-model="semestre">
+                    <select class="form-control" id="inputSemestre" ng-model="semestre" required>
                         <option value="I">I</option>
                         <option value="II">II</option>
                     </select>
                 </div>
             </div>
         </form>
+        <div class="row">
+            <div class="col-md-12 centrado">
+                <alert ng-repeat="alert in alerts" type="{{alert.type}}" close="closeAlert($index)">{{alert.msg}}</alert>
+            </div>
+        </div>
     </div>
     <div class="modal-footer">
         <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="cancelar()">Cancelar</button>
         <button type="button" class="btn btn-primary" ng-click="aceptar()">Guardar</button>
     </div>
-    <pre id="default-spacing">{{ tipo | json }}</pre>
 </div>
 </body>
 </html>

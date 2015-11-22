@@ -35,7 +35,7 @@
                     </a>
                 </div>
 
-                <ul class="nav nav-sidebar" ng-if="buscarCurso(parentIndex,$index) && curso.estado !== 'sin_config'">
+                <ul class="nav nav-sidebar" ng-if="buscarCurso(parentIndex,$index) && curso.estado !== 'creado'">
                     <li>
                         <a ui-sref="crsApp.cursosSemestre.clases({curso: curso.nombre_curso})">
                             <span class="font-bold">Clases</span>
@@ -67,7 +67,7 @@
                         </a>
                     </li>
                 </ul>
-                <ul class="nav nav-sidebar" ng-if="buscarCurso(parentIndex,$index) && curso.estado == 'sin_config'">
+                <ul class="nav nav-sidebar" ng-if="buscarCurso(parentIndex,$index) && curso.estado == 'creado'">
                     <li>
                         <a ui-sref="crsApp.cursosSemestre.config({curso: curso.nombre_curso})">
                             <span class="font-bold">Configuración</span>

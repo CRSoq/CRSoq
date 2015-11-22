@@ -2,7 +2,12 @@
     $scope.listaCursos = [];
     CursosServices.obtenerCursos(SessionServices.getSessionData()).then(function (data) {
         //$scope.listaCursos=data;
-        $scope.menu=data;
+        //$scope.menu=data;
+        if(data.error){
+            //error
+        }else{
+            $scope.menu=data;
+        }
     });
 
     $scope.mostrarSemestreLista = [];
@@ -63,6 +68,15 @@
     });
 
     function cargarMenu(){
-        $scope.menu = CursosServices.getAllCursos();
+        //$scope.menu = CursosServices.getAllCursos();
+        CursosServices.obtenerCursos(SessionServices.getSessionData()).then(function (data) {
+            //$scope.listaCursos=data;
+            //$scope.menu=data;
+            if(data.error){
+                //error
+            }else{
+                $scope.menu=data;
+            }
+        });
     }
 });

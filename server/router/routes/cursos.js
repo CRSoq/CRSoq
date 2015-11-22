@@ -9,12 +9,13 @@ router.post('/crearCurso', function (req, res) {
     if(!req.body){
         return res.sendStatus(400);
     }else{
-        connection.query('INSERT INTO curso SET id_user = ?, nombre_curso = ?, semestre = ?, ano = ? ',[req.body.id_user, req.body.nombre,req.body.semestre, req.body.ano], function (error) {
-            if(!error){
-                return res.send('add');
+        connection.query('INSERT INTO curso SET id_user = ?, nombre_curso = ?, semestre = ?, ano = ?, estado = ? ',[req.body.id_user, req.body.nombre,req.body.semestre, req.body.ano, req.body.estado], function (error, result) {
+            if(error){
+                return res.json({'error':true,'err':error});
+            }else{
+                return res.json({'id_clase':result.insertId});
             }
         });
-
     }
 });
 
@@ -35,7 +36,10 @@ router.post('/obtenerCursos', function (req, res) {
                         .map(function(current){
                             return _.object(_.zip(["nombre","cursos"], current));
                         });
-                    res.json(_.sortByOrder(_(lista).reverse().value(),['nombre'],['desc']));
+                    return res.json(_.sortByOrder(_(lista).reverse().value(),['nombre'],['desc']));
+                }else{
+                    //error
+                    return res.json({'error':true,'err':error});
                 }
             });
         }
@@ -50,9 +54,10 @@ router.post('/obtenerModulos', function (req, res) {
             if(!error && rows.length>0){
                 return res.json(rows);
             }else{
-                return res.json(rows);
+                //algo pasa aqui ? ):
+                return res.json({'error':true});
             }
-        })
+        });
     }
 });
 

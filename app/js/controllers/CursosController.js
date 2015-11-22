@@ -1,11 +1,11 @@
-crsApp.controller('CursosController', function($scope, $filter, $stateParams, $modal, CursosServices, SessionServices) {
+crsApp.controller('CursosController', function($scope, $rootScope, $filter, $stateParams, $modal, $timeout, CursosServices) {
     $scope.menu = CursosServices.getAllCursos();
+    $scope.alerts = [];
     var found = $filter('filter')($scope.menu,  {'nombre':$stateParams.semestre}, true)[0];
     if(!angular.isUndefined(found)) {
         $scope.semestre = found;
     }
     $scope.crearCurso = function () {
-        //levantar modal
         var modalInstance = $modal.open({
             animation   : true,
             templateUrl : '/partials/content/main/crearCursoModal.html',
@@ -21,23 +21,57 @@ crsApp.controller('CursosController', function($scope, $filter, $stateParams, $m
 
         modalInstance.result.then(function (curso){
             CursosServices.crearCurso(curso).then(function (data) {
-                console.log(data);
+                if(data.error){
+                    var id_alert = $scope.alerts.length+1;
+                    $scope.alerts.push({id: id_alert,type:'danger', msg:'No se pudo crear el curso "'+data.err+'"'});
+                    closeAlertTime(id_alert);
+                }else{
+                    $rootScope.$emit('actualizarControladores');
+                    var id_alert = $scope.alerts.length+1;
+                    $scope.alerts.push({id: id_alert,type:'success', msg:'Curso creado'});
+                    closeAlertTime(id_alert);
+                }
             });
         });
     };
-    //eliminarCurso?
+    $scope.closeAlert = function(index) {
+        $scope.alerts.splice(index, 1);
+    };
+    var closeAlertTime = function(id_alert) {
+        $timeout(function(){
+            $scope.alerts.splice(_.findIndex($scope.alerts,{id:id_alert}), 1);
+        }, 3000);
+    };
+
 });
 
-crsApp.controller('ModalCrearCursoController', function ($scope, $modalInstance, SessionServices) {
+crsApp.controller('ModalCrearCursoController', function ($scope, $timeout, $modalInstance, SessionServices) {
+    $scope.alerts = [];
     $scope.aceptar = function () {
         var dataUsuario = SessionServices.getSessionData();
         var curso = {
             nombre      : $scope.nombre,
             ano         : $scope.ano,
             semestre    : $scope.semestre,
-            id_user : dataUsuario.id_user
+            estado      : 'creado',
+            id_user     : dataUsuario.id_user
         };
-        $modalInstance.close(curso);
+        if(_.isEmpty(curso.nombre) || _.isEmpty(curso.ano) || _.isEmpty(curso.semestre) ){
+            var id_alert = $scope.alerts.length+1;
+            $scope.alerts.push({id: id_alert,type:'danger', msg:'Debe completar todos los campos.'});
+            closeAlertTime(id_alert);
+        }else{
+            $modalInstance.close(curso);
+        }
+    };
+
+    $scope.closeAlert = function(index) {
+        $scope.alerts.splice(index, 1);
+    };
+    var closeAlertTime = function(id_alert) {
+        $timeout(function(){
+            $scope.alerts.splice(_.findIndex($scope.alerts,{id:id_alert}), 1);
+        }, 3000);
     };
     $scope.cancelar = function () {
         $modalInstance.dismiss();
@@ -141,8 +175,8 @@ crsApp.controller('ConfigCursoController', function ($scope, $rootScope, $state,
         if(campoVacio($scope.modulos)){
             ModulosServices.guardarModulos($scope.config).then(function (data) {
                 if(data[0].insert.length==0 && data[1].update.length==0 && data[2].delete.length==0){
-                    if(curso.estado=='sin_config'){
-                        CursosServices.cambiarEstado(curso.id_curso,'disponible').then(function (data) {
+                    if(curso.estado=='creado'){
+                        CursosServices.cambiarEstado(curso.id_curso,'abierto').then(function (data) {
                             CursosServices.obtenerCursos(SessionServices.getSessionData()).then(function (data) {
                                 if(data){
                                     $rootScope.$emit('actualizarControladores');
@@ -154,7 +188,6 @@ crsApp.controller('ConfigCursoController', function ($scope, $rootScope, $state,
                 }
             });
         }else{
-            //sin modificacion
             $scope.cancelarConfig();
         }
 

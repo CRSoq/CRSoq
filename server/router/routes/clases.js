@@ -9,7 +9,7 @@ router.post('/crearClase', function (req, res) {
     if(!req.body){
         return res.sendStatus(400);
     }else{
-        connection.query('INSERT INTO clase (id_modulo,descripcion,fecha) VALUES (?,?,?)',[req.body.id_modulo,req.body.descripcion,req.body.fecha], function (error, result) {
+        connection.query('INSERT INTO clase (id_modulo,descripcion,fecha, estado_sesion) VALUES (?,?,?,?)',[req.body.id_modulo,req.body.descripcion,req.body.fecha, req.body.estado_sesion], function (error, result) {
             if(error){
                 res.json({'error':true});
             }else{
@@ -55,9 +55,9 @@ router.post('/actualizarClase', function (req, res) {
     if(!req.body){
         return res.sendStatus(400);
     }else{
-        connection.query('UPDATE clase SET id_modulo = ?, descripcion = ?, fecha = ? WHERE id_clase = ?',[req.body.id_modulo, req.body.descripcion, req.body.fecha, req.body.id_clase], function (error) {
+        connection.query('UPDATE clase SET id_modulo = ?, descripcion = ?, fecha = ?, estado_sesion = ?  WHERE id_clase = ?',[req.body.id_modulo, req.body.descripcion, req.body.fecha, req.body.estado_sesion, req.body.id_clase], function (error) {
             if(error){
-                return res.json({'error': true});
+                return res.json({'error': true,'err':error.code});
             }else{
                 return res.json({'error': false});
             }
@@ -68,11 +68,17 @@ router.post('/eliminarClase', function (req, res) {
     if(!req.body){
         return res.sendStatus(400);
     }else{
-        connection.query('DELETE FROM clase WHERE id_clase = ?',[req.body.id_clase], function (error) {
+        connection.query('UPDATE pregunta SET id_clase = null WHERE id_clase = ?',[req.body.id_clase], function (error) {
             if(error){
-                return res.json({'error': true});
+                return res.json({'error': true,'err':error.code});
             }else{
-                return res.json({'error': false});
+                connection.query('DELETE FROM clase WHERE id_clase = ?',[req.body.id_clase], function (error) {
+                    if(error){
+                        return res.json({'error': true,'err':error.code});
+                    }else{
+                        return res.json({'error': false});
+                    }
+                });
             }
         });
     }

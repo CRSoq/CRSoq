@@ -4,6 +4,63 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 </head>
 <body>
-<h1>Preguntas</h1>
+<div ng-controller="PreguntasController">
+    <h1>Preguntas - {{titulo}}</h1>
+    <button type="button" class="btn btn-primary" ng-click="agregarPregunta()">
+        <i class="fa fa-plus-circle"></i> Agregar pregunta
+    </button>
+    <div class="table-responsive">
+        <table class="table table-hover table-condensed table-bordered">
+            <thead>
+            <tr>
+                <th>Pregunta</th>
+                <!--<th>Módulo</th>-->
+                <th>Clase</th>
+                <th class="centrado">Acciones</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr ng-repeat="pregunta in listaPreguntasCurso">
+                <td ng-if="pregunta.edicion!=true">{{pregunta.pregunta}}</td>
+
+                <td ng-if="pregunta.edicion!=true">{{pregunta.clase}}</td>
+                <td ng-if="pregunta.edicion!=true" class="col-md-2 centrado">
+                    <button class="btn btn-primary" ng-click="editarPregunta(pregunta)"><i class="fa fa-pencil"></i></button>
+                    <button class="btn btn-primary" ng-click="eliminarPregunta(pregunta)"><i class="fa fa-times"></i></button>
+                </td>
+                <td ng-if="pregunta.edicion==true" class="col-md-6">
+                    <input type="text" name="pregunta" id="inputPregunta" class="form-control" title="escriba su pregunta" ng-model="pregunta.pregunta" required>
+                </td>
+                <!--
+                 <td ng-if="pregunta.edicion!=true">{{pregunta.nombre_modulo}}</td>
+                <td ng-if="pregunta.edicion==true" class="col-md-2">
+                    <select name="modulo" id="inputModulo" class="form-control" ng-options="modulo.id_modulo as modulo.nombre_modulo for modulo in listaModulos" ng-change="seleccionaModulo(pregunta.id_modulo)" ng-model="pregunta.id_modulo">
+                        <option value="">-- Elegir módulo --</option>
+                    </select>
+                </td>
+                -->
+                <td ng-if="pregunta.edicion==true" class="col-md-2">
+                    <select name="clase" id="inputClase" class="form-control" ng-options="clase.id_clase as clase.descripcion group by clase.modulo for clase in listaClases" ng-change="seleccionaClase(pregunta.id_clase)" ng-model="pregunta.id_clase">
+                         <option value="">-- Elegir clase --</option>
+                    </select>
+                </td>
+                <td ng-if="pregunta.edicion==true" class="col-md-2 centrado">
+                    <button class="btn btn-primary" ng-click="guardarPregunta(pregunta)"><i class="fa fa-floppy-o"></i></button>
+                    <button class="btn btn-primary" ng-click="cancelarPregunta(pregunta)"><i class="fa fa-times"></i></button>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+    <pre>
+        {{listaPreguntasCurso |json}}
+    </pre>
+    <pre>
+        {{listaClases |json}}
+    </pre>
+    <pre>
+        {{listaModulos |json}}
+    </pre>
+</div>
 </body>
 </html>

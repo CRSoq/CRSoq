@@ -12,6 +12,7 @@
         </span>
         Crear Curso
     </button>
+    <alert ng-repeat="alert in alerts" type="{{alert.type}}" close="closeAlert($index)">{{alert.msg}}</alert>
 </div>
 </body>
 </html>

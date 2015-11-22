@@ -69,7 +69,7 @@ crsApp.config(function($stateProvider, $urlRouterProvider) {
             authenticate:true
         })
         .state('crsApp.cursosSemestre.clases.sesion', {
-            url: '/sesion',
+            url: '/sesion/:id_sesion',
             views: {
                 'main@crsApp': {
                     templateUrl: 'partials/content/clases/sesion/sesionPartial.html'

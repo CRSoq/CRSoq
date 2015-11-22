@@ -40,7 +40,6 @@ crsApp.factory('CursosServices', function ($http, $q) {
             return listaCursos;
         },
         getCursoPorNombre: function (ano_semestre, nombreCurso) {
-            //var listaCursos = cursos;
             var positionSemestre = _.findIndex(cursos, {'nombre':ano_semestre});
             if(positionSemestre>=0){
                 var positionCurso = _.findIndex(cursos[positionSemestre].cursos, {'nombre_curso':nombreCurso});

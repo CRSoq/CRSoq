@@ -50,15 +50,17 @@
                     </td>
                     <td class="col-md-2 centrado" ng-if="clase.edicion==true">
                         <button class="btn btn-primary" ng-click="guardarClase(clase)"><i class="fa fa-floppy-o"></i></button>
-                        <button class="btn btn-primary" ng-click="cancelarClase(clase)"><i class="fa fa-times"></i></button>
+                        <button class="btn btn-primary" ng-click="cancelarClase(clase, $index)"><i class="fa fa-times"></i></button>
                     </td>
                 </tr>
             </tbody>
         </table>
     </div>
-    <pre>
-        {{listaClases |json}}
-    </pre>
+    <div class="row">
+        <div class="col-md-12 centrado">
+            <alert ng-repeat="alert in alerts" type="{{alert.type}}" close="closeAlert($index)">{{alert.msg}}</alert>
+        </div>
+    </div>
 </div>
 </body>
 </html>

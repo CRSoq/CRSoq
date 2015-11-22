@@ -4,16 +4,38 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 </head>
 <body>
+<!--
 <div class="container-fluid">
     <div class="row">
         <div id="tablaSesion" class="table-responsive" ng-controller="SesionController">
-            <h1>Clase: {{tituloClase}}</h1>
-            <h2>Módulo: {{tituloModulo}}</h2>
-            <button type="button" class="btn btn-primary" ng-click="newRow()">
-                <i class="fa fa-plus-circle"></i> Crear Pregunta
-            </button>
-            <div id="listaPreguntas" ag-grid="gridOptions" class="ag-fresh listaPreguntas" style="width: 100%;"></div>
+            <h1>Clase: {{titulo.Clase}}</h1>
+            <h2>Módulo: {{titulo.Modulo}}</h2>
         </div>
+    </div>
+</div>
+-->
+<div ng-controller="SesionController">
+    <h1>{{curso}}</h1>
+    <h2>{{clase}}</h2>
+    <button type="button" class="btn btn-primary" ng-click="agregarClase()">
+        <i class="fa fa-plus-circle"></i> Agregar Clase
+    </button>
+    <div class="table-responsive">
+        <table class="table table-hover table-condensed table-bordered">
+            <thead>
+            <tr>
+                <th>
+                    Fecha
+                    <i class="fa fa-caret-down"></i>
+                </th>
+                <th>Descripción</th>
+                <th>Módulo</th>
+                <th class="centrado">Acciones</th>
+            </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
     </div>
 </div>
 </body>
