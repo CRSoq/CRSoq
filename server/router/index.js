@@ -4,4 +4,5 @@ module.exports = function (app) {
     app.use('/clases', require('./routes/clases'));
     app.use('/sesion', require('./routes/sesion'));
     app.use('/preguntas', require('./routes/preguntas'));
+    app.use('/estudiante', require('./routes/estudiante'));
 };

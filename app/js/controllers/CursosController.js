@@ -102,7 +102,7 @@ crsApp.controller('CursoGralInfoController', function ($scope, $rootScope, $stat
 
 });
 
-crsApp.controller('ConfigCursoController', function ($scope, $rootScope, $state, $stateParams, CursosServices, ModulosServices, SessionServices) {
+crsApp.controller('ConfigCursoController', function ($scope, $rootScope, $state, $stateParams, CursosServices, ModulosServices, SessionServices, EstudiantesServices) {
     var curso = CursosServices.getCursoPorNombre($stateParams.semestre, $stateParams.curso);
     $scope.config = [
         {
@@ -205,5 +205,104 @@ crsApp.controller('ConfigCursoController', function ($scope, $rootScope, $state,
     };
     $scope.cancelarConfig = function () {
         $state.transitionTo("crsApp.cursosSemestre.curso",{semestre:$stateParams.semestre,curso:$stateParams.curso});
+    };
+
+
+    //alumnos
+    $scope.generarUsuario = true;
+    $scope.generarClave = true;
+    //$scope.listaEstudiantes = [];
+    EstudiantesServices.ObtenerListaEstudiantes(curso).then(function (data) {
+        if(data.error){
+            console.log('error get '+data.err.code);
+        }else{
+            $scope.listaEstudiantes= _.cloneDeep(data.estudiantes);
+        }
+    });
+    $scope.agregarEstudiante = function () {
+        var estudiante = {
+            'id_curso': curso.id_curso,
+            'nombre': null,
+            'apellido': null,
+            'rut': null,
+            'usuario': null,
+            'clave': null,
+            'edicion': true,
+            'nuevo': true
+        };
+        $scope.listaEstudiantes.push(estudiante);
+    };
+
+    $scope.generarUsuarioEstudiante = function (estudiante) {
+        if($scope.generarUsuario){
+            estudiante.usuario = estudiante.nombre.charAt(0)+estudiante.apellido;
+        }
+    };
+    $scope.generarClaveEstudiante = function (estudiante) {
+        if($scope.generarClave){
+            estudiante.clave = estudiante.rut.replace(/\D+/g, '');
+        }
+    };
+    $scope.formatoRut = function(estudiante){
+        //darle formato al rut mientras escribe
+        //XX.XXX.XXX-Y
+        //console.log(rut);
+    };
+    $scope.guardarEstudiante = function (estudiante) {
+        //llamar al servicio
+        //error..ya existe mismo usuario
+        //  mostrar sugerencias
+        //  se envia la sugerencia
+        EstudiantesServices.ObtenerEstudiante(estudiante).then(function (data) {
+            if(data.error){
+                console.log('error '+data.err);
+            }else{
+                if(data.estudiante.length==1){
+                    //existe estudiante asigno al curso
+                    estudiante.id_user = data.estudiante[0].id_user;
+                    var EstudianteCurso = {
+                        'id_user':estudiante.id_user,
+                        'id_curso':estudiante.id_curso
+                    };
+                    EstudiantesServices.AsignarCursoAEstudiante(EstudianteCurso).then(function (data) {
+                        if(data.error){
+                            console.log('error asignar curso '+data.err);
+                        }else{
+                            console.log('data '+data.result);
+                            delete estudiante['nuevo'];
+                            estudiante.edicion = false;
+                        }
+                    });
+                }else if(data.estudiante.length==0){
+                    //no existe, creo estudiante, luego asigno al curso
+                    EstudiantesServices.CrearEstudiante(estudiante).then(function (data) {
+                        if(data.error){
+                            console.log('error crear estud '+data.err);
+                            if(data.err.code=='ER_DUP_ENTRY'){
+                                //generar sugerencia de usuario
+                            }
+                        }else{
+                            estudiante.id_user = data.id_user;
+                            var EstudianteCurso = {
+                                'id_user':estudiante.id_user,
+                                'id_curso':estudiante.id_curso
+                            };
+                            EstudiantesServices.AsignarCursoAEstudiante(EstudianteCurso).then(function (data) {
+                                if(data.error){
+                                    console.log('error asignar curso '+data.err);
+                                }else{
+                                    console.log('data '+data.result);
+                                    delete estudiante['nuevo'];
+                                    estudiante.edicion = false;
+                                }
+                            });
+                        }
+                    });
+                }else{
+                    //error
+                    console.log('error otro '+data);
+                }
+            }
+        });
     };
 });

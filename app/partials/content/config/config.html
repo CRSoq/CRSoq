@@ -7,6 +7,83 @@
 <div ng-controller="ConfigCursoController">
     <h1 class="titulo">Configuración</h1>
     <form class="form-horizontal" role="form">
+        <label>
+            Generar usuario simple
+        </label>
+        <input type="checkbox" ng-model="generarUsuario">
+        <label>
+            Generar clave simple
+        </label>
+        <input type="checkbox" ng-model="generarClave">
+    </form>
+    <button type="button" class="btn btn-primary" ng-click="agregarEstudiante()">
+        <i class="fa fa-plus-circle"></i> Agregar Estudiante
+    </button>
+    <button type="button" class="btn btn-primary" ng-click="importar()">
+        <i class="fa fa-file-excel-o"></i> Importar
+    </button>
+    <div class="table-responsive">
+        <table class="table table-hover table-condensed table-bordered">
+            <thead>
+            <tr>
+                <th>RUT</th>
+                <th>Nombre</th>
+                <th>Apellido</th>
+                <th>Usuario</th>
+                <th>Clave</th>
+                <th class="centrado">Acciones</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr ng-repeat="estudiante in listaEstudiantes">
+                <td ng-if="estudiante.edicion!=true">
+                    {{ estudiante.rut }}
+                </td>
+                <td ng-if="estudiante.edicion==true">
+                    <input type="text" name="estudianteRut" id="inputEstudianteRut" class="form-control" title="Rut del Estudiante" ng-model="estudiante.rut" ng-required="true" ng-maxlength="12" maxlength="12" ng-change="generarClaveEstudiante(estudiante); formatoRut(estudiante)" required/>
+                </td>
+                <td ng-if="estudiante.edicion!=true">
+                    {{ estudiante.nombre }}
+                </td>
+                <td ng-if="estudiante.edicion==true">
+                    <input type="text" name="estudianteNombre" id="inputEstudianteNombre" class="form-control" title="Nombre del Estudiante" ng-model="estudiante.nombre" ng-required="true" ng-change="generarUsuarioEstudiante(estudiante)" required/>
+                </td>
+                <td ng-if="estudiante.edicion!=true">
+                    {{ estudiante.apellido }}
+                </td>
+                <td ng-if="estudiante.edicion==true">
+                    <input type="text" name="estudianteApellido" id="inputEstudianteApellido" class="form-control" title="Apellido del Estudiante" ng-model="estudiante.apellido"  ng-required="true" ng-change="generarUsuarioEstudiante(estudiante)" required/>
+                </td>
+                <td ng-if="estudiante.edicion!=true">
+                    {{estudiante.usuario}}
+                </td>
+                <td ng-if="estudiante.edicion==true">
+                    <input ng-disabled="generarUsuario" type="text" name="estudianteUsuario" id="inputEstudianteUsuario" class="form-control" title="Usuario" ng-model="estudiante.usuario" required="required" />
+                </td>
+                <td ng-if="estudiante.edicion!=true">
+                    {{estudiante.clave}}
+                </td>
+                <td ng-if="estudiante.edicion==true">
+                    <input ng-disabled="generarClave" type="text" name="estudianteClave" id="inputEstudianteClave" class="form-control" title="Clave" ng-model="estudiante.clave" required="required" />
+                </td>
+                <td class="col-md-2 centrado" ng-if="estudiante.edicion!=true">
+                    <button class="btn btn-primary" ng-click="editarClase(clase)"><i class="fa fa-pencil"></i></button>
+                    <button class="btn btn-primary" ng-click="eliminarClase(clase)"><i class="fa fa-times"></i></button>
+                </td>
+                <td class="col-md-2 centrado" ng-if="estudiante.edicion==true">
+                    <button class="btn btn-primary" ng-click="guardarEstudiante(estudiante)"><i class="fa fa-floppy-o"></i></button>
+                    <button class="btn btn-primary" ng-click="cancelarClase(clase, $index)"><i class="fa fa-times"></i></button>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <pre>
+        {{listaEstudiantes | json}}
+    </pre>
+
+    <form class="form-horizontal" role="form">
         <div class="form-group" ng-repeat="modulo in modulos">
             <label for="inputNombreModulo" class="col-sm-2 control-label">Nombre módulo #{{modulo.posicion}}</label>
             <div class="col-md-8">

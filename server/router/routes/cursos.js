@@ -13,7 +13,7 @@ router.post('/crearCurso', function (req, res) {
             if(error){
                 return res.json({'error':true,'err':error});
             }else{
-                return res.json({'id_clase':result.insertId});
+                return res.json({'id_curso':result.insertId});
             }
         });
     }
