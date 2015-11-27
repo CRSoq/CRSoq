@@ -67,12 +67,12 @@
                     <input ng-disabled="generarClave" type="text" name="estudianteClave" id="inputEstudianteClave" class="form-control" title="Clave" ng-model="estudiante.clave" required="required" />
                 </td>
                 <td class="col-md-2 centrado" ng-if="estudiante.edicion!=true">
-                    <button class="btn btn-primary" ng-click="editarClase(clase)"><i class="fa fa-pencil"></i></button>
-                    <button class="btn btn-primary" ng-click="eliminarClase(clase)"><i class="fa fa-times"></i></button>
+                    <button class="btn btn-primary" ng-click="editarEstudiante(estudiante)"><i class="fa fa-pencil"></i></button>
+                    <button class="btn btn-primary" ng-click="eliminarEstudianteDelCurso(estudiante, $index)"><i class="fa fa-times"></i></button>
                 </td>
                 <td class="col-md-2 centrado" ng-if="estudiante.edicion==true">
                     <button class="btn btn-primary" ng-click="guardarEstudiante(estudiante)"><i class="fa fa-floppy-o"></i></button>
-                    <button class="btn btn-primary" ng-click="cancelarClase(clase, $index)"><i class="fa fa-times"></i></button>
+                    <button class="btn btn-primary" ng-click="cancelarEstudiante(estudiante, $index)"><i class="fa fa-times"></i></button>
                 </td>
             </tr>
             </tbody>

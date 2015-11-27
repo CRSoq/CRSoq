@@ -249,60 +249,80 @@ crsApp.controller('ConfigCursoController', function ($scope, $rootScope, $state,
         //console.log(rut);
     };
     $scope.guardarEstudiante = function (estudiante) {
-        //llamar al servicio
-        //error..ya existe mismo usuario
-        //  mostrar sugerencias
-        //  se envia la sugerencia
-        EstudiantesServices.ObtenerEstudiante(estudiante).then(function (data) {
-            if(data.error){
-                console.log('error '+data.err);
-            }else{
-                if(data.estudiante.length==1){
-                    //existe estudiante asigno al curso
-                    estudiante.id_user = data.estudiante[0].id_user;
-                    var EstudianteCurso = {
-                        'id_user':estudiante.id_user,
-                        'id_curso':estudiante.id_curso
-                    };
-                    EstudiantesServices.AsignarCursoAEstudiante(EstudianteCurso).then(function (data) {
-                        if(data.error){
-                            console.log('error asignar curso '+data.err);
-                        }else{
-                            console.log('data '+data.result);
-                            delete estudiante['nuevo'];
-                            estudiante.edicion = false;
-                        }
-                    });
-                }else if(data.estudiante.length==0){
-                    //no existe, creo estudiante, luego asigno al curso
-                    EstudiantesServices.CrearEstudiante(estudiante).then(function (data) {
-                        if(data.error){
-                            console.log('error crear estud '+data.err);
-                            if(data.err.code=='ER_DUP_ENTRY'){
-                                //generar sugerencia de usuario
+        if(!_.isUndefined(estudiante.nuevo)) {
+            EstudiantesServices.ObtenerEstudiante(estudiante).then(function (data) {
+                if (data.error) {
+                    console.log('error ' + data.err);
+                } else {
+                    if (data.estudiante.length == 1) {
+                        //existe estudiante asigno al curso
+                        estudiante.id_user = data.estudiante[0].id_user;
+                        var EstudianteCurso = {
+                            'id_user': estudiante.id_user,
+                            'id_curso': estudiante.id_curso
+                        };
+                        EstudiantesServices.AsignarCursoAEstudiante(EstudianteCurso).then(function (data) {
+                            if (data.error) {
+                                console.log('error asignar curso ' + data.err);
+                            } else {
+                                console.log('data ' + data.result);
+                                delete estudiante['nuevo'];
+                                estudiante.edicion = false;
                             }
-                        }else{
-                            estudiante.id_user = data.id_user;
-                            var EstudianteCurso = {
-                                'id_user':estudiante.id_user,
-                                'id_curso':estudiante.id_curso
-                            };
-                            EstudiantesServices.AsignarCursoAEstudiante(EstudianteCurso).then(function (data) {
-                                if(data.error){
-                                    console.log('error asignar curso '+data.err);
-                                }else{
-                                    console.log('data '+data.result);
-                                    delete estudiante['nuevo'];
-                                    estudiante.edicion = false;
+                        });
+                    } else if (data.estudiante.length == 0) {
+                        //no existe, creo estudiante, luego asigno al curso
+                        EstudiantesServices.CrearEstudiante(estudiante).then(function (data) {
+                            if (data.error) {
+                                console.log('error crear estud ' + data.err);
+                                if (data.err.code == 'ER_DUP_ENTRY') {
+                                    //generar sugerencia de usuario
+                                    console.log('ya existe el mismo usuario');
                                 }
-                            });
-                        }
-                    });
-                }else{
-                    //error
-                    console.log('error otro '+data);
+                            } else {
+                                estudiante.id_user = data.id_user;
+                                var EstudianteCurso = {
+                                    'id_user': estudiante.id_user,
+                                    'id_curso': estudiante.id_curso
+                                };
+                                EstudiantesServices.AsignarCursoAEstudiante(EstudianteCurso).then(function (data) {
+                                    if (data.error) {
+                                        console.log('error asignar curso ' + data.err);
+                                    } else {
+                                        console.log('data ' + data.result);
+                                        delete estudiante['nuevo'];
+                                        estudiante.edicion = false;
+                                    }
+                                });
+                            }
+                        });
+                    } else {
+                        //error
+                        console.log('error otro ' + data);
+                    }
                 }
+            });
+        }else{
+
+        }
+    };
+    $scope.editarEstudiante = function (estudiante) {
+        estudiante.edicion = true;
+    };
+    $scope.eliminarEstudianteDelCurso = function (estudiante, index) {
+        EstudiantesServices.EliminarEstudianteDelCurso(estudiante).then(function (data) {
+            if(data.error){
+                console.log(data.err.code);
+            }else{
+                $scope.listaEstudiantes.splice(index,1);
             }
         });
+    };
+    $scope.cancelarEstudiante = function (estudiante, index) {
+        if(!_.isUndefined(estudiante.nuevo)){
+            $scope.listaEstudiantes.splice(index, 1);
+        }else{
+            estudiante.edicion = false;
+        }
     };
 });

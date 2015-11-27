@@ -65,7 +65,7 @@ router.post('/obtenerEstudiantesPorCurso', function (req, res) {
     if(!req.body){
         return res.sendStatus(400);
     }else{
-        connection.query('SELECT id_user FROM pertenece WHERE id_curso = ?',[req.body.id_curso], function (error, rows) {
+        connection.query('SELECT c.id_curso, e.id_user, e.nombre, e.apellido, e.usuario, e.clave, e.rut FROM pertenece ec INNER JOIN estudiante e ON ec.id_user=e.id_user INNER JOIN curso c ON ec.id_curso=c.id_curso WHERE c.id_curso = ?',[req.body.id_curso], function (error, rows) {
             if(error){
                 return res.json({'error':true, 'err':error});
             }else{
@@ -93,7 +93,7 @@ router.post('/actualizarEstudiante', function (req, res) {
     }else{
         connection.query('UPDATE estudiante SET nombre = ?, apellido = ?, usuario = ?, clave = ?, rut = ?  WHERE id_user = ?',[req.body.nombre, req.body.apellido, req.body.usuario, req.body.clave, req.body.rut, req.body.id_user], function (error) {
             if(error){
-                return res.json({'error': true,'err':error.code});
+                return res.json({'error': true,'err':error});
             }else{
                 return res.json({'error': false});
             }
@@ -106,7 +106,7 @@ router.post('/eliminarEstudianteDelCurso', function (req, res) {
     }else{
         connection.query('DELETE FROM pertenece WHERE id_user = ? AND id_curso = ?',[req.body.id_user, req.body.id_curso], function (error) {
             if(error){
-                return res.json({'error': true,'err':error.code});
+                return res.json({'error': true,'err':error});
             }else{
                 return res.json({'error': false});
             }
