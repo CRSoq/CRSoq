@@ -25,10 +25,10 @@ router.post('/obtenerPreguntasClase', function (req, res) {
         return res.sendStatus(400);
     }else{
         connection.query('SELECT * FROM pregunta WHERE id_clase = ?',[req.body.id_clase], function (error, rows) {
-            if(!error && rows.length>0){
+            if(!error){
                 return res.json(rows);
             }else{
-                return res.json({'error':true});
+                return res.json({'error':true,'err':error});
             }
         });
     }
@@ -39,10 +39,10 @@ router.post('/obtenerPreguntasCurso', function (req, res) {
         return res.sendStatus(400);
     }else{
         connection.query('SELECT * FROM pregunta WHERE id_curso = ?',[req.body.id_curso], function (error, rows) {
-            if(!error && rows.length>0){
-                return res.json(rows);
+            if(error){
+                return res.json({'error':true,'err':error});
             }else{
-                return res.json({'error':true});
+                return res.json(rows);
             }
         });
     }
@@ -53,7 +53,7 @@ router.post('/actualizarPregunta', function (req, res) {
     }else{
         connection.query('UPDATE pregunta SET id_clase = ?, id_user = ?, pregunta = ? WHERE id_pregunta = ?',[req.body.id_clase, req.body.id_user, req.body.pregunta, req.body.id_pregunta], function (error) {
             if(error){
-                return res.json({'error': true});
+                return res.json({'error': true, 'err':error});
             }else{
                 return res.json({'error': false});
             }
@@ -66,7 +66,7 @@ router.post('/eliminarPregunta', function (req, res) {
     }else{
         connection.query('DELETE FROM pregunta WHERE id_pregunta = ?',[req.body.id_pregunta], function (error) {
             if(error){
-                return res.json({'error': true});
+                return res.json({'error': true, 'err':error});
             }else{
                 return res.json({'error': false});
             }

@@ -1,5 +1,5 @@
 'use strict';
-crsApp.controller('PreguntasController', function ($scope, $stateParams, PreguntasServices, CursosServices, ClasesServices, ModulosServices) {
+crsApp.controller('PreguntasController', function ($scope, $stateParams, $timeout, PreguntasServices, CursosServices, ClasesServices, ModulosServices) {
     var curso = CursosServices.getCursoPorNombre($stateParams.semestre, $stateParams.curso);
     $scope.listaPreguntasCurso = [];
     $scope.listaPreguntasClase = [];
