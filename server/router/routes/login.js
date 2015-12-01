@@ -24,13 +24,7 @@ router.post('/', function(req, res){
                         tipo    : 'estudiante',
                         id_user : rows[0].id_user
                     };
-                    connection.query('UPDATE estudiante SET token = ? WHERE id_user = ?', [token, rows[0].id_user], function(error, rows, fields){
-                        if(error){
-                            res.send('Error update');
-                        }else{
-                            res.json(output);
-                        }
-                    });
+                    return res.json({'usuario':output});
                 }else{
                     connection.query(select_profe,[req.body.usuario, req.body.clave], function (error, rows) {
                         if(!error){
@@ -42,13 +36,7 @@ router.post('/', function(req, res){
                                     tipo: 'profesor',
                                     id_user : rows[0].id_user
                                 };
-                                connection.query('UPDATE profesor SET token = ? WHERE id_user = ?', [token, rows[0].id_user], function(error, rows, fields){
-                                    if(error){
-                                        res.send('Error update');
-                                    }else{
-                                        res.json(output);
-                                    }
-                                });
+                                return res.json({'usuario':output});
                             }else{
                                 connection.query(select_admin,[req.body.usuario, req.body.clave], function (error, rows) {
                                     if(!error){
@@ -60,22 +48,81 @@ router.post('/', function(req, res){
                                                 tipo: 'administrador',
                                                 id_user : rows[0].id_user
                                             };
-                                            connection.query('UPDATE administrador SET token = ? WHERE id_user = ?', [token, rows[0].id_user], function(error, rows, fields){
-                                                if(error){
-                                                    res.send('Error update');
-                                                }else{
-                                                    res.json(output);
-                                                }
-                                            });
+                                            return res.json({'usuario':output});
                                         }else{
-                                            res.send('error');
+                                            return res.json({'error':true});
                                         }
+                                    }else{
+                                        return res.json({'error':true,'err':error});
                                     }
                                 });
                             }
+                        }else{
+                            return res.json({'error':true,'err':error});
                         }
                     });
                 }
+            }else{
+                return res.json({'error':true,'err':error});
+            }
+        });
+    }
+});
+
+/*
+ connection.query(select_profe,[req.body.usuario, req.body.clave], function (error, rows) {
+ if(!error){
+ if(rows.length==1){
+ var token = crypto.randomBytes(64).toString('hex');
+ output = {
+ token: token,
+ usuario: rows[0].usuario,
+ tipo: 'profesor',
+ id_user : rows[0].id_user
+ };
+ connection.query('UPDATE profesor SET token = ? WHERE id_user = ?', [token, rows[0].id_user], function(error, rows, fields){
+ if(error){
+ return res.json({'error':true, 'err':error});
+ }else{
+ return res.json(output);
+ }
+ });
+ }else{
+ connection.query(select_admin,[req.body.usuario, req.body.clave], function (error, rows) {
+ if(!error){
+ if(rows.length==1){
+ var token = crypto.randomBytes(64).toString('hex');
+ output = {
+ token: token,
+ usuario: rows[0].usuario,
+ tipo: 'administrador',
+ id_user : rows[0].id_user
+ };
+ connection.query('UPDATE administrador SET token = ? WHERE id_user = ?', [token, rows[0].id_user], function(error, rows, fields){
+ if(error){
+ return res.json({'error':true, 'err':error});
+ }else{
+ return res.json(output);
+ }
+ });
+ }else{
+ return res.json({'error':true});
+ }
+ }
+ });
+ }
+ }
+ });
+ */
+router.post('/asignarToken', function (req, res) {
+    if (!req.body){
+        return res.sendStatus(400);
+    }else{
+        connection.query('UPDATE ?? SET token = ? WHERE id_user = ?', [req.body.tipo,req.body.token, req.body.id_user], function(error, rows){
+            if(error){
+                return res.json({'error':true,'err':error});
+            }else{
+                return res.json({'error':false});
             }
         });
     }
@@ -94,26 +141,21 @@ router.post('/checkToken', function (req, res) {
         };
 
         if( typeof input.token !== 'undefined'){
-            connection.query('SELECT * FROM ?? WHERE token = ? AND usuario = ?',[input.tipo,input.token,input.usuario],function(err, rows, fields) {
+            connection.query('SELECT id_user FROM ?? WHERE token = ? AND usuario = ?',[input.tipo,input.token,input.usuario],function(err, rows, fields) {
                 if (!err) {
                     if (rows.length == 1) {
-                        output = {
-                            credencial: true
-                        };
-                        res.json(output);
+                        return res.json({'credencial':true});
                     } else {
-                        output = {
-                            credencial: false
-                        };
-                        res.json(output);
+                        return res.json({'credencial': false});
                     }
                 } else {
-                    res.send('Error');
+                    return res.json({'error':true,'err':err});
+
                 }
             });
 
         }else{
-            res.send('no data');
+            res.json({'error':true,'err':'no token'});
         }
     }
 });
