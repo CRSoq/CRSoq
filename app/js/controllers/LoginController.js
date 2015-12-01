@@ -6,11 +6,20 @@ crsApp.controller('LoginController', function($scope, LoginService, SessionServi
             clave : $scope.clave
         };
         LoginService.logIn(usuario).then(function(data){
-            if(data.token != ""){
-                SessionServices.setToken(data);
-                $state.transitionTo("crsApp");
+            if(data.error){
+                console.log('alert login fail... '+data.err.code);
             }else{
-                $state.transitionTo("crsApp.login");
+                if(data.usuario.token != ""){
+                    SessionServices.asignarToken(data.usuario).then(function (data) {
+                        if(data.error){
+                            console.log('error actualizar token '+data.err.code);
+                        }else{
+                            $state.transitionTo("crsApp");
+                        }
+                    });
+                }else{
+                    $state.transitionTo("crsApp.login");
+                }
             }
         });
 

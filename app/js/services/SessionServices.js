@@ -21,6 +21,19 @@ crsApp.factory('SessionServices', function($http, $q, $localStorage){
                 });
             return promise;
         },
+        asignarToken: function (data) {
+            var defered = $q.defer();
+            var promise = defered.promise;
+            this.setToken(data);
+            $http.post('/login/asignarToken', data)
+                .success(function(response){
+                    defered.resolve(response);
+                })
+                .error(function(error){
+                    defered.reject(error);
+                });
+            return promise;
+        },
         destroyToken: function(){
             delete  $localStorage.token;
             delete  $localStorage.usuario;
