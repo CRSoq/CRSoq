@@ -24,8 +24,8 @@ router.post('/obtenerCursos', function (req, res) {
         return res.sendStatus(400);
     }else{
         if(req.body.tipo == 'profesor'){
-            connection.query('SELECT id_curso, nombre_curso, semestre, ano, estado FROM curso WHERE id_user = ?',[req.body.id_user, req.body.usuario], function (error, rows) {
-                if(!error && rows.length>0){
+            connection.query('SELECT id_curso, nombre_curso, semestre, ano, estado FROM curso WHERE id_user = ?',[req.body.id_user], function (error, rows) {
+                if(!error){
                     var listaOrdenada = _.map(_.sortByOrder(rows, ['ano', 'semestre'], ['desc', 'desc']));
                     var lista = _.chain(listaOrdenada)
                         .map(function (e) {
