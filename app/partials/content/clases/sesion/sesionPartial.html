@@ -17,23 +17,33 @@
 <div ng-controller="SesionController">
     <h1>{{curso}}</h1>
     <h2>{{clase}}</h2>
-    <button type="button" class="btn btn-primary" ng-click="agregarClase()">
-        <i class="fa fa-plus-circle"></i> Agregar Clase
+    <button type="button" class="btn btn-primary" ng-click="agregarPregunta()">
+        <i class="fa fa-plus-circle"></i> Agregar Pregunta
+    </button>
+    <button type="button" class="btn btn-primary" ng-click="crearPregunta()">
+        <i class="fa fa-plus-circle"></i> Crear Pregunta
     </button>
     <div class="table-responsive">
         <table class="table table-hover table-condensed table-bordered">
             <thead>
             <tr>
                 <th>
-                    Fecha
+                    Pregunta
                     <i class="fa fa-caret-down"></i>
                 </th>
-                <th>Descripción</th>
-                <th>Módulo</th>
                 <th class="centrado">Acciones</th>
             </tr>
             </thead>
             <tbody>
+                <tr data-ng-repeat="pregunta in listaPreguntasClase">
+                    <td>
+                        {{pregunta.pregunta}}
+                    </td>
+                    <td class="col-md-2 centrado">
+                        <button class="btn btn-primary" ng-click="guardarClase(clase)"><i class="fa fa-floppy-o"></i></button>
+                        <button class="btn btn-primary" ng-click="cancelarClase(clase, $index)"><i class="fa fa-times"></i></button>
+                    </td>
+                </tr>
             </tbody>
         </table>
     </div>

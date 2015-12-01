@@ -46,11 +46,11 @@ router.post('/obtenerSesionPreguntas', function (req, res) {
     }
 });
 */
-router.post('/actualizarSesion', function (req, res) {
+router.post('/actualizarSesionClase', function (req, res) {
     if(!req.body){
         return res.sendStatus(400);
     }else{
-        connection.query('UPDATE sesion SET estado_sesion = ? WHERE id_sesion = ?',[req.body.estado_sesion, req.body.id_clase], function (error) {
+        connection.query('UPDATE clase SET estado_sesion = ? WHERE id_sesion = ?',[req.body.estado_sesion, req.body.id_clase], function (error) {
             if(error){
                 return res.json({'error':true ,'err':error});
             }else{
