@@ -21,7 +21,7 @@
         </ul>
         -->
         <!-- Collect the nav links, forms, and other content for toggling -->
-        <div class="collapse navbar-collapse" collapse="navCollapsed">
+        <div class="collapse navbar-collapse" uib-collapse="navCollapsed">
             <ul class="nav navbar-nav" ng-if="!navCollapsed">
                 <li ng-repeat="opc in menu" ng-init="parentIndex = $index">
                     <div ng-if="!buscarSemestre($index)">
