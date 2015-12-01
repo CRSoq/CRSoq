@@ -1,6 +1,6 @@
-﻿/*==============================================================*/
+/*==============================================================*/
 /* DBMS name:      MySQL 5.0                                    */
-/* Created on:     20/10/2015 17:15:40                          */
+/* Created on:     27/11/2015 14:35:41                          */
 /*==============================================================*/
 
 
@@ -14,8 +14,6 @@ drop table if exists curso;
 
 drop table if exists estudiante;
 
-drop table if exists ganador;
-
 drop table if exists modulo;
 
 drop table if exists participa;
@@ -28,7 +26,7 @@ drop table if exists pregunta;
 
 drop table if exists profesor;
 
-drop table if exists tiene;
+drop table if exists puede_ganar;
 
 /*==============================================================*/
 /* Table: actividad                                             */
@@ -47,10 +45,11 @@ create table actividad
 create table administrador
 (
    id_user              int not null auto_increment,
-   usuario              varchar(1024) not null,
-   clave                varchar(1024) not null,
-   token                varchar(1024),
-   primary key (id_user)
+   usuario              varchar(250) not null,
+   clave                varchar(250) not null,
+   token                varchar(65),
+   primary key (id_user),
+   unique key ak_key_2 (usuario)
 );
 
 /*==============================================================*/
@@ -60,7 +59,9 @@ create table clase
 (
    id_clase             int not null auto_increment,
    id_modulo            int not null,
+   fecha                date,
    descripcion          varchar(1024),
+   estado_sesion        varchar(200),
    primary key (id_clase)
 );
 
@@ -71,9 +72,10 @@ create table curso
 (
    id_curso             int not null auto_increment,
    id_user              int not null,
-   nombre_curso         varchar(1024),
-   semestre             varchar(1024),
-   ano                  varchar(1024),
+   nombre_curso         varchar(250),
+   semestre             varchar(250),
+   ano                  varchar(250),
+   estado               varchar(250),
    primary key (id_curso)
 );
 
@@ -83,21 +85,14 @@ create table curso
 create table estudiante
 (
    id_user              int not null auto_increment,
-   nombre_estudiante    varchar(1024),
-   usuario              varchar(1024) not null,
-   clave                varchar(1024) not null,
-   token                varchar(1024),
-   primary key (id_user)
-);
-
-/*==============================================================*/
-/* Table: ganador                                               */
-/*==============================================================*/
-create table ganador
-(
-   id_ganador           int not null auto_increment,
-   nombre_ganador       varchar(1024),
-   primary key (id_ganador)
+   rut                  varchar(13),
+   nombre               varchar(250),
+   apellido             varchar(250),
+   usuario              varchar(250) not null,
+   clave                varchar(250) not null,
+   token                varchar(65),
+   primary key (id_user),
+   unique key ak_key_2 (usuario)
 );
 
 /*==============================================================*/
@@ -107,7 +102,8 @@ create table modulo
 (
    id_modulo            int not null auto_increment,
    id_curso             int not null,
-   nombre_modulo        varchar(1024),
+   nombre_modulo        varchar(250),
+   posicion             varchar(200),
    primary key (id_modulo)
 );
 
@@ -147,9 +143,10 @@ create table pertenece
 create table pregunta
 (
    id_pregunta          int not null auto_increment,
-   id_clase             int not null,
+   id_curso             int not null,
+   id_clase             int,
+   id_user              int not null,
    pregunta             varchar(1024),
-   ganador_id           int,
    primary key (id_pregunta)
 );
 
@@ -159,21 +156,23 @@ create table pregunta
 create table profesor
 (
    id_user              int not null auto_increment,
-   nombre_profesor      varchar(1024),
-   usuario              varchar(1024) not null,
-   clave                varchar(1024) not null,
-   token                varchar(1024),
-   primary key (id_user)
+   nombre               varchar(250),
+   apellido             varchar(250),
+   usuario              varchar(250) not null,
+   clave                varchar(250) not null,
+   token                varchar(65),
+   primary key (id_user),
+   unique key ak_key_2 (usuario)
 );
 
 /*==============================================================*/
-/* Table: tiene                                                 */
+/* Table: puede_ganar                                           */
 /*==============================================================*/
-create table tiene
+create table puede_ganar
 (
+   id_user              int not null,
    id_actividad         int not null,
-   id_ganador           int not null,
-   primary key (id_actividad, id_ganador)
+   primary key (id_user, id_actividad)
 );
 
 alter table actividad add constraint fk_se_realizan foreign key (id_clase)
@@ -206,12 +205,18 @@ alter table pertenece add constraint fk_pertenece foreign key (id_user)
 alter table pertenece add constraint fk_pertenece2 foreign key (id_curso)
       references curso (id_curso) on delete restrict on update restrict;
 
+alter table pregunta add constraint fk_gana foreign key (id_user)
+      references estudiante (id_user) on delete restrict on update restrict;
+
+alter table pregunta add constraint fk_posee foreign key (id_curso)
+      references curso (id_curso) on delete restrict on update restrict;
+
 alter table pregunta add constraint fk_se_hacen foreign key (id_clase)
       references clase (id_clase) on delete restrict on update restrict;
 
-alter table tiene add constraint fk_tiene foreign key (id_actividad)
-      references actividad (id_actividad) on delete restrict on update restrict;
+alter table puede_ganar add constraint fk_puede_ganar foreign key (id_user)
+      references estudiante (id_user) on delete restrict on update restrict;
 
-alter table tiene add constraint fk_tiene2 foreign key (id_ganador)
-      references ganador (id_ganador) on delete restrict on update restrict;
+alter table puede_ganar add constraint fk_puede_ganar2 foreign key (id_actividad)
+      references actividad (id_actividad) on delete restrict on update restrict;
 
