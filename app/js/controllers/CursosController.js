@@ -1,4 +1,4 @@
-crsApp.controller('CursosController', function($scope, $rootScope, $filter, $stateParams, $modal, $timeout, CursosServices) {
+crsApp.controller('CursosController', function($scope, $rootScope, $filter, $stateParams, $uibModal, $timeout, CursosServices) {
     $scope.menu = CursosServices.getAllCursos();
     $scope.alerts = [];
     var found = $filter('filter')($scope.menu,  {'nombre':$stateParams.semestre}, true)[0];
@@ -6,7 +6,7 @@ crsApp.controller('CursosController', function($scope, $rootScope, $filter, $sta
         $scope.semestre = found;
     }
     $scope.crearCurso = function () {
-        var modalInstance = $modal.open({
+        var modalInstance = $uibModal.open({
             animation   : true,
             templateUrl : '/partials/content/main/crearCursoModal.html',
             controller  : 'ModalCrearCursoController',
@@ -289,7 +289,7 @@ crsApp.controller('ConfigCursoController', function ($scope, $rootScope, $state,
                                     if (data.error) {
                                         console.log('error asignar curso ' + data.err);
                                     } else {
-                                        console.log('data ' + data.result);
+                                        //console.log('data ' + data.result);
                                         delete estudiante['nuevo'];
                                         estudiante.edicion = false;
                                     }
@@ -303,7 +303,13 @@ crsApp.controller('ConfigCursoController', function ($scope, $rootScope, $state,
                 }
             });
         }else{
-
+            EstudiantesServices.ActualizarEstudiante(estudiante).then(function (data) {
+                if(data.error){
+                    console.log('error al actualizar '+data.err.code);
+                }else{
+                    estudiante.edicion = false;
+                }
+            });
         }
     };
     $scope.editarEstudiante = function (estudiante) {
