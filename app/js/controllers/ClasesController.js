@@ -1,4 +1,4 @@
-crsApp.controller('ClasesController', function($scope, $rootScope, $timeout, $modal, $state, $stateParams, ClasesServices, ModulosServices, CursosServices, SesionClasesService){
+crsApp.controller('ClasesController', function($scope, $rootScope, $timeout, $uibModal, $state, $stateParams, ClasesServices, ModulosServices, CursosServices, SesionClasesService){
     $scope.titulo = $stateParams.curso;
     $scope.listaClases = [];
     $scope.alerts = [];
@@ -82,7 +82,7 @@ crsApp.controller('ClasesController', function($scope, $rootScope, $timeout, $mo
         }
     };
     $scope.eliminarClase = function (clase) {
-        var modalEliminarClaseInstance = $modal.open({
+        var modalEliminarClaseInstance = $uibModal.open({
             animation: true,
             templateUrl: '/partials/content/clases/modalEliminarClase.html',
             controller: 'ModalEliminarClaseController',
@@ -115,9 +115,34 @@ crsApp.controller('ClasesController', function($scope, $rootScope, $timeout, $mo
 
     };
     $scope.iniciarSesion = function (clase) {
+        /*
         SesionClasesService.obtenerSesion(clase).then(function (data) {
             $state.transitionTo("crsApp.cursosSemestre.clases.sesion",{semestre:$stateParams.semestre,curso:$stateParams.curso,id_sesion:data[0].id_sesion});
         });
+        */
+        if(clase.estado_sesion=='creada'){
+            //iniciar y cambiar estado a iniciado
+            clase.estado_sesion = 'iniciada';
+            ClasesServices.actualizarSesionClase(clase).then(function (data) {
+                if(data.error){
+                    //error al iniciar la sesion...
+                    console.log('error al inciar sesión '+data.err.code);
+                }else{
+                    //se inicio la sesion
+                    //redirecionar
+                    $state.transitionTo('crsApp.cursosSemestre.clases.sesion', {semestre:$stateParams.semestre,curso:$stateParams.curso,id_clase:clase.id_clase});
+                }
+            });
+        }else if(clase.estado_sesion=='iniciada'){
+            //continuar con la sesion
+            //redireccionar
+            $state.transitionTo('crsApp.cursosSemestre.clases.sesion', {semestre:$stateParams.semestre,curso:$stateParams.curso,id_clase:clase.id_clase});
+        }else if(clase.estado_sesion=='cerrada'){
+            //avisar que la sesion esta cerrada
+            //preguntar si se desea abrir la sesion nuevamente
+        }else{
+            //error al iniciar la sesion u obtenerla
+        }
     };
     $scope.closeAlert = function(index) {
         $scope.alerts.splice(index, 1);
