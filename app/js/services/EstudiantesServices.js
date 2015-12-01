@@ -28,6 +28,9 @@ crsApp.factory('EstudiantesServices', function ($http, $q) {
         },
         EliminarEstudianteDelCurso: function (data) {
             return postHelper('/estudiante/eliminarEstudianteDelCurso',data);
+        },
+        ActualizarEstudiante: function (data) {
+            return postHelper('/estudiante/actualizarEstudiante', data);
         }
     }
 });
