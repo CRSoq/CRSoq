@@ -4,24 +4,20 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 </head>
 <body>
-<!--
-<div class="container-fluid">
-    <div class="row">
-        <div id="tablaSesion" class="table-responsive" ng-controller="SesionController">
-            <h1>Clase: {{titulo.Clase}}</h1>
-            <h2>Módulo: {{titulo.Modulo}}</h2>
-        </div>
-    </div>
-</div>
--->
 <div ng-controller="SesionController">
     <h1>{{curso}}</h1>
     <h2>{{clase}}</h2>
     <button type="button" class="btn btn-primary" ng-click="agregarPregunta()">
-        <i class="fa fa-plus-circle"></i> Agregar Pregunta
+        <i class="fa fa-search"></i> Agregar Pregunta
     </button>
     <button type="button" class="btn btn-primary" ng-click="crearPregunta()">
         <i class="fa fa-plus-circle"></i> Crear Pregunta
+    </button>
+    <button type="button" class="btn btn-primary" ng-click="proyectarSesion()">
+        <i class="fa fa-desktop"></i> Proyectar
+    </button>
+    <button type="button" class="btn btn-primary" ng-click="finalizarSesion()">
+        <i class="fa fa-power-off"></i> Finalizar Sesion
     </button>
     <div class="table-responsive">
         <table class="table table-hover table-condensed table-bordered">
@@ -40,13 +36,25 @@
                         {{pregunta.pregunta}}
                     </td>
                     <td class="col-md-2 centrado">
-                        <button class="btn btn-primary" ng-click="guardarClase(clase)"><i class="fa fa-floppy-o"></i></button>
-                        <button class="btn btn-primary" ng-click="cancelarClase(clase, $index)"><i class="fa fa-times"></i></button>
+                        <button ng-if="pregunta.id_user==null" class="btn btn-primary" ng-click="lanzarPregunta(pregunta)">
+                            <i class="fa fa-play"></i>
+                        </button>
+
+                        <button ng-if="pregunta.id_user!=null" class="btn btn-primary" ng-click="editarGanadorPregunta(pregunta)">
+                            <i class="fa fa-lock"></i>
+                        </button>
+                        <button class="btn btn-primary" ng-click="editarPregunta(pregunta)">
+                            <i class="fa fa-pencil"></i>
+                        </button>
+                        <button class="btn btn-primary" ng-click="eliminarPregunta(pregunta, $index)"><i class="fa fa-times"></i></button>
                     </td>
                 </tr>
             </tbody>
         </table>
     </div>
+    <pre>
+        {{listaPreguntasClase | json}}
+    </pre>
 </div>
 </body>
 </html>

@@ -1,4 +1,4 @@
-crsApp.controller('SesionController', function($scope, $stateParams, SesionClasesService, CursosServices, ClasesServices, PreguntasServices){
+crsApp.controller('SesionController', function($scope, $state, $stateParams, SesionClasesService, CursosServices, ClasesServices, PreguntasServices){
     $scope.curso = $stateParams.curso;
     //$scope.id_sesion = $stateParams.id_sesion;
     /*
@@ -24,6 +24,7 @@ crsApp.controller('SesionController', function($scope, $stateParams, SesionClase
     });
     */
     //obtener preguntas de la clase
+    $scope.pregunta = null;
     $scope.listaPreguntasClase=[];
     PreguntasServices.obtenerPreguntasClase({'id_clase':$stateParams.id_clase}).then(function (data) {
         if(data.error){
@@ -33,9 +34,32 @@ crsApp.controller('SesionController', function($scope, $stateParams, SesionClase
         }
     });
     //boton añadir pregunta de la biblioteca
+    $scope.agregarPregunta = function (pregunta) {
+
+    };
     //boton crear pregunta (agregar automaticamente a la clase y al módulo)
+    $scope.crearPregunta = function (pregunta) {
+
+    };
     //boton eliminar pregunta?
+    $scope.eliminarPregunta = function (pregunta) {
+
+    };
     //boton lanzar pregunta
+    $scope.lanzarPregunta = function (pregunta) {
+        $scope.pregunta = pregunta.pregunta;
+        $state.transitionTo('crsApp.cursosSemestre.clases.sesion.pregunta',{semestre:$stateParams.semestre,curso:$stateParams.curso,id_clase:$stateParams.id_clase,id_pregunta:pregunta.id_pregunta});
+    };
+    //boton editar ganador
+    $scope.editarGanadorPregunta = function (pregunta) {
+
+    };
     //boton finalizar sesion
-    //
+    $scope.finalizarSesion = function () {
+
+    };
+    //boton proyectar sesion
+    $scope.proyectarSesion = function () {
+
+    };
 });
