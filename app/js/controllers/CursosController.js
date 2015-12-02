@@ -1,5 +1,6 @@
-crsApp.controller('CursosController', function($scope, $rootScope, $filter, $stateParams, $uibModal, $timeout, CursosServices) {
+crsApp.controller('CursosController', function($scope, $rootScope, $filter, $stateParams, $uibModal, $timeout, CursosServices, SessionServices) {
     $scope.menu = CursosServices.getAllCursos();
+    $scope.user = SessionServices.getSessionData();
     $scope.alerts = [];
     var found = $filter('filter')($scope.menu,  {'nombre':$stateParams.semestre}, true)[0];
     if(!angular.isUndefined(found)) {
@@ -45,7 +46,7 @@ crsApp.controller('CursosController', function($scope, $rootScope, $filter, $sta
 
 });
 
-crsApp.controller('ModalCrearCursoController', function ($scope, $timeout, $modalInstance, SessionServices) {
+crsApp.controller('ModalCrearCursoController', function ($scope, $timeout, $uibModalInstance, SessionServices) {
     $scope.alerts = [];
     $scope.aceptar = function () {
         var dataUsuario = SessionServices.getSessionData();
@@ -61,7 +62,7 @@ crsApp.controller('ModalCrearCursoController', function ($scope, $timeout, $moda
             $scope.alerts.push({id: id_alert,type:'danger', msg:'Debe completar todos los campos.'});
             closeAlertTime(id_alert);
         }else{
-            $modalInstance.close(curso);
+            $uibModalInstance.close(curso);
         }
     };
 
@@ -74,7 +75,7 @@ crsApp.controller('ModalCrearCursoController', function ($scope, $timeout, $moda
         }, 3000);
     };
     $scope.cancelar = function () {
-        $modalInstance.dismiss();
+        $uibModalInstance.dismiss();
     }
 });
 
