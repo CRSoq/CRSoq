@@ -3,7 +3,6 @@
 var crsApp = angular.module('crsApp', [
     'ui.router',
     'ngAnimate',
-    'agGrid',
     'ngStorage',
     'ui.bootstrap'
 ]);
@@ -73,6 +72,15 @@ crsApp.config(function($stateProvider, $urlRouterProvider) {
             views: {
                 'main@crsApp': {
                     templateUrl: 'partials/content/clases/sesion/sesionPartial.html'
+                }
+            },
+            authenticate:true
+        })
+        .state('crsApp.cursosSemestre.clases.sesion.pregunta', {
+            url: '/:id_pregunta',
+            views: {
+                'main@crsApp': {
+                    templateUrl: 'partials/content/clases/sesion/preguntaPartial.html'
                 }
             },
             authenticate:true
