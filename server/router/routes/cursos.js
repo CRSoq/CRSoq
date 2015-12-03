@@ -18,7 +18,25 @@ router.post('/crearCurso', function (req, res) {
         });
     }
 });
-
+function ordenar (rows){
+    //primer se ordenan las filas por ano y semestre (desc ambos)
+    var listaOrdenada = _.map(_.sortByOrder(rows, ['ano', 'semestre'], ['desc', 'desc']));
+    //luego se mapean agrupandolas por ano y semestre, y se retorna un objeto con el nombre del semestre
+    //y los cursos correspondientes
+    var lista = _.chain(listaOrdenada)
+        .map(function (e) {
+            return _.extend({},e, { anoSemestre: e.ano+' '+ e.semestre });
+        })
+        .groupBy('anoSemestre')
+        .pairs()
+        .map(function(current){
+            return _.object(_.zip(["nombre","cursos"], current));
+        });
+    //finalmente se ordenan porque el proceso anterior no es devuelto 100% ordenado por lodash
+    _.sortByOrder(_(lista).reverse().value(),['nombre'],['desc']);
+    //lista creada y retornada.
+    return lista;
+};
 router.post('/obtenerCursos', function (req, res) {
     if(!req.body){
         return res.sendStatus(400);
@@ -26,22 +44,23 @@ router.post('/obtenerCursos', function (req, res) {
         if(req.body.tipo == 'profesor'){
             connection.query('SELECT id_curso, nombre_curso, semestre, ano, estado FROM curso WHERE id_user = ?',[req.body.id_user], function (error, rows) {
                 if(!error){
-                    var listaOrdenada = _.map(_.sortByOrder(rows, ['ano', 'semestre'], ['desc', 'desc']));
-                    var lista = _.chain(listaOrdenada)
-                        .map(function (e) {
-                            return _.extend({},e, { anoSemestre: e.ano+' '+ e.semestre });
-                        })
-                        .groupBy('anoSemestre')
-                        .pairs()
-                        .map(function(current){
-                            return _.object(_.zip(["nombre","cursos"], current));
-                        });
-                    return res.json(_.sortByOrder(_(lista).reverse().value(),['nombre'],['desc']));
+                    return res.json(ordenar(rows));
                 }else{
-                    //error
                     return res.json({'error':true,'err':error});
                 }
             });
+        }else if(req.body.tipo == 'estudiante'){
+            connection.query('SELECT c.id_curso, c.nombre_curso, c.semestre, c.ano, c.estado FROM pertenece ec INNER JOIN estudiante e ON ec.id_user=e.id_user INNER JOIN curso c ON ec.id_curso = c.id_curso WHERE e.id_user = ?',[req.body.id_user], function (error, rows) {
+                if (!error) {
+                    return res.json(ordenar(rows));
+                } else {
+                    return res.json({'error': true, 'err': error});
+                }
+            });
+        }else if(req.body.tipo == 'administrador'){
+            //retornar todos los cursos disponibles
+        }else{
+            //no se le permite el acceso
         }
     }
 });
