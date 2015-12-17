@@ -62,7 +62,20 @@ crsApp.config(function($stateProvider, $urlRouterProvider) {
             url: '/:curso/clases',
             views: {
                 'main@crsApp': {
-                    templateUrl: 'partials/content/clases/clases.html'
+                    templateProvider:
+                        function ($rootScope, $http) {
+                            if($rootScope.user.tipo=='estudiante'){
+                                return $http.get('partials/content/clases/estudianteClases.html')
+                                    .then(function (template) {
+                                        return  template.data;
+                                    });
+                            }else if($rootScope.user.tipo=='profesor'){
+                                return $http.get('partials/content/clases/clases.html')
+                                    .then(function (template) {
+                                        return  template.data;
+                                    });
+                            }
+                        }
                 }
             },
             authenticate:true
@@ -71,7 +84,20 @@ crsApp.config(function($stateProvider, $urlRouterProvider) {
             url: '/:id_clase/sesion',
             views: {
                 'main@crsApp': {
-                    templateUrl: 'partials/content/clases/sesion/sesionPartial.html'
+                    templateProvider:
+                        function ($rootScope, $http) {
+                            if($rootScope.user.tipo=='estudiante'){
+                                return $http.get('partials/content/clases/sesion/_estudianteSesionPartial.html')
+                                    .then(function (template) {
+                                        return  template.data;
+                                    });
+                            }else if($rootScope.user.tipo=='profesor'){
+                                return $http.get('partials/content/clases/sesion/sesionPartial.html')
+                                    .then(function (template) {
+                                        return  template.data;
+                                    });
+                            }
+                        }
                 }
             },
             authenticate:true
@@ -128,6 +154,14 @@ crsApp.run(function($rootScope, $state, SessionServices){
             SessionServices.checkToken().then(function (data) {
                 if(data.credencial){
                     //$state.transitionTo("crsApp");
+                    $rootScope.user = SessionServices.getSessionData();
+
+                    /*
+                    socket.on('dar_saludo', function (data) {
+                        console.log(data.saludo);
+                        socket.emit('recibir_saludo',{'saludo':'gracias, soy un usuario'});
+                    });*/
+                    //socket.emit('connection');
                 }else{
                     event.preventDefault();
                     $state.transitionTo("crsApp.login");

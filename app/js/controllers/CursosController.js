@@ -1,6 +1,5 @@
 crsApp.controller('CursosController', function($scope, $rootScope, $filter, $stateParams, $uibModal, $timeout, CursosServices, SessionServices) {
     $scope.menu = CursosServices.getAllCursos();
-    $scope.user = SessionServices.getSessionData();
     $scope.alerts = [];
     var found = $filter('filter')($scope.menu,  {'nombre':$stateParams.semestre}, true)[0];
     if(!angular.isUndefined(found)) {
