@@ -5,7 +5,6 @@ var db          = require('./config');
 var crypto      = require('crypto');
 var connection  = mysql.createConnection(db.database);
 
-
 router.post('/', function(req, res){
     var output = {};
     if (!req.body){
@@ -69,51 +68,6 @@ router.post('/', function(req, res){
     }
 });
 
-/*
- connection.query(select_profe,[req.body.usuario, req.body.clave], function (error, rows) {
- if(!error){
- if(rows.length==1){
- var token = crypto.randomBytes(64).toString('hex');
- output = {
- token: token,
- usuario: rows[0].usuario,
- tipo: 'profesor',
- id_user : rows[0].id_user
- };
- connection.query('UPDATE profesor SET token = ? WHERE id_user = ?', [token, rows[0].id_user], function(error, rows, fields){
- if(error){
- return res.json({'error':true, 'err':error});
- }else{
- return res.json(output);
- }
- });
- }else{
- connection.query(select_admin,[req.body.usuario, req.body.clave], function (error, rows) {
- if(!error){
- if(rows.length==1){
- var token = crypto.randomBytes(64).toString('hex');
- output = {
- token: token,
- usuario: rows[0].usuario,
- tipo: 'administrador',
- id_user : rows[0].id_user
- };
- connection.query('UPDATE administrador SET token = ? WHERE id_user = ?', [token, rows[0].id_user], function(error, rows, fields){
- if(error){
- return res.json({'error':true, 'err':error});
- }else{
- return res.json(output);
- }
- });
- }else{
- return res.json({'error':true});
- }
- }
- });
- }
- }
- });
- */
 router.post('/asignarToken', function (req, res) {
     if (!req.body){
         return res.sendStatus(400);
