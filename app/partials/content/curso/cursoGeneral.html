@@ -5,12 +5,18 @@
 </head>
 <body>
 <div ng-controller="CursoGralInfoController">
-    <h1>Curso Gral</h1>
-    <div ng-if="estado=='creado'">
-        <h3>Por favor configure su curso, sino no podrá continuar.</h3>
-    </div>
-    <div ng-if="estado!='creado'">
+    <div ng-if="user.tipo=='profesor'">
+        <h1>Curso Gral</h1>
+        <div ng-if="estado=='creado'">
+            <h3>Por favor configure su curso, sino no podrá continuar.</h3>
+        </div>
+        <div ng-if="estado!='creado'">
 
+        </div>
+    </div>
+
+    <div ng-if="user.tipo=='estudiante'">
+        <h1>Curso Gral</h1>
     </div>
 </div>
 
