@@ -1,7 +1,8 @@
-crsApp.controller('ClasesController', function($scope, $rootScope, $timeout, $uibModal, $state, $stateParams, ClasesServices, ModulosServices, CursosServices, SesionClasesService){
+crsApp.controller('ClasesController', function($scope, $rootScope, $timeout, $uibModal, $state, $stateParams, ClasesServices, ModulosServices, CursosServices, SesionClasesService, SocketServices){
     $scope.titulo = $stateParams.curso;
     $scope.listaClases = [];
     $scope.alerts = [];
+    /*
     var curso = CursosServices.getCursoPorNombre($stateParams.semestre, $stateParams.curso);
     ModulosServices.obtenerModulos(curso).then(function (data) {
         $scope.listaModulos= _.cloneDeep(data);
@@ -14,20 +15,44 @@ crsApp.controller('ClasesController', function($scope, $rootScope, $timeout, $ui
             });
         });
     });
+    */
+    //$scope.listaClases
+    var curso = CursosServices.getCursoPorNombre($stateParams.semestre, $stateParams.curso);
+    ModulosServices.obtenerModulos(curso).then(function (data) {
+        $scope.listaModulos= _.cloneDeep(data);
+        $scope.listaModulos= _.map(_.sortByOrder($scope.listaModulos,['posicion'],['asc']));
+        ClasesServices.obtenerClases($scope.listaModulos).then(function (data) {
+            var lista = _.cloneDeep(data);
+
+            _.forEach(lista, function(n){
+                var clasesModulo = _.cloneDeep(n);
+                _.forEach(clasesModulo, function(clase){
+                    var posModulo = _.findIndex($scope.listaModulos,{'id_modulo': clase.id_modulo});
+                    clase.modulo = $scope.listaModulos[posModulo].nombre_modulo;
+                });
+                var i = 0;
+                while(i<clasesModulo.length){
+                    $scope.listaClases.push(clasesModulo[i]);
+                    i++;
+                }
+            });
+
+        });
+    });
 
     $scope.agregarClase = function () {
         var clase = {
             'fecha': new Date(),
             'descripcion': '',
             'id_modulo':null,
-            'estado_sesion':'creada',
+            'estado_sesion':'noIniciada',
             'modulo': null,
             'edicion':true,
             'nuevo': true
         };
         $scope.listaClases.push(clase);
     };
-    //
+
     $scope.editarClase = function (clase) {
         if(_.isNull(clase.fecha)){
             clase.fecha = new Date();
@@ -43,9 +68,7 @@ crsApp.controller('ClasesController', function($scope, $rootScope, $timeout, $ui
                 clase.id_modulo = $scope.listaModulos[posModulo].id_modulo;
                 ClasesServices.actualizarClase(clase).then(function (data) {
                     if(data.error){
-                        var id_alert = $scope.alerts.length+1;
-                        $scope.alerts.push({id: id_alert,type:'danger', msg:'Error al actualizar cambios: "'+data.error.err.code+'"'});
-                        closeAlertTime(id_alert);
+                        newAlert('danger', 'Error al actualizar cambios: "'+data.error.err.code+'"');
                     }else{
                         clase.edicion = false;
                     }
@@ -55,9 +78,7 @@ crsApp.controller('ClasesController', function($scope, $rootScope, $timeout, $ui
                 clase.id_modulo = $scope.listaModulos[posModulo].id_modulo;
                 ClasesServices.crearClase(clase).then(function (data) {
                     if(data.error){
-                        var id_alert = $scope.alerts.length+1;
-                        $scope.alerts.push({id: id_alert,type:'danger', msg:'Error al crear clase: "'+data.error.err.code+'"'});
-                        closeAlertTime(id_alert);
+                        newAlert('danger', 'Error al crear clase: "'+data.error.err.code+'"');
                     }else{
                         clase.edicion = false;
                         clase.id_clase = data.id_clase;
@@ -65,9 +86,7 @@ crsApp.controller('ClasesController', function($scope, $rootScope, $timeout, $ui
                 });
             }
         }else{
-            var id_alert = $scope.alerts.length+1;
-            $scope.alerts.push({id: id_alert,type:'danger', msg:'Debe seleccionar un módulo.'});
-            closeAlertTime(id_alert);
+            newAlert('danger', 'Debe seleccionar un módulo.');
         }
     };
     $scope.cancelarClase = function (clase, index) {
@@ -101,13 +120,9 @@ crsApp.controller('ClasesController', function($scope, $rootScope, $timeout, $ui
         modalEliminarClaseInstance.result.then(function (clase) {
             ClasesServices.eliminarClase(clase).then(function (data) {
                 if(data.error){
-                    var id_alert = $scope.alerts.length+1;
-                    $scope.alerts.push({id: id_alert,type:'danger', msg:'Error al eliminar clase: "'+data.error.err.code+'"'});
-                    closeAlertTime(id_alert);
+                    newAlert('danger', 'Error al eliminar clase: "'+data.error.err.code+'"');
                 }else{
-                    var id_alert = $scope.alerts.length+1;
-                    $scope.alerts.push({id: id_alert,type:'success', msg:'Clase eliminada.'});
-                    closeAlertTime(id_alert);
+                    newAlert('success', 'Clase eliminada.');
                     $scope.listaClases.splice(_.findIndex($scope.listaClases,{'id_clase':clase.id_clase}), 1);
                 }
             });
@@ -115,28 +130,26 @@ crsApp.controller('ClasesController', function($scope, $rootScope, $timeout, $ui
 
     };
     $scope.iniciarSesion = function (clase) {
-        /*
-        SesionClasesService.obtenerSesion(clase).then(function (data) {
-            $state.transitionTo("crsApp.cursosSemestre.clases.sesion",{semestre:$stateParams.semestre,curso:$stateParams.curso,id_sesion:data[0].id_sesion});
-        });
-        */
-        if(clase.estado_sesion=='creada'){
+        var infoSesion = {
+            semestre: $stateParams.semestre,
+            curso: $stateParams.curso,
+            id_clase: clase.id_clase,
+            nombreSala: $stateParams.semestre+$stateParams.curso+clase.id_clase
+        };
+        if(clase.estado_sesion=='noIniciada'){
             //iniciar y cambiar estado a iniciado
             clase.estado_sesion = 'iniciada';
             ClasesServices.actualizarSesionClase(clase).then(function (data) {
                 if(data.error){
-                    //error al iniciar la sesion...
-                    console.log('error al inciar sesión '+data.err.code);
+                    newAlert('danger', 'Error al inciar sesión '+data.err.code);
                 }else{
-                    //se inicio la sesion
-                    //redirecionar
+                    SocketServices.emit('iniciarSesion',infoSesion);
                     $state.transitionTo('crsApp.cursosSemestre.clases.sesion', {semestre:$stateParams.semestre,curso:$stateParams.curso,id_clase:clase.id_clase});
                 }
             });
         }else if(clase.estado_sesion=='iniciada'){
-            //continuar con la sesion
-            //redireccionar
             $state.transitionTo('crsApp.cursosSemestre.clases.sesion', {semestre:$stateParams.semestre,curso:$stateParams.curso,id_clase:clase.id_clase});
+            SocketServices.emit('IngresarASala',infoSesion);
         }else if(clase.estado_sesion=='cerrada'){
             //avisar que la sesion esta cerrada
             //preguntar si se desea abrir la sesion nuevamente
@@ -152,6 +165,27 @@ crsApp.controller('ClasesController', function($scope, $rootScope, $timeout, $ui
             $scope.alerts.splice(_.findIndex($scope.alerts,{id:id_alert}), 1);
         }, 3000);
     };
+
+    var newAlert = function (type, msg) {
+        var id_alert = $scope.alerts.length+1;
+        $scope.alerts.push({id: id_alert,type:type, msg:msg});
+        closeAlertTime(id_alert);
+    };
+
+    $rootScope.$on('activarSesion', function (event, data) {
+        var clase = _.findWhere($scope.listaClases, {'id_clase':data});
+        if(!_.isUndefined(clase)){
+            clase.estado_sesion = 'iniciada';
+        }
+    });
+    $scope.ingresarSesion = function (clase) {
+        var data ={
+            nombreSala: $stateParams.semestre+$stateParams.curso+clase.id_clase
+        };
+        SocketServices.emit('IngresarASala', data);
+        $state.transitionTo('crsApp.cursosSemestre.clases.sesion', {semestre:$stateParams.semestre,curso:$stateParams.curso,id_clase:clase.id_clase});
+    };
+
 });
 
 crsApp.controller('ModalEliminarClaseController',function($scope, $modalInstance, titulo,clase){
