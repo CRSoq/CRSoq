@@ -25,8 +25,22 @@
                     <td class="col-md-1">{{clase.fecha | date:'dd-MM-yyyy' }}</td>
                     <td>{{clase.descripcion}}</td>
                     <td>{{clase.modulo}}</td>
-                    <td>
-                        Sesión activa
+                    <td class="col-md-2 centrado">
+                        <div ng-if="clase.estado_sesion=='iniciada'">
+                            <button class="btn btn-primary" ng-click="ingresarSesion(clase)">
+                                <i class="fa fa-play"></i>
+                            </button>
+                        </div>
+                        <div ng-if="clase.estado_sesion=='noiniciada'">
+                            <button class="btn btn-primary">
+                                <i class="fa fa-clock-o"></i>
+                            </button>
+                        </div>
+                        <div ng-if="clase.estado_sesion=='cerrada'">
+                            <button class="btn btn-primary">
+                                <i class="fa fa-lock"></i>
+                            </button>
+                        </div>
                     </td>
                 </tr>
                 </tbody>
