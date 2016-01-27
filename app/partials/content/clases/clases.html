@@ -46,8 +46,8 @@
                         </td>
                         <td class="col-md-2 centrado" ng-if="clase.edicion!=true">
                             <button class="btn btn-primary" ng-click="iniciarSesion(clase)">
-                                <i ng-if="clase.estado_sesion=='creada'" class="fa fa-play"></i>
-                                <i ng-if="clase.estado_sesion=='iniciada'" class="fa fa-pause"></i>
+                                <i ng-if="clase.estado_sesion=='noIniciada'" class="fa fa-play"></i>
+                                <i ng-if="clase.estado_sesion=='iniciada'" class="fa fa-sign-in"></i>
                             </button>
                             <button class="btn btn-primary" ng-click="editarClase(clase)"><i class="fa fa-pencil"></i></button>
                             <button class="btn btn-primary" ng-click="eliminarClase(clase)"><i class="fa fa-times"></i></button>
@@ -60,9 +60,12 @@
                 </tbody>
             </table>
         </div>
+        <pre>
+            {{listaClases |json}}
+        </pre>
         <div class="row">
             <div class="col-md-12 centrado">
-                <alert ng-repeat="alert in alerts" type="{{alert.type}}" close="closeAlert($index)">{{alert.msg}}</alert>
+                <uib-alert ng-repeat="alert in alerts" type="{{alert.type}}" close="closeAlert($index)">{{alert.msg}}</uib-alert>
             </div>
         </div>
     </div>
