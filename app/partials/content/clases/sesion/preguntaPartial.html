@@ -7,9 +7,56 @@
 <div ng-controller="SesionController">
     <h1>{{pregunta}}</h1>
 
-    <button type="button" class="btn btn-primary" ng-click="finalizarSesion()">
-        <i class="fa fa-power-off"></i> Finalizar Pregunta
+    <button type="button" class="btn btn-primary" ng-click="cerrarParticipacion()">
+        <i class="fa fa-power-off"></i> Cerrar participación
     </button>
+
+    <button type="button" class="btn btn-primary" ng-click="finalizarPregunta()">
+        <i class="fa fa-power-off"></i> Finalizar pregunta
+    </button>
+    <br><br>
+    <div class="table-responsive" ng-show="!responder">
+        <table class="table table-hover table-condensed table-bordered">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Nombre</th>
+                    <th>Apellido</th>
+                    <th>RUT</th>
+                    <th>Acción</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="participante in listaParticipantes" ng-class="{'success':participante.seleccionado}">
+                    <td>{{$index+1}}</td>
+                    <td>{{participante.nombre}}</td>
+                    <td>{{participante.apellido}}</td>
+                    <td>{{participante.rut}}</td>
+                    <td>
+                        <div ng-show="preguntaFinalizada">
+                            <button class="btn btn-primary" ng-click="seleccionarEstudiante(participante)">
+                                <i ng-if="!participante.seleccionado" class="fa fa-play"></i>
+                                <i ng-if="participante.seleccionado" class="fa fa-warning"></i>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <pre>
+        {{listaParticipantes | json}}
+        {{pregunta | json}}
+    </pre>
+    <div ng-show="responder">
+        <button type="button" class="btn btn-primary" ng-click="respuestaCorrecta(pregunta)">
+            <i class="fa fa-ticket"></i> Correcto
+        </button>
+
+        <button type="button" class="btn btn-primary" ng-click="respuestaIncorrecta(pregunta)">
+            <i class="fa fa-close"></i> Incorrecto
+        </button>
+    </div>
 
 </div>
 </body>

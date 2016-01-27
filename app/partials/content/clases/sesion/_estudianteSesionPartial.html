@@ -5,7 +5,56 @@
 </head>
 <body>
 <div ng-controller="SesionController">
-    <h1>{{pregunta}}</h1>
+    <div ng-show="esperar" class="row centrado">
+        <br><br>
+        <h1>Por favor espere mientras se realiza la pregunta</h1>
+        <br><br>
+        <i class="fa fa-spinner fa-pulse fa-5x"></i>
+    </div>
+    <div ng-show="preguntaRealizada" class="row centrado">
+        <br><br>
+        <h1>{{pregunta.pregunta}}</h1>
+        <br><br>
+    </div>
+    <div ng-show="participar" class="row centrado">
+        <br><br>
+        <button class="btn btn-primary btn-dange" ng-click="responderPregunta()">
+            Participar
+        </button>
+        <br><br>
+    </div>
+    <div ng-show="participantes" class="row centrado">
+        <div class="table-responsive">
+            <table class="table table-hover table-condensed table-bordered">
+                <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Nombre</th>
+                    <th>Apellido</th>
+                    <th>RUT</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr ng-repeat="participante in listaParticipantes" ng-class="seleccionado">
+                    <td>{{$index+1}}</td>
+                    <td>{{participante.nombre}}</td>
+                    <td>{{participante.apellido}}</td>
+                    <td>{{participante.rut}}</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div ng-show="responder" class="row centrado">
+        <br><br>
+        <h1>Es su turno para responder.</h1>
+        <br><br>
+    </div>
+    <div ng-show="resultado" class="row centrado">
+        <br><br>
+        <h1>{{msjResultado}}</h1>
+        <br><br>
+    </div>
 </div>
 </body>
 </html>
