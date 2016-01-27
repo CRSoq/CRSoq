@@ -1,19 +1,21 @@
 'use strict';
 
 crsApp.factory('LoginService', function ($http, $q) {
+    var postHelper = function(ruta, data){
+        var defered = $q.defer();
+        var promise = defered.promise;
+        $http.post(ruta,data)
+            .success(function (response) {
+                defered.resolve(response);
+            })
+            .error(function (error) {
+                defered.reject(error);
+            });
+        return promise;
+    };
     return{
         logIn: function(data){
-            var defered = $q.defer();
-            var promise = defered.promise;
-
-            $http.post('/login', data)
-                .success(function(response){
-                    defered.resolve(response);
-                })
-                .error(function(error){
-                    defered.reject(error);
-                });
-            return promise;
+            return postHelper('/login',data);
         }
         //,
         //logOut: function(){

@@ -18,64 +18,22 @@ crsApp.factory('PreguntasServices', function($http, $q){
             return postHelper('/preguntas/obtenerPreguntasClase',clase);
         },
         crearPregunta: function (pregunta) {
-            var defered = $q.defer();
-            var promise = defered.promise;
-            $http.post('/preguntas/crearPregunta',pregunta)
-                .success(function (response) {
-                    defered.resolve(response);
-                })
-                .error(function (error) {
-                    defered.reject(error);
-                });
-            return promise;
+            return postHelper('/preguntas/crearPregunta',pregunta);
         },
         obtenerPreguntasCurso: function (curso) {
-            var defered = $q.defer();
-            var promise = defered.promise;
-            $http.post('/preguntas/obtenerPreguntasCurso',curso)
-                .success(function (response) {
-                    defered.resolve(response);
-                })
-                .error(function (error) {
-                    defered.reject(error);
-                });
-            return promise;
+            return postHelper('/preguntas/obtenerPreguntasCurso',curso);
         },
         obtenerPreguntasPorSesion: function (sesion) {
-            var defered = $q.defer();
-            var promise = defered.promise;
-            $http.post('/preguntas/obtenerPreguntasPorSesion',sesion)
-                .success(function (response) {
-                    defered.resolve(response);
-                })
-                .error(function (error) {
-                    defered.reject(error);
-                });
-            return promise;
+            return postHelper('/preguntas/obtenerPreguntasPorSesion',sesion);
         },
         actualizarPregunta: function (pregunta) {
-            var defered = $q.defer();
-            var promise = defered.promise;
-            $http.post('/preguntas/actualizarPregunta',pregunta)
-                .success(function (response) {
-                    defered.resolve(response);
-                })
-                .error(function (error) {
-                    defered.reject(error);
-                });
-            return promise;
+            return postHelper('/preguntas/actualizarPregunta',pregunta);
         },
         eliminarPregunta: function (pregunta) {
-            var defered = $q.defer();
-            var promise = defered.promise;
-            $http.post('/preguntas/eliminarPregunta',pregunta)
-                .success(function (response) {
-                    defered.resolve(response);
-                })
-                .error(function (error) {
-                    defered.reject(error);
-                });
-            return promise;
+            return postHelper('/preguntas/eliminarPregunta',pregunta);
+        },
+        asignarGanador: function (data) {
+            return postHelper('/preguntas/asignarGanador',data);
         }
     }
 });

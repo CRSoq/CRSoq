@@ -1,6 +1,19 @@
 'use strict';
 
 crsApp.factory('CursosServices', function ($http, $q) {
+    var postHelper = function(ruta, data){
+        var defered = $q.defer();
+        var promise = defered.promise;
+        $http.post(ruta,data)
+            .success(function (response) {
+                defered.resolve(response);
+            })
+            .error(function (error) {
+                defered.reject(error);
+            });
+        return promise;
+    };
+
     var cursos = [];
     function setCursos(listaCursos){
         cursos = listaCursos;
@@ -11,16 +24,7 @@ crsApp.factory('CursosServices', function ($http, $q) {
 
     return{
         crearCurso: function (curso) {
-            var defered = $q.defer();
-            var promise = defered.promise;
-            $http.post('/cursos/crearCurso', curso)
-                .success(function(response){
-                    defered.resolve(response);
-                })
-                .error(function(error){
-                    defered.reject(error);
-                });
-            return promise;
+            return postHelper('/cursos/crearCurso',curso);
         },
         obtenerCursos: function (data) {
             var defered = $q.defer();
@@ -53,16 +57,7 @@ crsApp.factory('CursosServices', function ($http, $q) {
                 'id_curso': id_curso,
                 'estado': estado
             };
-            var defered = $q.defer();
-            var promise = defered.promise;
-            $http.post('/cursos/cambiarEstado', cursoEstado)
-                .success(function (response) {
-                    defered.resolve(response);
-                })
-                .error(function (error) {
-                    defered.reject(error);
-                });
-            return promise;
+            return postHelper('/cursos/cambiarEstado',cursoEstado);
         }
     }
 });
