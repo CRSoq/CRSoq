@@ -12,10 +12,19 @@ crsApp.controller('PreguntasController', function ($scope, $stateParams, $timeou
         $scope.listaModulos= _.cloneDeep(data);
         $scope.listaModulos= _.map(_.sortByOrder($scope.listaModulos,['posicion'],['asc']));
         ClasesServices.obtenerClases($scope.listaModulos).then(function (data) {
-            $scope.listaClases = _.cloneDeep(data);
-            _.forEach($scope.listaClases, function(n){
-                var posModulo = _.findIndex($scope.listaModulos,{'id_modulo': n.id_modulo});
-                n.modulo = $scope.listaModulos[posModulo].nombre_modulo;
+            var lista = _.cloneDeep(data);
+
+            _.forEach(lista, function(n){
+                var clasesModulo = _.cloneDeep(n);
+                _.forEach(clasesModulo, function(clase){
+                    var posModulo = _.findIndex($scope.listaModulos,{'id_modulo': clase.id_modulo});
+                    clase.modulo = $scope.listaModulos[posModulo].nombre_modulo;
+                });
+                var i = 0;
+                while(i<clasesModulo.length){
+                    $scope.listaClases.push(clasesModulo[i]);
+                    i++;
+                }
             });
             PreguntasServices.obtenerPreguntasCurso(curso).then(function (data) {
                 if(!data.error){
