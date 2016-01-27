@@ -21,7 +21,10 @@ router.post('/', function(req, res){
                         token   : token,
                         usuario : rows[0].usuario,
                         tipo    : 'estudiante',
-                        id_user : rows[0].id_user
+                        id_user : rows[0].id_user,
+                        nombre  : rows[0].nombre,
+                        apellido: rows[0].apellido,
+                        rut     : rows[0].rut
                     };
                     return res.json({'usuario':output});
                 }else{
@@ -33,7 +36,9 @@ router.post('/', function(req, res){
                                     token: token,
                                     usuario: rows[0].usuario,
                                     tipo: 'profesor',
-                                    id_user : rows[0].id_user
+                                    id_user : rows[0].id_user,
+                                    nombre  : rows[0].nombre,
+                                    apellido: rows[0].apellido
                                 };
                                 return res.json({'usuario':output});
                             }else{
@@ -45,7 +50,9 @@ router.post('/', function(req, res){
                                                 token: token,
                                                 usuario: rows[0].usuario,
                                                 tipo: 'administrador',
-                                                id_user : rows[0].id_user
+                                                id_user : rows[0].id_user,
+                                                nombre  : rows[0].nombre,
+                                                apellido: rows[0].apellido
                                             };
                                             return res.json({'usuario':output});
                                         }else{

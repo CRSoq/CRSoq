@@ -51,7 +51,7 @@ router.post('/actualizarPregunta', function (req, res) {
     if(!req.body){
         return res.sendStatus(400);
     }else{
-        connection.query('UPDATE pregunta SET id_clase = ?, id_user = ?, pregunta = ? WHERE id_pregunta = ?',[req.body.id_clase, req.body.id_user, req.body.pregunta, req.body.id_pregunta], function (error) {
+        connection.query('UPDATE pregunta SET id_clase = ?, pregunta = ? WHERE id_pregunta = ?',[req.body.id_clase, req.body.pregunta, req.body.id_pregunta], function (error) {
             if(error){
                 return res.json({'error': true, 'err':error});
             }else{
@@ -65,6 +65,19 @@ router.post('/eliminarPregunta', function (req, res) {
         return res.sendStatus(400);
     }else{
         connection.query('DELETE FROM pregunta WHERE id_pregunta = ?',[req.body.id_pregunta], function (error) {
+            if(error){
+                return res.json({'error': true, 'err':error});
+            }else{
+                return res.json({'error': false});
+            }
+        });
+    }
+});
+router.post('/asignarGanador', function (req, res) {
+    if(!req.body){
+        return res.sendStatus(400);
+    }else{
+        connection.query('UPDATE pregunta SET id_user = ?, WHERE id_pregunta = ?',[req.body.id_user, req.body.id_pregunta], function (error) {
             if(error){
                 return res.json({'error': true, 'err':error});
             }else{
