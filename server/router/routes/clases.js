@@ -27,12 +27,13 @@ router.post('/obtenerClases', function (req, res) {
         var query = "";
         while(i<req.body.length){
             if(i==0){
-                query = 'SELECT * FROM clase WHERE id_modulo = '+req.body[i].id_modulo;
+                query = 'SELECT id_clase, id_modulo, fecha, descripcion, estado_sesion FROM clase WHERE id_modulo = '+req.body[i].id_modulo;
             }else{
-                query += '; SELECT * FROM clase WHERE id_modulo = '+req.body[i].id_modulo;
+                query += '; SELECT id_clase, id_modulo, fecha, descripcion, estado_sesion FROM clase WHERE id_modulo = '+req.body[i].id_modulo;
             }
             i++;
         }
+        /*
         connection.query(query, function (error, rows) {
             if(!error && rows.length>0){
                 var i=j=0;
@@ -49,8 +50,15 @@ router.post('/obtenerClases', function (req, res) {
                 return res.json(listaDeClases);
             }
         });
+        */
+        connection.query(query, function (error, rows) {
+            if(!error && rows.length>0){
+                return res.json(rows);
+            }
+        });
     }
 });
+
 router.post('/actualizarClase', function (req, res) {
     if(!req.body){
         return res.sendStatus(400);
