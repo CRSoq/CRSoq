@@ -1,4 +1,4 @@
-crsApp.controller('LoginController', function($scope, LoginService, SessionServices, $state){
+crsApp.controller('LoginController', function($scope, $state, LoginService, SessionServices, SocketServices){
     'use strict';
     $scope.login = function() {
         var usuario = {
@@ -10,6 +10,7 @@ crsApp.controller('LoginController', function($scope, LoginService, SessionServi
                 console.log('alert login fail... '+data.err.code);
             }else{
                 if(data.usuario.token != ""){
+                    SocketServices.on('connection');
                     SessionServices.asignarToken(data.usuario).then(function (data) {
                         if(data.error){
                             console.log('error actualizar token '+data.err.code);
