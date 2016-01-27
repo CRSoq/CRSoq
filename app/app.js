@@ -153,15 +153,7 @@ crsApp.run(function($rootScope, $state, SessionServices){
         if(toState.authenticate){
             SessionServices.checkToken().then(function (data) {
                 if(data.credencial){
-                    //$state.transitionTo("crsApp");
                     $rootScope.user = SessionServices.getSessionData();
-
-                    /*
-                    socket.on('dar_saludo', function (data) {
-                        console.log(data.saludo);
-                        socket.emit('recibir_saludo',{'saludo':'gracias, soy un usuario'});
-                    });*/
-                    //socket.emit('connection');
                 }else{
                     event.preventDefault();
                     $state.transitionTo("crsApp.login");
