@@ -121,8 +121,9 @@ ul.ng-enter {
     text-align: center;
 }
 
-.table,
-.table tr,
-.table td {
-    background-color: white !important;
+.table{
+    background-color: white;
+}
+.seleccionado{
+    background-color: green;
 }
