@@ -20,6 +20,20 @@ router.post('/crearPregunta', function (req, res) {
 
 });
 
+router.post('/obtenerPreguntaPorId', function (req, res) {
+    if(!req.body){
+        return res.sendStatus(400);
+    }else{
+        connection.query('SELECT * FROM pregunta WHERE id_pregunta = ?',[req.body.id], function (error, rows) {
+            if(!error){
+                return res.json(rows[0]);
+            }else{
+                return res.json({'error':true,'err':error});
+            }
+        });
+    }
+});
+
 router.post('/obtenerPreguntasClase', function (req, res) {
     if(!req.body){
         return res.sendStatus(400);
@@ -77,7 +91,7 @@ router.post('/asignarGanador', function (req, res) {
     if(!req.body){
         return res.sendStatus(400);
     }else{
-        connection.query('UPDATE pregunta SET id_user = ?, WHERE id_pregunta = ?',[req.body.id_user, req.body.id_pregunta], function (error) {
+        connection.query('UPDATE pregunta SET id_user = ? WHERE id_pregunta = ?',[req.body.id_user, req.body.pregunta.id_pregunta], function (error) {
             if(error){
                 return res.json({'error': true, 'err':error});
             }else{
