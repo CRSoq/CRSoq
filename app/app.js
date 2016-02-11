@@ -87,7 +87,7 @@ crsApp.config(function($stateProvider, $urlRouterProvider) {
                     templateProvider:
                         function ($rootScope, $http) {
                             if($rootScope.user.tipo=='estudiante'){
-                                return $http.get('partials/content/clases/sesion/_estudianteSesionPartial.html')
+                                return $http.get('partials/content/clases/sesion/pregunta/_estudianteSesionPartial.html')
                                     .then(function (template) {
                                         return  template.data;
                                     });
@@ -106,7 +106,7 @@ crsApp.config(function($stateProvider, $urlRouterProvider) {
             url: '/:id_pregunta',
             views: {
                 'main@crsApp': {
-                    templateUrl: 'partials/content/clases/sesion/preguntaPartial.html'
+                    templateUrl: 'partials/content/clases/sesion/pregunta/preguntaPartial.html'
                 }
             },
             authenticate:true

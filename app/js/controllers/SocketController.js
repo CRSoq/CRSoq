@@ -42,7 +42,9 @@ crsApp.controller('SocketController', function ($scope,$rootScope,$timeout,Socke
             //emit to controller el usuario...
         }
     });
-
+    SocketServices.on('Pregunta', function (data) {
+        $rootScope.$emit('preguntaSesion', data);
+    });
 
     SocketServices.on('finParticipacion', function () {
         $rootScope.$emit('finParticipacionEstudiantes');
