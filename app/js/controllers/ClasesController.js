@@ -1,4 +1,4 @@
-crsApp.controller('ClasesController', function($scope, $rootScope, $timeout, $uibModal, $state, $stateParams, ClasesServices, ModulosServices, CursosServices, SesionClasesService, SocketServices){
+crsApp.controller('ClasesController', function($scope, $rootScope, $timeout, $uibModal, $state, $stateParams, ClasesServices, ModulosServices, CursosServices, SocketServices){
     $scope.titulo = $stateParams.curso;
     $scope.listaClases = [];
     $scope.alerts = [];
@@ -24,18 +24,30 @@ crsApp.controller('ClasesController', function($scope, $rootScope, $timeout, $ui
         ClasesServices.obtenerClases($scope.listaModulos).then(function (data) {
             var lista = _.cloneDeep(data);
 
-            _.forEach(lista, function(n){
-                var clasesModulo = _.cloneDeep(n);
-                _.forEach(clasesModulo, function(clase){
+            if(lista.length>1){
+                _.forEach(lista, function(n){
+                    var clasesModulo = _.cloneDeep(n);
+                    _.forEach(clasesModulo, function(clase){
+                        var posModulo = _.findIndex($scope.listaModulos,{'id_modulo': clase.id_modulo});
+                        clase.modulo = $scope.listaModulos[posModulo].nombre_modulo;
+                    });
+                    var i = 0;
+                    while(i<clasesModulo.length){
+                        $scope.listaClases.push(clasesModulo[i]);
+                        i++;
+                    }
+                });
+            }else{
+                _.forEach(lista, function(clase){
                     var posModulo = _.findIndex($scope.listaModulos,{'id_modulo': clase.id_modulo});
                     clase.modulo = $scope.listaModulos[posModulo].nombre_modulo;
                 });
                 var i = 0;
-                while(i<clasesModulo.length){
-                    $scope.listaClases.push(clasesModulo[i]);
+                while(i<lista.length){
+                    $scope.listaClases.push(lista[i]);
                     i++;
                 }
-            });
+            }
 
         });
     });
