@@ -17,6 +17,9 @@ crsApp.factory('PreguntasServices', function($http, $q){
         obtenerPreguntasClase: function (clase) {
             return postHelper('/preguntas/obtenerPreguntasClase',clase);
         },
+        obtenerPreguntaPorId: function (id_pregunta) {
+            return postHelper('/preguntas/obtenerPreguntaPorId',{'id':id_pregunta});
+        },
         crearPregunta: function (pregunta) {
             return postHelper('/preguntas/crearPregunta',pregunta);
         },
