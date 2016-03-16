@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+</head>
+<body>
+<div ng-controller="SesionController">
+    <div class="modal-content">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true" ng-click="cancelar()">&times;</button>
+            <h4 class="modal-title">Lista de preguntas del curso (aun no asignadas)</h4>
+        </div>
+        <form class="form-horizontal">
+            <div class="modal-body">
+                <p>Seleccione las preguntas que desea agregar a la clase.</p>
+                <div class="table-responsive">
+                    <table class="table table-hover table-condensed table-bordered">
+                        <thead>
+                            <tr>
+
+                                <th>
+                                    Pregunta
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr data-ng-repeat="pregunta in listaPreguntasDelCurso">
+                                <td class="col-md-1 centrado">
+                                    <div class="checkbox">
+                                        <label>
+                                            <input type="checkbox" value="pregunta" ng-click="seleccionar(pregunta)"> {{pregunta.pregunta}}
+                                        </label>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </form>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="cancelar()">No</button>
+            <button type="button" class="btn btn-primary" ng-click="aceptar()">Si</button>
+        </div>
+
+    </div>
+</div>
+</body>
+</html>

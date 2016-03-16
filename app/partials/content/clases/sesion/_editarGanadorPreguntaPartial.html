@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+</head>
+<body>
+<div ng-controller="SesionController">
+    <div class="modal-content">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true" ng-click="cancelar()">&times;</button>
+            <h4 class="modal-title">Modificar ganador de la pregunta</h4>
+        </div>
+        <form class="form-horizontal">
+            <div class="modal-body">
+                <label>Pregunta: </label>
+                {{pregunta.pregunta}}
+                <br>
+                <div ng-if="pregunta.id_user!=null">
+                    <label>Ganador actual: </label>
+                    {{ganadorActual.rut}} {{ganadorActual.nombre}} {{ganadorActual.apellido}}
+                    <br>
+                </div>
+                <label for="ganadorSelect">Ganador: </label>
+                <select name="ganadorSelect" id="ganadorSelect" ng-model="listaEstudiantes.ganador">
+                    <option ng-repeat="estudiante in listaEstudiantes" value="{{estudiante}}"> {{estudiante.rut}} | {{estudiante.nombre}} {{estudiante.apellido}}</option>
+                    <option value="{{sin_ganador}}">Sin Ganador</option>
+                </select>
+            </div>
+        </form>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="cancelar()">No</button>
+            <button type="button" class="btn btn-primary" ng-click="aceptar()">Si</button>
+        </div>
+
+    </div>
+</div>
+</body>
+</html>
