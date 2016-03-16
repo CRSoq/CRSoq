@@ -11,12 +11,7 @@ crsApp.controller('CursosController', function($scope, $rootScope, $filter, $sta
             templateUrl : '/partials/content/main/crearCursoModal.html',
             controller  : 'ModalCrearCursoController',
             size        : 'lg',
-            backdrop    : 'static',
-            resolve     : {
-                /*items: function () {
-                    return
-                }*/
-            }
+            backdrop    : 'static'
         });
 
         modalInstance.result.then(function (curso){
