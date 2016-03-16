@@ -37,10 +37,15 @@ module.exports = function (io) {
                             'socketId'  :socket.client.id,
                             'cursos'    :datos
                         });
+
                     }else{
                         user.socketId   = socket.client.id;
                         user.cursos     = datos;
+
                     }
+                    console.log(usuarios.length);
+                    console.log("");
+                    console.log(usuarios);
                 });
             });
 
@@ -80,11 +85,18 @@ module.exports = function (io) {
             socket.join(data.nombreSala);
         });
 
+        socket.on('SalirSala', function (data) {
+            socket.leave(data.nombreSala);
+        });
+
         //realizar pregunta dentro de la sesion (por el profesor)
         socket.on('RealizarPregunta', function (data) {
             io.to(data.sala).emit('Pregunta', data.pregunta);
         });
 
+        socket.on('FinalizarPregunta', function (data) {
+            io.to(socket.rooms[1]).emit('continuarSesion');
+        });
         //responder pregunta
         socket.on('responderPregunta', function (dataUsuario) {
             socket.broadcast.to(socket.rooms[1]).emit('agregarParticipante', dataUsuario);
@@ -112,6 +124,12 @@ module.exports = function (io) {
             var estudianteSeleccionado = _.findWhere(usuarios, {'usuario':participante.usuario});
             socket.broadcast.to(estudianteSeleccionado.socketId).emit('respuestaEstudianteCorrecta');
             socket.broadcast.to(socket.rooms[1]).emit('continuarSesion');
+        });
+
+        socket.on('finalizarSesion', function (data) {
+            //avisar a los de la sala que la dejen porque se termino la sesion
+            //yo dejo la sala
+            io.to(data.nombreSala).emit('finSesion',data);
         });
     });
 
