@@ -1,4 +1,4 @@
-crsApp.controller('ClasesController', function($scope, $rootScope, $timeout, $uibModal, $state, $stateParams, ClasesServices, ModulosServices, CursosServices, SocketServices){
+crsApp.controller('ClasesController', function($scope, $rootScope, $timeout, $uibModal, $state, $stateParams, ClasesServices, ModulosServices, CursosServices, SessionServices, SocketServices){
     $scope.titulo = $stateParams.curso;
     $scope.listaClases = [];
     $scope.alerts = [];
@@ -17,40 +17,50 @@ crsApp.controller('ClasesController', function($scope, $rootScope, $timeout, $ui
     });
     */
     //$scope.listaClases
-    var curso = CursosServices.getCursoPorNombre($stateParams.semestre, $stateParams.curso);
-    ModulosServices.obtenerModulos(curso).then(function (data) {
-        $scope.listaModulos= _.cloneDeep(data);
-        $scope.listaModulos= _.map(_.sortByOrder($scope.listaModulos,['posicion'],['asc']));
-        ClasesServices.obtenerClases($scope.listaModulos).then(function (data) {
-            var lista = _.cloneDeep(data);
 
-            if(lista.length>1){
-                _.forEach(lista, function(n){
-                    var clasesModulo = _.cloneDeep(n);
-                    _.forEach(clasesModulo, function(clase){
-                        var posModulo = _.findIndex($scope.listaModulos,{'id_modulo': clase.id_modulo});
-                        clase.modulo = $scope.listaModulos[posModulo].nombre_modulo;
-                    });
-                    var i = 0;
-                    while(i<clasesModulo.length){
-                        $scope.listaClases.push(clasesModulo[i]);
-                        i++;
+
+    CursosServices.obtenerCursos(SessionServices.getSessionData()).then(function (data) {
+        if(data.error){
+            //error
+        }else{
+            var curso = CursosServices.getCursoPorNombre($stateParams.semestre, $stateParams.curso);
+
+            ModulosServices.obtenerModulos(curso).then(function (data) {
+                $scope.listaModulos= _.cloneDeep(data);
+                $scope.listaModulos= _.map(_.sortByOrder($scope.listaModulos,['posicion'],['asc']));
+                ClasesServices.obtenerClases($scope.listaModulos).then(function (data) {
+                    var lista = _.cloneDeep(data);
+
+                    if(lista.length>1){
+                        _.forEach(lista, function(n){
+                            var clasesModulo = _.cloneDeep(n);
+                            _.forEach(clasesModulo, function(clase){
+                                var posModulo = _.findIndex($scope.listaModulos,{'id_modulo': clase.id_modulo});
+                                clase.modulo = $scope.listaModulos[posModulo].nombre_modulo;
+                            });
+                            var i = 0;
+                            while(i<clasesModulo.length){
+                                $scope.listaClases.push(clasesModulo[i]);
+                                i++;
+                            }
+                        });
+                    }else{
+                        _.forEach(lista, function(clase){
+                            var posModulo = _.findIndex($scope.listaModulos,{'id_modulo': clase.id_modulo});
+                            clase.modulo = $scope.listaModulos[posModulo].nombre_modulo;
+                        });
+                        var i = 0;
+                        while(i<lista.length){
+                            $scope.listaClases.push(lista[i]);
+                            i++;
+                        }
                     }
-                });
-            }else{
-                _.forEach(lista, function(clase){
-                    var posModulo = _.findIndex($scope.listaModulos,{'id_modulo': clase.id_modulo});
-                    clase.modulo = $scope.listaModulos[posModulo].nombre_modulo;
-                });
-                var i = 0;
-                while(i<lista.length){
-                    $scope.listaClases.push(lista[i]);
-                    i++;
-                }
-            }
 
-        });
+                });
+            });
+        }
     });
+
 
     $scope.agregarClase = function () {
         var clase = {
