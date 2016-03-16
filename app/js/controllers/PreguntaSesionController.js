@@ -20,9 +20,17 @@ crsApp.controller('PreguntaSesionProfesorController', function ($scope, $rootSco
         //$scope.responder = false;
     };
 
-    $scope.finalizarPregunta = function () {
-        $rootScope.$emit('continuarSesionPreguntas');
-        $state.transitionTo('crsApp.cursosSemestre.clases.sesion', {semestre:$stateParams.semestre,curso:$stateParams.curso,id_clase:$stateParams.id_clase});
+    $scope.finalizarPregunta = function (pregunta) {
+        pregunta.estado = 'realizada';
+        PreguntasServices.actualizarEstadoPregunta(pregunta).then(function (data) {
+            if(!data.error){
+                SocketServices.emit('FinalizarPregunta');
+                $state.transitionTo('crsApp.cursosSemestre.clases.sesion', {semestre:$stateParams.semestre,curso:$stateParams.curso,id_clase:$stateParams.id_clase});
+            }else{
+                //error
+            }
+        });
+        //cerrar pregunta dejar con o sin ganador
     };
 
     $scope.seleccionarEstudiante = function (participante) {
@@ -64,7 +72,11 @@ crsApp.controller('PreguntaSesionProfesorController', function ($scope, $rootSco
         $scope.estudianteSeleccionado.seleccionado = true;
         SocketServices.emit('respuestaIncorrecta', $scope.estudianteSeleccionado);
         $scope.estudianteSeleccionado = null;
+
+        //ver como guardar las respuestas incorrectas
     };
+
+
 });
 
 crsApp.controller('PreguntaSesionController', function ($scope, $rootScope, $state, $stateParams, $timeout, SocketServices, SessionServices) {
@@ -151,5 +163,9 @@ crsApp.controller('PreguntaSesionController', function ($scope, $rootScope, $sta
         $scope.responder = false; //mostrar cuando le toca responder
         $scope.resultado = false; //mostrar si esta correcta o no la respuesta
         $scope.preguntaFinalizada = false;
+    });
+
+    $rootScope.$on('SalirSesion', function (event, data) {
+        $state.transitionTo('crsApp.cursosSemestre.clases', {semestre:$stateParams.semestre,curso:$stateParams.curso});
     });
 });

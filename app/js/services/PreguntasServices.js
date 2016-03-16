@@ -32,8 +32,14 @@ crsApp.factory('PreguntasServices', function($http, $q){
         actualizarPregunta: function (pregunta) {
             return postHelper('/preguntas/actualizarPregunta',pregunta);
         },
+        actualizarEstadoPregunta: function (pregunta) {
+            return postHelper('/preguntas/actualizarEstadoPregunta',pregunta);
+        },
         eliminarPregunta: function (pregunta) {
             return postHelper('/preguntas/eliminarPregunta',pregunta);
+        },
+        asignarPreguntasClase: function (data) {
+            return postHelper('/preguntas/asignarPreguntaClase',data);
         },
         asignarGanador: function (data) {
             return postHelper('/preguntas/asignarGanador',data);

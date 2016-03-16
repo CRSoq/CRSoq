@@ -69,6 +69,7 @@ crsApp.controller('PreguntasController', function ($scope, $stateParams, $timeou
             'id_modulo':null,
             'nombre_modulo': null,
             'edicion': true,
+            'estado':'sin_realizar',
             'nuevo': true
         };
         $scope.listaPreguntasCurso.push(pregunta);
