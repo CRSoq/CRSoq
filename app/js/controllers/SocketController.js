@@ -74,4 +74,10 @@ crsApp.controller('SocketController', function ($scope,$rootScope,$timeout,Socke
         //cambiar estado de la lista eliminando el participante
         $rootScope.$emit('continuarSesionPreguntas');
     });
+
+    SocketServices.on('finSesion', function (data) {
+
+        SocketServices.emit('SalirSala', data);
+        $rootScope.$emit('SalirSesion');
+    });
 });
