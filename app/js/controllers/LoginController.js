@@ -10,11 +10,15 @@ crsApp.controller('LoginController', function($scope, $state, LoginService, Sess
                 console.log('alert login fail... '+data.err.code);
             }else{
                 if(data.usuario.token != ""){
-                    SocketServices.on('connection');
                     SessionServices.asignarToken(data.usuario).then(function (data) {
                         if(data.error){
                             console.log('error actualizar token '+data.err.code);
                         }else{
+                            SocketServices.connect();
+                            var dataSesion = SessionServices.getSessionData();
+                            if(!_.isUndefined(dataSesion.usuario)){
+                                SocketServices.emit('EnviarDatos', dataSesion);
+                            }
                             $state.transitionTo("crsApp");
                         }
                     });
