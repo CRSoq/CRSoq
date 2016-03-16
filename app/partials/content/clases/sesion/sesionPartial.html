@@ -19,6 +19,7 @@
     <button type="button" class="btn btn-primary" ng-click="finalizarSesion()">
         <i class="fa fa-power-off"></i> Finalizar Sesion
     </button>
+    <br></br>
     <div class="table-responsive">
         <table class="table table-hover table-condensed table-bordered">
             <thead>
@@ -32,14 +33,14 @@
             </thead>
             <tbody>
                 <tr data-ng-repeat="pregunta in listaPreguntasClase">
-                    <td>
+                    <td ng-if="pregunta.edicion!=true" >
                         {{pregunta.pregunta}}
                     </td>
-                    <td class="col-md-2 centrado">
+
+                    <td class="col-md-2 centrado" ng-if="pregunta.edicion!=true">
                         <button ng-if="pregunta.id_user==null" class="btn btn-primary" ng-click="lanzarPregunta(pregunta)">
                             <i class="fa fa-play"></i>
                         </button>
-
                         <button ng-if="pregunta.id_user!=null" class="btn btn-primary" ng-click="editarGanadorPregunta(pregunta)">
                             <i class="fa fa-lock"></i>
                         </button>
@@ -48,6 +49,20 @@
                         </button>
                         <button class="btn btn-primary" ng-click="eliminarPregunta(pregunta, $index)"><i class="fa fa-times"></i></button>
                     </td>
+
+                    <td ng-if="pregunta.edicion==true">
+                        <input type="text" name="pregunta" id="inputPregunta" class="form-control" title="escriba su pregunta" ng-model="pregunta.pregunta" required>
+                    </td>
+
+                    <td class="col-md-2 centrado" ng-if="pregunta.edicion==true">
+                        <button class="btn btn-primary" ng-click="guardarPregunta(pregunta)">
+                            <i class="fa fa-floppy-o"></i>
+                        </button>
+                        <button class="btn btn-primary" ng-click="cancelarPregunta(pregunta)">
+                            <i class="fa fa-times"></i>
+                        </button>
+                    </td>
+
                 </tr>
             </tbody>
         </table>
