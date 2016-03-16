@@ -13,7 +13,19 @@ crsApp.factory('CursosServices', function ($http, $q) {
             });
         return promise;
     };
-
+    var postHelperMisCursos = function(ruta, data){
+        var defered = $q.defer();
+        var promise = defered.promise;
+        $http.post(ruta, data)
+            .success(function (response) {
+                setCursos(response);
+                defered.resolve(response);
+            })
+            .error(function (error) {
+                defered.reject(error);
+            });
+        return promise;
+    };
     var cursos = [];
     function setCursos(listaCursos){
         cursos = listaCursos;
@@ -27,17 +39,7 @@ crsApp.factory('CursosServices', function ($http, $q) {
             return postHelper('/cursos/crearCurso',curso);
         },
         obtenerCursos: function (data) {
-            var defered = $q.defer();
-            var promise = defered.promise;
-            $http.post('/cursos/obtenerCursos', data)
-                .success(function (response) {
-                    setCursos(response);
-                    defered.resolve(response);
-                })
-                .error(function (error) {
-                    defered.reject(error);
-                });
-            return promise;
+            return postHelperMisCursos('/cursos/obtenerCursos',data);
         },
         getAllCursos: function(){
             var listaCursos = getCursos();
