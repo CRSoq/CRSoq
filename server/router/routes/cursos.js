@@ -65,6 +65,20 @@ router.post('/obtenerCursos', function (req, res) {
     }
 });
 
+router.post('/obtenerCursoPorNombre', function (req, res) {
+    if(!req.body){
+        return res.sendStatus(400);
+    }else{
+        connection.query('SELECT id_curso, semestre, ano, estado FROM curso WHERE nombre_curso = ?',[req.body.nombre_curso], function (error, rows) {
+            if(!error){
+                return res.json(rows);
+            }else{
+                return res.json({'error':true,'err':error});
+            }
+        });
+    }
+});
+
 router.post('/obtenerModulos', function (req, res) {
     if(!req.body){
         return res.sendStatus(400);
