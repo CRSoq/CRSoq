@@ -48,6 +48,8 @@
                             <button class="btn btn-primary" ng-click="iniciarSesion(clase)">
                                 <i ng-if="clase.estado_sesion=='noIniciada'" class="fa fa-play"></i>
                                 <i ng-if="clase.estado_sesion=='iniciada'" class="fa fa-sign-in"></i>
+                                <i ng-if="clase.estado_sesion=='cerrada'" class="fa fa-lock"></i>
+
                             </button>
                             <button class="btn btn-primary" ng-click="editarClase(clase)"><i class="fa fa-pencil"></i></button>
                             <button class="btn btn-primary" ng-click="eliminarClase(clase)"><i class="fa fa-times"></i></button>
