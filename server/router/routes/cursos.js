@@ -9,9 +9,9 @@ router.post('/crearCurso', function (req, res) {
     if(!req.body){
         return res.sendStatus(400);
     }else{
-        connection.query('INSERT INTO curso SET id_user = ?, nombre_curso = ?, semestre = ?, ano = ?, estado = ? ',[req.body.id_user, req.body.nombre,req.body.semestre, req.body.ano, req.body.estado], function (error, result) {
+        connection.query('INSERT INTO curso SET id_asignatura = ?, id_calendario = ?, ano = ?, semestre = ?, id_user = ?, estado_curso = ?, nombre_curso = ? ',[req.body.id_asignatura, req.body.id_calendario, req.body.ano, req.body.semestre, req.body.id_user, req.body.estado_curso, req.body.nombre_curso], function (error, result) {
             if(error){
-                return res.json({'error':true,'err':error});
+                return res.json({'error':true,'err':error.code});
             }else{
                 return res.json({'id_curso':result.insertId});
             }
@@ -42,7 +42,7 @@ router.post('/obtenerCursos', function (req, res) {
         return res.sendStatus(400);
     }else{
         if(req.body.tipo == 'profesor'){
-            connection.query('SELECT id_curso, nombre_curso, semestre, ano, estado FROM curso WHERE id_user = ?',[req.body.id_user], function (error, rows) {
+            connection.query('SELECT id_curso, id_asignatura, id_calendario, ano, semestre, estado_curso, nombre_curso FROM curso WHERE id_user = ?',[req.body.id_user], function (error, rows) {
                 if(!error){
                     return res.json(ordenar(rows));
                 }else{
