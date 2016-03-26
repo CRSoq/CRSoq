@@ -40,23 +40,80 @@ crsApp.controller('CursosController', function($scope, $rootScope, $filter, $sta
 
 });
 
-crsApp.controller('ModalCrearCursoController', function ($scope, $timeout, $uibModalInstance, SessionServices) {
+crsApp.controller('ModalCrearCursoController', function ($scope, $timeout, $uibModalInstance, SessionServices, CalendarioServices, AsignaturasServices) {
+    $scope.curso = {};
     $scope.alerts = [];
+    $scope.asignaturas = [];
+    $scope.anos = [];
+    $scope.semestres = [];
+    $scope.asignaturaSeleccionada = [];
+    $scope.anoSeleccionado = [];
+    $scope.semestreSeleccionado = [];
+    $scope.calendario = [];
+    $scope.cargandoAsignaturas=true;
+    $scope.cargandoAno=true;
+    $scope.cargandoSemestre=true;
+    AsignaturasServices.obtenerAsignaturas().then(function (response) {
+        if(!response.error){
+            $scope.asignaturas = _.cloneDeep(response);
+        }else{
+            console.log(response.err.code);
+        }
+        $scope.cargandoAsignaturas=false;
+    });
+    CalendarioServices.obtenerCalendario().then(function (response) {
+        if(!response.error){
+            $scope.anos = _.cloneDeep(response);
+            $scope.anos = _.chain($scope.anos)
+                .groupBy('ano')
+                .pairs()
+                .map(function (item) {
+                    return _.object(_.zip(['ano', 'semestres'], item));
+                })
+                .value();
+            $scope.anos=_.map(_.sortByOrder($scope.anos, ['ano'], ['desc']));
+        }else{
+            console.log(response.err.code);
+        }
+        $scope.cargandoAno=false;
+    });
+
+    $scope.cargarSemestre = function (ano) {
+        $scope.cargandoSemestre=false;
+        $scope.semestres = _.cloneDeep(ano.semestres);
+        $scope.semestres = _.chain($scope.semestres)
+            .groupBy('semestre')
+            .pairs()
+            .map(function (item) {
+                return _.object(_.zip(['semestre', 'calendario'], item));
+            })
+            .value();
+        $scope.semestres=_.map(_.sortByOrder($scope.semestres, ['semestre'], ['desc']));
+    };
+
+    $scope.guardarCalendario = function (calendario) {
+        if(!_.isUndefined(calendario)){
+            $scope.calendario = _.cloneDeep(calendario[0]);
+        }
+    };
+
     $scope.aceptar = function () {
         var dataUsuario = SessionServices.getSessionData();
-        var curso = {
-            nombre      : $scope.nombre,
-            ano         : $scope.ano,
-            semestre    : $scope.semestre,
-            estado      : 'creado',
-            id_user     : dataUsuario.id_user
+        $scope.curso = {
+            nombre_curso    : $scope.asignaturaSeleccionada.nombre_asignatura,
+            id_asignatura   : $scope.asignaturaSeleccionada.id_asignatura,
+            id_calendario   : $scope.calendario.id_calendario,
+            ano             : $scope.calendario.ano,
+            semestre        : $scope.calendario.semestre,
+            estado_curso    : 'creado',
+            id_user         : dataUsuario.id_user
         };
-        if(_.isEmpty(curso.nombre) || _.isEmpty(curso.ano) || _.isEmpty(curso.semestre) ){
+        if(_.isUndefined($scope.curso.nombre_curso) || _.isUndefined($scope.curso.id_calendario) ){
             var id_alert = $scope.alerts.length+1;
             $scope.alerts.push({id: id_alert,type:'danger', msg:'Debe completar todos los campos.'});
             closeAlertTime(id_alert);
         }else{
-            $uibModalInstance.close(curso);
+            $uibModalInstance.close($scope.curso);
         }
     };
 
