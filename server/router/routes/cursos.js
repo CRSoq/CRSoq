@@ -84,7 +84,7 @@ router.post('/obtenerModulos', function (req, res) {
         return res.sendStatus(400);
     }else{
         connection.query('SELECT * FROM modulo WHERE id_curso = ?',[req.body.id_curso], function (error, rows) {
-            if(!error && rows.length>0){
+            if(!error && rows.length>=0){
                 return res.json(rows);
             }else{
                 //algo pasa aqui ? ):
