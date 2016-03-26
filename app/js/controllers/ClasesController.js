@@ -173,7 +173,26 @@ crsApp.controller('ClasesController', function($scope, $rootScope, $timeout, $ui
             $state.transitionTo('crsApp.cursosSemestre.clases.sesion', {semestre:$stateParams.semestre,curso:$stateParams.curso,id_clase:clase.id_clase});
             SocketServices.emit('IngresarASala',infoSesion);
         }else if(clase.estado_sesion=='cerrada'){
-            //avisar que la sesion esta cerrada
+            var modalAbrirSesionCerrada = $uibModal.open({
+                animation: true,
+                templateUrl: '/partials/content/clases/_sesioncerradaPartial.html',
+                controller: 'ModalAbrirSesionCerradaController',
+                backdrop: 'static',
+                size: 'md',
+                resolve: {
+                    titulo: function () {
+                        return "Sesión de preguntas cerrada";
+                    },
+                    clase: function(){
+                        return clase;
+                    }
+                }
+            });
+
+            modalAbrirSesionCerrada.result.then(function () {
+
+            });
+             //modal
             //preguntar si se desea abrir la sesion nuevamente
         }else{
             //error al iniciar la sesion u obtenerla
@@ -210,16 +229,28 @@ crsApp.controller('ClasesController', function($scope, $rootScope, $timeout, $ui
 
 });
 
-crsApp.controller('ModalEliminarClaseController',function($scope, $modalInstance, titulo,clase){
+crsApp.controller('ModalEliminarClaseController',function($scope, $uibModalInstance, titulo,clase){
     $scope.modalTitulo=titulo;
     $scope.fechaClase = clase.fecha;
     $scope.descripcionClase = clase.descripcion;
     $scope.moduloClase = clase.modulo;
     $scope.estado_sesion = clase.estado_sesion;
     $scope.cerrarModal = function(){
-        $modalInstance.dismiss();
+        $uibModalInstance.dismiss();
     };
     $scope.aceptarModal = function(){
-         $modalInstance.close(clase);
+        $uibModalInstance.close(clase);
+    };
+});
+
+
+crsApp.controller('ModalAbrirSesionCerradaController',function($scope, $uibModalInstance, titulo,clase){
+    $scope.modalTitulo=titulo;
+
+    $scope.cerrarModal = function(){
+        $uibModalInstance.dismiss();
+    };
+    $scope.aceptarModal = function(){
+        $uibModalInstance.close();
     };
 });
