@@ -1,6 +1,6 @@
 /*==============================================================*/
 /* DBMS name:      MySQL 5.0                                    */
-/* Created on:     25-03-2016 1:46:21                           */
+/* Created on:     26-03-2016 13:17:55                          */
 /*==============================================================*/
 
 
@@ -112,6 +112,7 @@ create table curso
    semestre             int not null,
    id_user              int not null,
    estado_curso         varchar(250),
+   nombre_curso         varchar(250),
    primary key (id_curso)
 );
 
