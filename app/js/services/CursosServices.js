@@ -55,11 +55,7 @@ crsApp.factory('CursosServices', function ($http, $q) {
             }
         },
         cambiarEstado: function (id_curso, estado) {
-            var cursoEstado = {
-                'id_curso': id_curso,
-                'estado': estado
-            };
-            return postHelper('/cursos/cambiarEstado',cursoEstado);
+            return postHelper('/cursos/cambiarEstado',{'id_curso': id_curso, 'estado': estado});
         }
     }
 });

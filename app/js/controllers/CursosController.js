@@ -227,7 +227,7 @@ crsApp.controller('ConfigCursoController', function ($scope, $rootScope, $state,
         if(campoVacio($scope.modulos)){
             ModulosServices.guardarModulos($scope.config).then(function (data) {
                 if(data[0].insert.length==0 && data[1].update.length==0 && data[2].delete.length==0){
-                    if(curso.estado=='creado'){
+                    if(curso.estado_curso=='creado'){
                         CursosServices.cambiarEstado(curso.id_curso,'abierto').then(function (data) {
                             CursosServices.obtenerCursos(SessionServices.getSessionData()).then(function (data) {
                                 if(data){

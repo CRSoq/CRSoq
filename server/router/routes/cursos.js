@@ -143,7 +143,7 @@ router.post('/cambiarEstado', function (req, res) {
     if(!req.body){
         return res.sendStatus(400);
     }else{
-        connection.query('UPDATE curso SET estado = ? WHERE id_curso = ?',[req.body.estado, req.body.id_curso], function (error) {
+        connection.query('UPDATE curso SET estado_curso = ? WHERE id_curso = ?',[req.body.estado, req.body.id_curso], function (error) {
             if(!error){
                 return res.json(true);
             }
