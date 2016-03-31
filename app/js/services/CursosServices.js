@@ -1,6 +1,6 @@
 'use strict';
 
-crsApp.factory('CursosServices', function ($http, $q) {
+crsApp.factory('CursosServices', function ($http, $q, $localStorage) {
     var postHelper = function(ruta, data){
         var defered = $q.defer();
         var promise = defered.promise;
@@ -56,6 +56,13 @@ crsApp.factory('CursosServices', function ($http, $q) {
         },
         cambiarEstado: function (id_curso, estado) {
             return postHelper('/cursos/cambiarEstado',{'id_curso': id_curso, 'estado': estado});
+        },
+        almacenarCursos: function (cursos) {
+            delete  $localStorage.cursos;
+            $localStorage.cursos = JSON.stringify(cursos);
+        },
+        obtenerCursosLocal: function () {
+            return  JSON.parse($localStorage.cursos);
         }
     }
 });
