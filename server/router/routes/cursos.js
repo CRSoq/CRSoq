@@ -30,7 +30,10 @@ function ordenar (rows){
         .groupBy('anoSemestre')
         .pairs()
         .map(function(current){
-            return _.object(_.zip(["nombre","cursos"], current));
+            var test = _.object(_.zip(["nombre","cursos"], current));
+            test['ano'] = current[1][0].ano;
+            test['semestre'] = current[1][0].semestre;
+            return test;
         });
     //finalmente se ordenan porque el proceso anterior no es devuelto 100% ordenado por lodash
     _.sortByOrder(_(lista).reverse().value(),['nombre'],['desc']);
@@ -50,7 +53,7 @@ router.post('/obtenerCursos', function (req, res) {
                 }
             });
         }else if(req.body.tipo == 'estudiante'){
-            connection.query('SELECT c.id_curso, c.nombre_curso, c.semestre, c.ano, c.estado FROM pertenece ec INNER JOIN estudiante e ON ec.id_user=e.id_user INNER JOIN curso c ON ec.id_curso = c.id_curso WHERE e.id_user = ?',[req.body.id_user], function (error, rows) {
+            connection.query('SELECT c.id_curso, c.nombre_curso, c.semestre, c.ano, c.estado_curso FROM pertenece ec INNER JOIN estudiante e ON ec.id_user=e.id_user INNER JOIN curso c ON ec.id_curso = c.id_curso WHERE e.id_user = ?',[req.body.id_user], function (error, rows) {
                 if (!error) {
                     return res.json(ordenar(rows));
                 } else {
