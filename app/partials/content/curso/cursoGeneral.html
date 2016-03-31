@@ -7,10 +7,10 @@
 <div ng-controller="CursoGralInfoController">
     <div ng-if="user.tipo=='profesor'">
         <h1>Curso Gral</h1>
-        <div ng-if="estado=='creado'">
+        <div ng-if="estado_curso=='creado'">
             <h3>Por favor configure su curso, sino no podrá continuar.</h3>
         </div>
-        <div ng-if="estado!='creado'">
+        <div ng-if="estado_curso!='creado'">
 
         </div>
     </div>
