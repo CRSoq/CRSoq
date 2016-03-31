@@ -2,65 +2,36 @@ crsApp.controller('ClasesController', function($scope, $rootScope, $timeout, $ui
     $scope.titulo = $stateParams.curso;
     $scope.listaClases = [];
     $scope.alerts = [];
-    /*
-    var curso = CursosServices.getCursoPorNombre($stateParams.semestre, $stateParams.curso);
+
+    var cursos = CursosServices.obtenerCursosLocal();
+    var semestre = _.findWhere(cursos,{'ano': Number($stateParams.ano), 'semestre':Number($stateParams.semestre)})
+    var curso = _.findWhere(semestre.cursos, {'nombre_curso': $stateParams.curso});
+
     ModulosServices.obtenerModulos(curso).then(function (data) {
         $scope.listaModulos= _.cloneDeep(data);
         $scope.listaModulos= _.map(_.sortByOrder($scope.listaModulos,['posicion'],['asc']));
-        ClasesServices.obtenerClases($scope.listaModulos).then(function (data) {
-            $scope.listaClases = _.cloneDeep(data);
-            _.forEach($scope.listaClases, function(n){
-                var posModulo = _.findIndex($scope.listaModulos,{'id_modulo': n.id_modulo});
-                n.modulo = $scope.listaModulos[posModulo].nombre_modulo;
-            });
+
+        ClasesServices.obtenerClases($scope.listaModulos).then(function (response) {
+            if(response.error){
+                newAlert('danger','Error. "'+data.error.err.code+'"');
+            }else{
+                var lista = _.cloneDeep(response);
+                if(lista.length>0){
+                    _.forEach(lista, function (item) {
+                        if(_.isArray(item)){
+                            _.forEach(item, function (elemento) {
+                                elemento.modulo = _.findWhere($scope.listaModulos,{'id_modulo': elemento.id_modulo}).nombre_modulo;
+                                $scope.listaClases.push(elemento);
+                            });
+                        }else{
+                            item.modulo = _.findWhere($scope.listaModulos,{'id_modulo': item.id_modulo}).nombre_modulo;
+                            $scope.listaClases.push(item);
+                        }
+                    });
+                }
+            }
         });
     });
-    */
-    //$scope.listaClases
-
-
-    CursosServices.obtenerCursos(SessionServices.getSessionData()).then(function (data) {
-        if(data.error){
-            //error
-        }else{
-            var curso = CursosServices.getCursoPorNombre($stateParams.semestre, $stateParams.curso);
-
-            ModulosServices.obtenerModulos(curso).then(function (data) {
-                $scope.listaModulos= _.cloneDeep(data);
-                $scope.listaModulos= _.map(_.sortByOrder($scope.listaModulos,['posicion'],['asc']));
-                ClasesServices.obtenerClases($scope.listaModulos).then(function (data) {
-                    var lista = _.cloneDeep(data);
-
-                    if(lista.length>1){
-                        _.forEach(lista, function(n){
-                            var clasesModulo = _.cloneDeep(n);
-                            _.forEach(clasesModulo, function(clase){
-                                var posModulo = _.findIndex($scope.listaModulos,{'id_modulo': clase.id_modulo});
-                                clase.modulo = $scope.listaModulos[posModulo].nombre_modulo;
-                            });
-                            var i = 0;
-                            while(i<clasesModulo.length){
-                                $scope.listaClases.push(clasesModulo[i]);
-                                i++;
-                            }
-                        });
-                    }else{
-                        _.forEach(lista, function(clase){
-                            var posModulo = _.findIndex($scope.listaModulos,{'id_modulo': clase.id_modulo});
-                            clase.modulo = $scope.listaModulos[posModulo].nombre_modulo;
-                        });
-                        var i = 0;
-                        while(i<lista.length){
-                            $scope.listaClases.push(lista[i]);
-                            i++;
-                        }
-                    }
-
-                });
-            });
-        }
-    });
-
 
     $scope.agregarClase = function () {
         var clase = {
@@ -153,10 +124,11 @@ crsApp.controller('ClasesController', function($scope, $rootScope, $timeout, $ui
     };
     $scope.iniciarSesion = function (clase) {
         var infoSesion = {
+            ano: $stateParams.ano,
             semestre: $stateParams.semestre,
             curso: $stateParams.curso,
             id_clase: clase.id_clase,
-            nombreSala: $stateParams.semestre+$stateParams.curso+clase.id_clase
+            nombreSala: $stateParams.ano+$stateParams.semestre+$stateParams.curso+clase.id_clase
         };
         if(clase.estado_sesion=='noIniciada'){
             //iniciar y cambiar estado a iniciado
@@ -166,11 +138,11 @@ crsApp.controller('ClasesController', function($scope, $rootScope, $timeout, $ui
                     newAlert('danger', 'Error al inciar sesión '+data.err.code);
                 }else{
                     SocketServices.emit('iniciarSesion',infoSesion);
-                    $state.transitionTo('crsApp.cursosSemestre.clases.sesion', {semestre:$stateParams.semestre,curso:$stateParams.curso,id_clase:clase.id_clase});
+                    $state.transitionTo('crsApp.cursosSemestre.clases.sesion', {ano:$stateParams.ano,semestre:$stateParams.semestre,curso:$stateParams.curso,id_clase:clase.id_clase});
                 }
             });
         }else if(clase.estado_sesion=='iniciada'){
-            $state.transitionTo('crsApp.cursosSemestre.clases.sesion', {semestre:$stateParams.semestre,curso:$stateParams.curso,id_clase:clase.id_clase});
+            $state.transitionTo('crsApp.cursosSemestre.clases.sesion', {ano:$stateParams.ano,semestre:$stateParams.semestre,curso:$stateParams.curso,id_clase:clase.id_clase});
             SocketServices.emit('IngresarASala',infoSesion);
         }else if(clase.estado_sesion=='cerrada'){
             var modalAbrirSesionCerrada = $uibModal.open({

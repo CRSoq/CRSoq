@@ -17,27 +17,24 @@ crsApp.controller('CursosController', function($scope, $rootScope, $filter, $sta
         modalInstance.result.then(function (curso){
             CursosServices.crearCurso(curso).then(function (data) {
                 if(data.error){
-                    var id_alert = $scope.alerts.length+1;
-                    $scope.alerts.push({id: id_alert,type:'danger', msg:'No se pudo crear el curso "'+data.err+'"'});
-                    closeAlertTime(id_alert);
+                    alerta('danger', 'No se pudo crear el curso "'+data.err+'"');
                 }else{
                     $rootScope.$emit('actualizarControladores');
-                    var id_alert = $scope.alerts.length+1;
-                    $scope.alerts.push({id: id_alert,type:'success', msg:'Curso creado'});
-                    closeAlertTime(id_alert);
+                    alerta('success', 'Curso creado');
                 }
             });
         });
     };
-    $scope.closeAlert = function(index) {
-        $scope.alerts.splice(index, 1);
-    };
-    var closeAlertTime = function(id_alert) {
+    var alerta = function (tipo, mensaje) {
+        var id_alert = $scope.alerts.length+1;
+        $scope.alerts.push({id: id_alert,type:tipo, msg:mensaje});
         $timeout(function(){
             $scope.alerts.splice(_.findIndex($scope.alerts,{id:id_alert}), 1);
         }, 3000);
     };
-
+    $scope.closeAlert = function(index) {
+        $scope.alerts.splice(index, 1);
+    };
 });
 
 crsApp.controller('ModalCrearCursoController', function ($scope, $timeout, $uibModalInstance, SessionServices, CalendarioServices, AsignaturasServices) {
@@ -109,25 +106,27 @@ crsApp.controller('ModalCrearCursoController', function ($scope, $timeout, $uibM
             id_user         : dataUsuario.id_user
         };
         if(_.isUndefined($scope.curso.nombre_curso) || _.isUndefined($scope.curso.id_calendario) ){
-            var id_alert = $scope.alerts.length+1;
-            $scope.alerts.push({id: id_alert,type:'danger', msg:'Debe completar todos los campos.'});
-            closeAlertTime(id_alert);
+            alerta('danger', 'Debe completar todos los campos.');
         }else{
             $uibModalInstance.close($scope.curso);
         }
     };
 
-    $scope.closeAlert = function(index) {
-        $scope.alerts.splice(index, 1);
+    $scope.cancelar = function () {
+        $uibModalInstance.dismiss();
     };
-    var closeAlertTime = function(id_alert) {
+
+    var alerta = function (tipo, mensaje) {
+        var id_alert = $scope.alerts.length+1;
+        $scope.alerts.push({id: id_alert,type:tipo, msg:mensaje});
         $timeout(function(){
             $scope.alerts.splice(_.findIndex($scope.alerts,{id:id_alert}), 1);
         }, 3000);
     };
-    $scope.cancelar = function () {
-        $uibModalInstance.dismiss();
-    }
+
+    $scope.closeAlert = function(index) {
+        $scope.alerts.splice(index, 1);
+    };
 });
 
 crsApp.controller('CursoGralInfoController', function ($scope, $rootScope, $stateParams, $location, CursosServices) {
@@ -136,26 +135,17 @@ crsApp.controller('CursoGralInfoController', function ($scope, $rootScope, $stat
         obtenerInfo();
     });
     function obtenerInfo(){
-        var ano_semestre=$location.path();
-        ano_semestre=ano_semestre.substring(8,ano_semestre.length);
-        ano_semestre=ano_semestre.substring(0,ano_semestre.indexOf('/'));
-        //var algo =CursosServices.getCursoPorNombre(ano_semestre,$stateParams.curso);
-        var cursos = CursosServices.getAllCursos();
-        var positionSemestre = _.findIndex(cursos, {'nombre':ano_semestre});
-        if(positionSemestre>=0){
-            var positionCurso = _.findIndex(cursos[positionSemestre].cursos, {'nombre_curso':$stateParams.curso});
-            if(!_.isUndefined(cursos[positionSemestre].cursos[positionCurso])){
-                $scope.estado = cursos[positionSemestre].cursos[positionCurso].estado;
-            }
-        }else{
-            return false;
-        }
+        var cursos = CursosServices.obtenerCursosLocal();
+        var semestre = _.findWhere(cursos,{'ano': Number($stateParams.ano), 'semestre':Number($stateParams.semestre)})
+        var curso = _.findWhere(semestre.cursos, {'nombre_curso': $stateParams.curso});
+        $scope.estado_curso = curso.estado_curso;
     }
-
 });
 
 crsApp.controller('ConfigCursoController', function ($scope, $rootScope, $state, $stateParams, CursosServices, ModulosServices, SessionServices, EstudiantesServices) {
-    var curso = CursosServices.getCursoPorNombre($stateParams.semestre, $stateParams.curso);
+    var cursos = CursosServices.obtenerCursosLocal();
+    var semestre = _.findWhere(cursos,{'ano': Number($stateParams.ano), 'semestre':Number($stateParams.semestre)})
+    var curso = _.findWhere(semestre.cursos, {'nombre_curso': $stateParams.curso});
     $scope.config = [
         {
             'id_curso': curso.id_curso
@@ -236,7 +226,7 @@ crsApp.controller('ConfigCursoController', function ($scope, $rootScope, $state,
                             });
                         });
                     }
-                    $state.transitionTo("crsApp.cursosSemestre.curso",{semestre:$stateParams.semestre,curso:$stateParams.curso});
+                    $state.transitionTo("crsApp.cursosSemestre.curso",{ano:$stateParams.ano,semestre:$stateParams.semestre,curso:$stateParams.curso});
                 }
             });
         }else{
@@ -256,9 +246,8 @@ crsApp.controller('ConfigCursoController', function ($scope, $rootScope, $state,
 
     };
     $scope.cancelarConfig = function () {
-        $state.transitionTo("crsApp.cursosSemestre.curso",{semestre:$stateParams.semestre,curso:$stateParams.curso});
+        $state.transitionTo("crsApp.cursosSemestre.curso",{ano:$stateParams.ano,semestre:$stateParams.semestre,curso:$stateParams.curso});
     };
-
 
     //alumnos
     $scope.generarUsuario = true;

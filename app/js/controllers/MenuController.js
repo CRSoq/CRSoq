@@ -1,15 +1,16 @@
-﻿crsApp.controller('MenuController', function($scope, $rootScope, $filter, $localStorage,CursosServices,SessionServices){
-
+﻿crsApp.controller('MenuController', function($scope, $rootScope, $stateParams, $filter, $localStorage,CursosServices,SessionServices){
     CursosServices.obtenerCursos(SessionServices.getSessionData()).then(function (data) {
         if(data.error){
             //error
         }else{
             $scope.menu=data;
+            CursosServices.almacenarCursos(data);
         }
     });
     $scope.listaCursos = [];
     $scope.mostrarSemestreLista = [];
     $scope.mostrarCursosLista = [];
+
     $scope.mostrarSemestre = function (variable){
         var indexSemestre = _.findIndex($scope.mostrarSemestreLista, {'id':variable});
         if(indexSemestre>=0){
@@ -59,5 +60,14 @@
                 $scope.menu=data;
             }
         });
+    }
+    // en caso de pasar los parametros por la url
+    // se hace una consulta local
+    if(!_.isUndefined($stateParams.ano) && !_.isUndefined($stateParams.semestre)){
+        var cursos = CursosServices.obtenerCursosLocal();
+        var index =  _.findIndex(cursos, function (item) {
+            return (item.ano == $stateParams.ano && item.semestre == $stateParams.semestre);
+        });
+        $scope.mostrarSemestre(index);
     }
 });
