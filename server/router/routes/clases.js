@@ -33,26 +33,10 @@ router.post('/obtenerClases', function (req, res) {
             }
             i++;
         }
-        /*
         connection.query(query, function (error, rows) {
-            if(!error && rows.length>0){
-                var i=j=0;
-                while(i<rows.length){
-                    if(rows[i].length>0){
-                        while(j<rows[i].length){
-                            listaDeClases.push(rows[i][j]);
-                            j++;
-                        }
-                        j=0;
-                    }
-                    i++;
-                }
-                return res.json(listaDeClases);
-            }
-        });
-        */
-        connection.query(query, function (error, rows) {
-            if(!error && rows.length>0){
+            if(error){
+                return res.json({'error':true,'err':error});
+            }else{
                 return res.json(rows);
             }
         });
