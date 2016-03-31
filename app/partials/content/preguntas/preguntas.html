@@ -5,45 +5,53 @@
 </head>
 <body>
 <div ng-controller="PreguntasController">
-    <h1>Preguntas - {{titulo}}</h1>
+    <h1><i class="fa fa-graduation-cap"></i> Preguntas del curso: {{titulo}}</h1>
     <button type="button" class="btn btn-primary" ng-click="agregarPregunta()">
-        <i class="fa fa-plus-circle"></i> Agregar pregunta
+        <i class="fa fa-plus-circle"></i> Crear Pregunta
     </button>
+    <br><br>
     <div class="table-responsive">
         <table class="table table-hover table-condensed table-bordered">
             <thead>
             <tr>
                 <th>Pregunta</th>
-                <!--<th>Módulo</th>-->
                 <th>Clase</th>
+                <th>Archivada?</th>
                 <th class="centrado">Acciones</th>
             </tr>
             </thead>
             <tbody>
             <tr ng-repeat="pregunta in listaPreguntasCurso">
                 <td ng-if="pregunta.edicion!=true">{{pregunta.pregunta}}</td>
-
-                <td ng-if="pregunta.edicion!=true">{{pregunta.clase}}</td>
-                <td ng-if="pregunta.edicion!=true" class="col-md-2 centrado">
-                    <button class="btn btn-primary" ng-click="editarPregunta(pregunta)"><i class="fa fa-pencil"></i></button>
-                    <button class="btn btn-primary" ng-click="eliminarPregunta(pregunta)"><i class="fa fa-times"></i></button>
-                </td>
-                <td ng-if="pregunta.edicion==true" class="col-md-6">
+                <td ng-if="pregunta.edicion==true && _.isNull(pregunta.id_b_pregunta)" class="col-md-6">
                     <input type="text" name="pregunta" id="inputPregunta" class="form-control" title="escriba su pregunta" ng-model="pregunta.pregunta" required>
                 </td>
-                <!--
-                 <td ng-if="pregunta.edicion!=true">{{pregunta.nombre_modulo}}</td>
-                <td ng-if="pregunta.edicion==true" class="col-md-2">
-                    <select name="modulo" id="inputModulo" class="form-control" ng-options="modulo.id_modulo as modulo.nombre_modulo for modulo in listaModulos" ng-change="seleccionaModulo(pregunta.id_modulo)" ng-model="pregunta.id_modulo">
-                        <option value="">-- Elegir módulo --</option>
-                    </select>
+                <td ng-if="pregunta.edicion==true && !_.isNull(pregunta.id_b_pregunta)" class="col-md-6">
+                    {{pregunta.pregunta}}
                 </td>
-                -->
+                <td ng-if="pregunta.edicion!=true">{{pregunta.clase}}</td>
                 <td ng-if="pregunta.edicion==true" class="col-md-2">
                     <select name="clase" id="inputClase" class="form-control" ng-options="clase.id_clase as clase.descripcion group by clase.modulo for clase in listaClases" ng-change="seleccionaClase(pregunta.id_clase)" ng-model="pregunta.id_clase">
-                         <option value="">-- Elegir clase --</option>
+                        <option value="">-- Elegir clase --</option>
                     </select>
                 </td>
+                <td class="col-md-1 centrado">
+                    <span ng-if="_.isNull(pregunta.id_b_pregunta)" class="fa-stack fa-lg">
+                      <i class="fa fa-archive"></i>
+                      <i class="fa fa-ban fa-stack-2x text-danger"></i>
+                    </span>
+                    <span ng-if="!_.isNull(pregunta.id_b_pregunta)">
+                      <i class="fa fa-archive fa-2x"></i>
+                    </span>
+                </td>
+
+                <td ng-if="pregunta.edicion!=true" class="col-md-2 centrado">
+                    <button class="btn btn-primary" ng-click="editarPregunta(pregunta)"><i class="fa fa-pencil"></i></button>
+                    <button ng-if="_.isNull(pregunta.id_b_pregunta)" class="btn btn-primary" ng-click="archivarPregunta(pregunta)"><i class="fa fa-archive"></i></button>
+                    <button class="btn btn-primary" ng-click="eliminarPregunta(pregunta)"><i class="fa fa-times"></i></button>
+                </td>
+
+
                 <td ng-if="pregunta.edicion==true" class="col-md-2 centrado">
                     <button class="btn btn-primary" ng-click="guardarPregunta(pregunta)"><i class="fa fa-floppy-o"></i></button>
                     <button class="btn btn-primary" ng-click="cancelarPregunta(pregunta)"><i class="fa fa-times"></i></button>
@@ -51,6 +59,41 @@
             </tr>
             </tbody>
         </table>
+    </div>
+    <div class="row">
+        <div class="col-md-12 centrado">
+            <uib-alert ng-repeat="alert in alerts" type="{{alert.type}}" close="closeAlert($index)">{{alert.msg}}</uib-alert>
+        </div>
+    </div>
+    <h1><i class="fa fa-archive"></i> Biblioteca de preguntas de {{asignatura}}</h1>
+    <button type="button" class="btn btn-primary" ng-click="crearPreguntaBiblioteca()">
+        <i class="fa fa-plus-circle"></i> Crear Pregunta
+    </button>
+    <br><br>
+
+    <div class="table-responsive">
+        <table class="table table-hover table-condensed table-bordered">
+            <thead>
+            <tr>
+                <th>Pregunta</th>
+                <th class="centrado">Acciones</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr ng-repeat="pregunta in listaPreguntasAsignatura">
+                <td ng-if="pregunta.edicion!=true">{{pregunta.b_pregunta}}</td>
+
+                <td ng-if="pregunta.edicion!=true" class="col-md-2 centrado">
+                </td>
+                <td ng-if="pregunta.edicion==true" class="col-md-6">
+                </td>
+                <td ng-if="pregunta.edicion==true" class="col-md-2 centrado">
+                </td>
+            </tr>
+            </tbody>
+        </table>
+
+
     </div>
 </div>
 </body>

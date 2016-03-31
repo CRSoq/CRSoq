@@ -1,75 +1,84 @@
 'use strict';
 crsApp.controller('PreguntasController', function ($scope, $stateParams, $timeout, PreguntasServices, CursosServices, ClasesServices, ModulosServices) {
-    var curso = CursosServices.getCursoPorNombre($stateParams.semestre, $stateParams.curso);
+    var cursos = CursosServices.obtenerCursosLocal();
+    var semestre = _.findWhere(cursos,{'ano': Number($stateParams.ano), 'semestre':Number($stateParams.semestre)})
+    var curso = _.findWhere(semestre.cursos, {'nombre_curso': $stateParams.curso});
+    $scope._ = _;
     $scope.listaPreguntasCurso = [];
-    $scope.listaPreguntasClase = [];
+    $scope.listaPreguntasAsignatura = [];
     $scope.listaModulos = [];
     $scope.listaClases = [];
     $scope.alerts = [];
     $scope.titulo = curso.nombre_curso;
+    $scope.asignatura = curso.id_asignatura;
+
+    PreguntasServices.obtenerPreguntasCurso(curso).then(function (response) {
+        if(!response.error){
+            $scope.listaPreguntasCurso = _.cloneDeep(response);
+            _.forEach($scope.listaPreguntasCurso, function (pregunta) {
+                pregunta.id_asignatura = curso.id_asignatura;
+            });
+        }else{
+            alerta('danger','Error. "'+data.error.err.code+'"');
+        }
+    });
+
+    PreguntasServices.obtenerPreguntasAsignatura(curso).then(function (response) {
+        if(!response.error){
+            $scope.listaPreguntasAsignatura = _.cloneDeep(response);
+        }else{
+            alerta('danger','Error. "'+data.error.err.code+'"');
+        }
+    });
 
     ModulosServices.obtenerModulos(curso).then(function (data) {
         $scope.listaModulos= _.cloneDeep(data);
         $scope.listaModulos= _.map(_.sortByOrder($scope.listaModulos,['posicion'],['asc']));
-        ClasesServices.obtenerClases($scope.listaModulos).then(function (data) {
-            var lista = _.cloneDeep(data);
 
-            if(lista.length>1){
-                _.forEach(lista, function(n){
-                    var clasesModulo = _.cloneDeep(n);
-                    _.forEach(clasesModulo, function(clase){
-                        var posModulo = _.findIndex($scope.listaModulos,{'id_modulo': clase.id_modulo});
-                        clase.modulo = $scope.listaModulos[posModulo].nombre_modulo;
-                    });
-                    var i = 0;
-                    while(i<clasesModulo.length){
-                        $scope.listaClases.push(clasesModulo[i]);
-                        i++;
-                    }
-                });
+        ClasesServices.obtenerClases($scope.listaModulos).then(function (response) {
+            if(response.error){
+                alerta('danger','Error. "'+data.error.err.code+'"');
             }else{
-                _.forEach(lista, function(clase){
-                    var posModulo = _.findIndex($scope.listaModulos,{'id_modulo': clase.id_modulo});
-                    clase.modulo = $scope.listaModulos[posModulo].nombre_modulo;
-                });
-                var i = 0;
-                while(i<lista.length){
-                    $scope.listaClases.push(lista[i]);
-                    i++;
-                }
-            }
-
-            PreguntasServices.obtenerPreguntasCurso(curso).then(function (data) {
-                if(!data.error){
-                    $scope.listaPreguntasCurso = _.cloneDeep(data);
-                    _.forEach($scope.listaPreguntasCurso, function(pregunta){
-                        if(_.isNull(pregunta.id_clase)){
-                            pregunta.clase = '';
-                        } else{
-                            var index = _.findIndex($scope.listaClases,{'id_clase':pregunta.id_clase});
-                            var descripcion = $scope.listaClases[index].descripcion;
-                            pregunta.clase = descripcion;
+                var lista = _.cloneDeep(response);
+                if(lista.length>0){
+                    _.forEach(lista, function (item) {
+                        if(_.isArray(item)){
+                            _.forEach(item, function (elemento) {
+                                elemento.modulo = _.findWhere($scope.listaModulos,{'id_modulo': elemento.id_modulo}).nombre_modulo;
+                                $scope.listaClases.push(elemento);
+                            });
+                        }else{
+                            item.modulo = _.findWhere($scope.listaModulos,{'id_modulo': item.id_modulo}).nombre_modulo;
+                            $scope.listaClases.push(item);
                         }
                     });
-                }else{
-                    var id_alert = $scope.alerts.length+1;
-                    $scope.alerts.push({id: id_alert,type:'danger', msg:'Error al obtener preguntas del curso.'});
-                    closeAlertTime(id_alert);
                 }
-            });
+                cargarInformacion();
+            }
         });
     });
+
+    var cargarInformacion = function () {
+        _.forEach($scope.listaPreguntasCurso, function (pregunta) {
+            if(!_.isNull(pregunta.id_clase)){
+                pregunta.clase = _.findWhere($scope.listaClases,{'id_clase': pregunta.id_clase}).descripcion;
+            }
+        });
+    };
+
     $scope.agregarPregunta = function () {
         var pregunta = {
+            'id_asignatura': curso.id_asignatura,
             'id_curso': curso.id_curso,
+            'id_b_pregunta': null,
             'id_clase': null,
-            'clase':null,
             'pregunta': null,
             'id_user': null,
             'id_modulo':null,
             'nombre_modulo': null,
             'edicion': true,
-            'estado':'sin_realizar',
+            'archivar': false,
+            'estado_pregunta':'sin_realizar',
             'nuevo': true
         };
         $scope.listaPreguntasCurso.push(pregunta);
@@ -80,9 +89,7 @@ crsApp.controller('PreguntasController', function ($scope, $stateParams, $timeou
     $scope.eliminarPregunta = function (pregunta) {
         PreguntasServices.eliminarPregunta(pregunta).then(function (data) {
             if(data.error){
-                var id_alert = $scope.alerts.length+1;
-                $scope.alerts.push({id: id_alert,type:'danger', msg:'Error al eliminar pregunta. "'+data.error.err.code+'"'});
-                closeAlertTime(id_alert);
+                alerta('danger','Error al eliminar pregunta. "'+data.error.err.code+'"');
             }else{
                 PreguntasServices.obtenerPreguntasCurso(curso).then(function (data) {
                     if(!data.error){
@@ -91,15 +98,11 @@ crsApp.controller('PreguntasController', function ($scope, $stateParams, $timeou
                             if(_.isNull(pregunta.id_clase)){
                                 pregunta.clase = '';
                             } else{
-                                var index = _.findIndex($scope.listaClases,{'id_clase':pregunta.id_clase});
-                                var descripcion = $scope.listaClases[index].descripcion;
-                                pregunta.clase = descripcion;
+                                pregunta.clase = _.findWhere($scope.listaClases,{'id_clase':pregunta.id_clase}).descripcion;
                             }
                         });
                     }else{
-                        var id_alert = $scope.alerts.length+1;
-                        $scope.alerts.push({id: id_alert,type:'danger', msg:'Error al obtener preguntas del curso.'});
-                        closeAlertTime(id_alert);
+                        alerta('danger','Error al obtener preguntas del curso.');
                     }
                 });
             }
@@ -108,22 +111,17 @@ crsApp.controller('PreguntasController', function ($scope, $stateParams, $timeou
     $scope.guardarPregunta = function (pregunta) {
         if(pregunta.pregunta!=null){
             if(pregunta.nuevo){
-                PreguntasServices.crearPregunta(pregunta).then(function (data) {
-                    if(!data.error){
-                        pregunta.id_pregunta = data.id_pregunta;
-                        delete pregunta['nuevo'];
-                        if(_.isNull(pregunta.id_clase)){
-                            pregunta.clase = '';
-                        }else{
-                            var index = _.findIndex($scope.listaClases,{'id_clase':pregunta.id_clase});
-                            var descripcion = $scope.listaClases[index].descripcion;
-                            pregunta.clase = descripcion;
+                PreguntasServices.crearPreguntaCurso(pregunta).then(function (response) {
+                    if(_.isUndefined(response.error)){
+                        pregunta.id_pregunta = response.id_pregunta;
+
+                        if(!_.isNull(pregunta.id_clase)){
+                            pregunta.clase = _.findWhere($scope.listaClases,{'id_clase':pregunta.id_clase}).descripcion;
                         }
+                        delete pregunta['nuevo'];
                         pregunta.edicion = false;
                     }else{
-                        var id_alert = $scope.alerts.length+1;
-                        $scope.alerts.push({id: id_alert,type:'danger', msg:'Error al crear pregunta. "'+data.error.err.code+'"'});
-                        closeAlertTime(id_alert);
+                        alerta('danger','Error al crear pregunta. "'+response.error.err.code+'"');
                     }
                 });
             }else{
@@ -132,22 +130,36 @@ crsApp.controller('PreguntasController', function ($scope, $stateParams, $timeou
                         if(_.isNull(pregunta.id_clase)){
                             pregunta.clase = '';
                         }else{
-                            var index = _.findIndex($scope.listaClases,{'id_clase':pregunta.id_clase});
-                            var descripcion = $scope.listaClases[index].descripcion;
-                            pregunta.clase = descripcion;
+                            pregunta.clase = _.findWhere($scope.listaClases,{'id_clase':pregunta.id_clase}).descripcion;
                         }
                         pregunta.edicion = false;
                     }else{
-                        var id_alert = $scope.alerts.length+1;
-                        $scope.alerts.push({id: id_alert,type:'danger', msg:'Error al actualizar pregunta."'+data.error.err.code+'"'});
-                        closeAlertTime(id_alert);
+                        alerta('danger','Error al actualizar pregunta."'+data.error.err.code+'"');
                     }
                 });
             }
 
         }else{
-            //abrir modal para que ingrese la pregunta al menos...
+            alerta('danger','Debe ingresar la pregunta.');
         }
+    };
+
+    $scope.archivarPregunta = function (pregunta) {
+        PreguntasServices.archivarPregunta(pregunta).then(function (response) {
+            if(!response.error){
+                _.findWhere($scope.listaPreguntasCurso, {'id_pregunta':pregunta.id_pregunta}).id_b_pregunta = response.id_b_pregunta;
+                PreguntasServices.actualizarID_B_Pregunta(pregunta);
+                PreguntasServices.obtenerPreguntasAsignatura(curso).then(function (response) {
+                    if(!response.error){
+                        $scope.listaPreguntasAsignatura = _.cloneDeep(response);
+                    }else{
+                        alerta('danger','Error. "'+data.error.err.code+'"');
+                    }
+                });
+            }else{
+                alerta('danger','Error al archivar la pregunta en la Biblioteca del curso.');
+            }
+        });
     };
 /*
     $scope.seleccionaModulo = function (id_modulo) {
@@ -179,12 +191,15 @@ crsApp.controller('PreguntasController', function ($scope, $stateParams, $timeou
         $scope.listaPreguntasCurso.splice(_.findIndex($scope.listaPreguntasCurso,{'$$hashKey':pregunta.$$hashKey}),1);
     };
 
-    $scope.closeAlert = function(index) {
-        $scope.alerts.splice(index, 1);
-    };
-    var closeAlertTime = function(id_alert) {
+    var alerta = function (tipo, mensaje) {
+        var id_alert = $scope.alerts.length+1;
+        $scope.alerts.push({id: id_alert,type:tipo, msg:mensaje});
         $timeout(function(){
             $scope.alerts.splice(_.findIndex($scope.alerts,{id:id_alert}), 1);
         }, 3000);
+    };
+
+    $scope.closeAlert = function(index) {
+        $scope.alerts.splice(index, 1);
     };
 });
