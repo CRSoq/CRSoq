@@ -1,6 +1,6 @@
 /*==============================================================*/
 /* DBMS name:      MySQL 5.0                                    */
-/* Created on:     26-03-2016 13:17:55                          */
+/* Created on:     31-03-2016 0:11:58                           */
 /*==============================================================*/
 
 
@@ -182,7 +182,8 @@ create table pregunta
 (
    id_pregunta          int not null auto_increment,
    id_clase             int,
-   id_b_pregunta        int not null,
+   id_b_pregunta        int,
+   id_curso             int not null,
    estado_pregunta      varchar(50),
    pregunta             varchar(1024),
    primary key (id_pregunta)
@@ -243,6 +244,9 @@ references curso (id_curso) on delete restrict on update restrict;
 
 alter table pregunta add constraint fk_instancia_pregunta foreign key (id_b_pregunta)
 references biblioteca_preguntas (id_b_pregunta) on delete restrict on update restrict;
+
+alter table pregunta add constraint fk_se_asocia foreign key (id_curso)
+references curso (id_curso) on delete restrict on update restrict;
 
 alter table pregunta add constraint fk_se_hacen foreign key (id_clase)
 references clase (id_clase) on delete restrict on update restrict;
