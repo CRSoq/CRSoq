@@ -41,7 +41,7 @@ crsApp.config(function($stateProvider, $urlRouterProvider) {
             authenticate:false
         })
         .state('crsApp.cursosSemestre', {
-            url: 'cursos/:semestre',
+            url: 'cursos/:ano/:semestre',
             views: {
                 'main@crsApp': {
                     templateUrl: 'partials/content/semestre/cursosSemestre.html'

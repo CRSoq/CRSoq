@@ -9,15 +9,15 @@
         <ul class="nav nav-sidebar">
             <li ng-repeat="opc in menu" ng-init="parentIndex = $index">
                 <div ng-if="!buscarSemestre($index)">
-                    <a ui-sref="crsApp.cursosSemestre({semestre: opc.nombre})" ng-click="mostrarSemestre($index)">
-                        <span class="font-bold">{{opc.nombre}}</span>
+                    <a ui-sref="crsApp.cursosSemestre({ano: opc.ano, semestre: opc.semestre})" ng-click="mostrarSemestre($index)">
+                        <span class="font-bold">{{opc.ano}} Semestre {{opc.semestre}}</span>
                         <span class="pull-right text-muted"><i class="fa fa-fw fa-angle-right text"></i></span>
                     </a>
                 </div>
                 <div ng-if="buscarSemestre($index)">
-                    <a ng-click="mostrarSemestre($index)">
-                        <span class="font-bold">{{opc.nombre}}</span>
-                        <span class="pull-right text-muted"><i class="fa fa-fw fa-angle-right text"></i></span>
+                    <a ng-click="mostrarSemestre($index)" style="background-color: #3F51B5">
+                        <span class="font-bold" style="color: #ffffff;">{{opc.ano}} Semestre {{opc.semestre}}</span>
+                        <span class="pull-right text-muted"  style="color: #ffffff;"><i class="fa fa-fw fa-angle-down text"></i></span>
                     </a>
                 </div>
                 <ul class="nav nav-sidebar" ng-if="buscarSemestre($index)">
@@ -31,7 +31,7 @@
                         <div ng-if="buscarCurso(parentIndex,$index)">
                             <a ng-click="mostrarCurso(parentIndex,$index)">
                                 <span class="font-bold">{{curso.nombre_curso}}</span>
-                                <span class="pull-right text-muted"><i class="fa fa-fw fa-angle-right text"></i></span>
+                                <span class="pull-right text-muted"><i class="fa fa-fw fa-angle-down text"></i></span>
                             </a>
                         </div>
 
@@ -84,14 +84,14 @@
         <ul class="nav nav-sidebar">
             <li ng-repeat="opc in menu" ng-init="parentIndex = $index">
                 <div ng-if="!buscarSemestre($index)">
-                    <a ui-sref="crsApp.cursosSemestre({semestre: opc.nombre})" ng-click="mostrarSemestre($index)">
-                        <span class="font-bold">{{opc.nombre}}</span>
+                    <a ui-sref="crsApp.cursosSemestre({ano: opc.ano, semestre: opc.semestre})" ng-click="mostrarSemestre($index)">
+                        <span class="font-bold">{{opc.ano}} Semestre {{opc.semestre}}</span>
                         <span class="pull-right text-muted"><i class="fa fa-fw fa-angle-right text"></i></span>
                     </a>
                 </div>
                 <div ng-if="buscarSemestre($index)">
                     <a ng-click="mostrarSemestre($index)">
-                        <span class="font-bold">{{opc.nombre}}</span>
+                        <span class="font-bold">{{opc.ano}} Semestre {{opc.semestre}}</span>
                         <span class="pull-right text-muted"><i class="fa fa-fw fa-angle-right text"></i></span>
                     </a>
                 </div>
@@ -141,6 +141,7 @@
             </li>
         </ul>
     </div>
+
 </div>
 </body>
 </html>
