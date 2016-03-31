@@ -20,11 +20,20 @@ crsApp.factory('PreguntasServices', function($http, $q){
         obtenerPreguntaPorId: function (id_pregunta) {
             return postHelper('/preguntas/obtenerPreguntaPorId',{'id':id_pregunta});
         },
-        crearPregunta: function (pregunta) {
-            return postHelper('/preguntas/crearPregunta',pregunta);
+        crearPreguntaCurso: function (pregunta) {
+            return postHelper('/preguntas/crearPreguntaCurso',pregunta);
+        },
+        crearPreguntaAsignatura: function (pregunta) {
+            return postHelper('/preguntas/crearPreguntaAsignatura',pregunta);
         },
         obtenerPreguntasCurso: function (curso) {
             return postHelper('/preguntas/obtenerPreguntasCurso',curso);
+        },
+        obtenerPreguntasListaClases: function (clases) {
+            return postHelper('/preguntas/obtenerPreguntasListaClases',clases);
+        },
+        obtenerPreguntasAsignatura: function (curso) {
+            return postHelper('/preguntas/obtenerPreguntasAsignatura',curso);
         },
         obtenerPreguntasPorSesion: function (sesion) {
             return postHelper('/preguntas/obtenerPreguntasPorSesion',sesion);
@@ -35,14 +44,20 @@ crsApp.factory('PreguntasServices', function($http, $q){
         actualizarEstadoPregunta: function (pregunta) {
             return postHelper('/preguntas/actualizarEstadoPregunta',pregunta);
         },
+        actualizarID_B_Pregunta: function (pregunta) {
+            return postHelper('/preguntas/actualizarID_B_Pregunta',pregunta);
+        },
         eliminarPregunta: function (pregunta) {
             return postHelper('/preguntas/eliminarPregunta',pregunta);
         },
-        asignarPreguntasClase: function (data) {
+        asignarPreguntaClase: function (data) {
             return postHelper('/preguntas/asignarPreguntaClase',data);
         },
         asignarGanador: function (data) {
             return postHelper('/preguntas/asignarGanador',data);
+        },
+        archivarPregunta : function (pregunta) {
+            return postHelper('/preguntas/archivarPregunta',pregunta);
         }
     }
 });
