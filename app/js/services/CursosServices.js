@@ -21,7 +21,7 @@ crsApp.factory('CursosServices', function ($http, $q, $localStorage) {
                 setCursos(response);
                 defered.resolve(response);
             })
-            .error(function (error) {
+            .error(function (error, status) {
                 defered.reject(error);
             });
         return promise;

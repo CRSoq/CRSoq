@@ -1,10 +1,11 @@
-crsApp.controller('CursosController', function($scope, $rootScope, $filter, $stateParams, $uibModal, $timeout, CursosServices, SessionServices) {
+crsApp.controller('CursosController', function($scope, $rootScope, $filter, $stateParams, $timeout, CursosServices, SessionServices) {
     $scope.menu = CursosServices.getAllCursos();
     $scope.alerts = [];
     var found = $filter('filter')($scope.menu,  {'nombre':$stateParams.semestre}, true)[0];
     if(!angular.isUndefined(found)) {
         $scope.semestre = found;
     }
+    /*
     $scope.crearCurso = function () {
         var modalInstance = $uibModal.open({
             animation   : true,
@@ -25,6 +26,7 @@ crsApp.controller('CursosController', function($scope, $rootScope, $filter, $sta
             });
         });
     };
+    */
     var alerta = function (tipo, mensaje) {
         var id_alert = $scope.alerts.length+1;
         $scope.alerts.push({id: id_alert,type:tipo, msg:mensaje});
@@ -130,22 +132,36 @@ crsApp.controller('ModalCrearCursoController', function ($scope, $timeout, $uibM
 });
 
 crsApp.controller('CursoGralInfoController', function ($scope, $rootScope, $stateParams, $location, CursosServices) {
-    obtenerInfo();
-    $rootScope.$on('actualizarControladores', function () {
+    if($rootScope.user.tipo=='profesor'){
         obtenerInfo();
+    }else if($rootScope.user.tipo='estudiante'){
+        obtenerInfoEstudiante();
+    }
+
+    $rootScope.$on('actualizarControladores', function () {
+        if($rootScope.user.tipo=='profesor'){
+            obtenerInfo();
+        }else if($rootScope.user.tipo=='estudiante'){
+            obtenerInfoEstudiante();
+        }
     });
+
     function obtenerInfo(){
-        var cursos = CursosServices.obtenerCursosLocal();
-        var semestre = _.findWhere(cursos,{'ano': Number($stateParams.ano), 'semestre':Number($stateParams.semestre)})
-        var curso = _.findWhere(semestre.cursos, {'nombre_curso': $stateParams.curso});
-        $scope.estado_curso = curso.estado_curso;
+        var asignaturas = CursosServices.obtenerCursosLocal();
+        var asignatura = _.findWhere(asignaturas,{'asignatura':$stateParams.nombre_asignatura});
+        $scope.curso = _.findWhere(asignatura.cursos, {'id_curso': Number($stateParams.id_curso)});
+    }
+    function obtenerInfoEstudiante(){
+        var semestres = CursosServices.obtenerCursosLocal();
+        var semestre = _.findWhere(semestres,{'ano':Number($stateParams.ano),'semestre':Number($stateParams.semestre)});
+        $scope.curso = _.findWhere(semestre.cursos, {'id_curso': Number($stateParams.id_curso)});
     }
 });
 
 crsApp.controller('ConfigCursoController', function ($scope, $rootScope, $state, $stateParams, CursosServices, ModulosServices, SessionServices, EstudiantesServices) {
-    var cursos = CursosServices.obtenerCursosLocal();
-    var semestre = _.findWhere(cursos,{'ano': Number($stateParams.ano), 'semestre':Number($stateParams.semestre)})
-    var curso = _.findWhere(semestre.cursos, {'nombre_curso': $stateParams.curso});
+    var asignaturas = CursosServices.obtenerCursosLocal();
+    var asignatura = _.findWhere(asignaturas,{'asignatura':$stateParams.nombre_asignatura});
+    var curso = _.findWhere(asignatura.cursos, {'id_curso':Number($stateParams.id_curso)});
     $scope.config = [
         {
             'id_curso': curso.id_curso
@@ -160,20 +176,26 @@ crsApp.controller('ConfigCursoController', function ($scope, $rootScope, $state,
     $scope.modulos = [];
     $scope.listaModulos = [];
     $scope.modulosEliminados = [];
-    ModulosServices.obtenerModulos(curso).then(function (data) {
-        if(data){
-            _.assign($scope.modulos,data);
-            $scope.modulos=_.sortByOrder($scope.modulos,['posicion'],['asc']);
-            _.assign($scope.listaModulos,data);
-            _.sortByOrder($scope.listaModulos,['posicion'],['asc']);
-        }else{
-            var modulo = {
-                'nombre_modulo': '',
-                'posicion': $scope.modulos.length+1
-            };
-            $scope.modulos.push(modulo);
-        }
-    });
+
+    var callbackModulos = function (response) {
+            if(response.result.length>0){
+                $scope.modulos= _.cloneDeep(response.result);
+                $scope.modulos= _.map(_.sortByOrder($scope.modulos,['posicion'],['asc']));
+            }else {
+                var modulo = {
+                    'nombre_modulo': '',
+                    'posicion': $scope.modulos.length + 1
+                };
+                $scope.modulos.push(modulo);
+            }
+    };
+
+    var callBackModulosError = function (error) {
+        toastr.error(error.err.code,'Error módulos');
+    };
+    ModulosServices.obtenerModulos(curso)
+        .then(callbackModulos,callBackModulosError);
+
 
     $scope.agregarModulo = function () {
         var modulo = {
@@ -226,7 +248,7 @@ crsApp.controller('ConfigCursoController', function ($scope, $rootScope, $state,
                             });
                         });
                     }
-                    $state.transitionTo("crsApp.cursosSemestre.curso",{ano:$stateParams.ano,semestre:$stateParams.semestre,curso:$stateParams.curso});
+                    $state.transitionTo("crsApp.asignatura.curso",{nombre_asignatura:curso.nombre_curso,ano:$stateParams.ano,semestre:$stateParams.semestre,id_curso:$stateParams.id_curso});
                 }
             });
         }else{
