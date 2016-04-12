@@ -1,17 +1,2 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-</head>
-<body>
-<div ui-view="menu"></div>
-<div class="col-sm-12 col-sm-offset-0 col-md-10 col-md-offset-2 main">
-    <div ui-view="main"></div>
-</div>
-<div class="row">
-    <div class="col-md-12 centrado">
-        <uib-alert ng-repeat="alert in alerts" type="{{alert.type}}" close="closeAlert($index)">{{alert.msg}}</uib-alert>
-    </div>
-</div>
-</body>
-</html>
+<div ui-view="menu" layout="row" flex="25"></div>
+<div ui-view="main" layout="row" flex="65" flex-offset="5" class="md-whiteframe-6dp"></div>

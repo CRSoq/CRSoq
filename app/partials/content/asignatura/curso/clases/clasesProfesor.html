@@ -1,0 +1,79 @@
+<div ng-controller="ClasesController"  flex="90" flex-offset="5">
+    <div ng-if="user.tipo=='profesor'" layout="column">
+
+        <h1><i class="fa fa-book"></i> {{curso.nombre_curso}} / Clases</h1>
+
+        <md-toolbar class="md-table-toolbar md-default">
+            <div class="md-toolbar-tools">
+                <md-button class="md-raised" aria-label="Agregar Clase" ng-click="agregarClase()">
+                    <i class="fa fa-plus"></i> Agregar clase
+                </md-button>
+            </div>
+        </md-toolbar>
+        <md-table-container >
+            <table md-table class="tablaClases alternarColor"  md-progress="promesas">
+                <thead md-head>
+                <tr md-row >
+                    <th md-column>Fecha</th>
+                    <th md-column>Descripción</th>
+                    <th md-column>Módulo</th>
+                    <th md-column>Acciones</th>
+                </tr>
+                </thead>
+                <tbody md-body>
+                <tr md-row ng-repeat="clase in listaClases">
+
+                    <td class="column-fecha" md-cell ng-show="clase.edicion!=true">{{clase.fecha | date:'dd-MM-yyyy'}}</td>
+                    <td class="column-fecha" md-cell ng-show="clase.edicion==true"><md-datepicker ng-model="clase.fecha" md-placeholder="Enter date"></md-datepicker></td>
+
+                    <td class="column-descripcion" md-cell ng-show="clase.edicion!=true">{{clase.descripcion}}</td>
+                    <td class="column-descripcion" md-cell ng-show="clase.edicion==true">
+                        <md-input-container class="md-block">
+                            <label>Descripción</label>
+                            <input md-maxlength="200"  md-no-asterisk name="description" ng-model="clase.descripcion">
+                            <div ng-messages="description.$error">
+                                <div ng-message="md-maxlength">La descripción debe tener menos de 200 caracteres.</div>
+                            </div>
+                        </md-input-container>
+                    </td>
+
+                    <td class="column-modulo" md-cell ng-show="clase.edicion!=true">{{clase.modulo}}</td>
+                    <td class="column-modulo" md-cell ng-show="clase.edicion==true">
+                        <md-input-container>
+                            <label>Módulo</label>
+                            <md-select ng-model="clase.modulo" required>
+                                <md-option ng-repeat="modulo in listaModulos" ng-model="clase.nombre_modulo" value="{{modulo.nombre_modulo}}">
+                                    {{modulo.nombre_modulo}}
+                                </md-option>
+                            </md-select>
+                        </md-input-container>
+                    </td>
+
+                    <td class="column-acciones" md-cell ng-show="clase.edicion!=true">
+                        <md-button aria-label="Sesión"  class="md-raised md-primary botonAccion" ng-click="iniciarSesion(clase)">
+                            <i ng-if="clase.estado_sesion=='noIniciada'" class="fa fa-play"></i>
+                            <i ng-if="clase.estado_sesion=='iniciada'" class="fa fa-sign-in"></i>
+                            <i ng-if="clase.estado_sesion=='cerrada'" class="fa fa-lock"></i>
+                        </md-button>
+                        <md-button aria-label="Editar" class="md-raised md-primary botonAccion" ng-click="editarClase(clase)">
+                            <i class="fa fa-pencil"></i>
+                        </md-button>
+                        <md-button aria-label="Eliminar" class="md-raised md-primary botonAccion" ng-click="eliminarClase(clase)">
+                            <i class="fa fa-times"></i>
+                        </md-button>
+                    </td>
+                    <td class="column-acciones" md-cell ng-show="clase.edicion==true">
+                        <md-button aria-label="Guardar" class="md-raised md-primary botonAccion" ng-click="guardarClase(clase)">
+                            <i class="fa fa-floppy-o"></i>
+                        </md-button>
+                        <md-button aria-label="Cancelar" class="md-raised md-primary botonAccion" ng-click="cancelarClase(clase, $index)">
+                            <i class="fa fa-times"></i>
+                        </md-button>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </md-table-container>
+    </div>
+</div>
+

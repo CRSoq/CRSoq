@@ -1,0 +1,52 @@
+<div ng-controller="PreguntaSesionController" flex="90" flex-offset="5">
+    <div ng-show="esperar" class="row centrado">
+        <br><br>
+        <h1>Por favor espere mientras se realiza la pregunta</h1>
+        <br><br>
+        <i class="fa fa-spinner fa-pulse fa-5x"></i>
+    </div>
+    <div ng-show="preguntaRealizada" class="row centrado">
+        <br><br>
+        <h1>{{pregunta.pregunta}}</h1>
+        <br><br>
+    </div>
+    <div ng-show="participar" class="row centrado">
+        <br><br>
+        <md-button class="md-raised md-warn" aria-label="Participar" ng-click="responderPregunta(pregunta)">
+            Participar
+        </md-button>
+        <br><br>
+    </div>
+    <md-table-container ng-show="participantes">
+        <table md-table class="tablaPreguntas alternarColor" md-progress="cargando">
+            <thead md-head>
+            <tr md-row>
+                <th md-column>#</th>
+                <th md-column>Nombre</th>
+                <th md-column>Apellido</th>
+                <th md-column>RUT</th>
+            </tr>
+            </thead>
+            <tbody md-body>
+            <tr ng-repeat="participante in listaParticipantes" ng-class="{'seleccionado':participante.seleccionado}">
+                <td md-cell>{{$index+1}}</td>
+                <td md-cell>{{participante.nombre}}</td>
+                <td md-cell>{{participante.apellido}}</td>
+                <td md-cell>{{participante.rut}}</td>
+            </tr>
+            </tbody>
+        </table>
+    </md-table-container>
+    <div ng-show="responder" class="row centrado">
+        <br><br>
+        <h1>Es su turno para responder.</h1>
+        <br><br>
+    </div>
+    <div ng-show="resultado" class="row centrado">
+        <br><br>
+        <h1>{{msjResultado}}</h1>
+        <br><br>
+    </div>
+</div>
+</body>
+</html>

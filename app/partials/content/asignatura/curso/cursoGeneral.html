@@ -1,0 +1,15 @@
+<div ng-controller="CursoGralInfoController" flex="90" flex-offset="5">
+    <div ng-if="user.tipo=='profesor'">
+        <h1><i class="fa fa-graduation-cap"></i> {{curso.nombre_curso}} {{curso.ano}} Sem {{curso.semestre}}</h1>
+        <div ng-if="curso.estado_curso=='creado'">
+            <h3>Por favor configure su curso, sino no podrá continuar.</h3>
+        </div>
+        <div ng-if="curso.estado_curso!='creado'">
+
+        </div>
+    </div>
+
+    <div ng-if="user.tipo=='estudiante'" flex="90" flex-offset="5">
+        <h1><i class="fa fa-graduation-cap"></i> {{curso.nombre_curso}} {{curso.ano}} Sem {{curso.semestre}}</h1>
+    </div>
+</div>

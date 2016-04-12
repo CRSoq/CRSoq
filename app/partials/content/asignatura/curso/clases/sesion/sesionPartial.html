@@ -1,0 +1,68 @@
+<div ng-controller="SesionController"  flex="90" flex-offset="5">
+    <h1><i class="fa fa-book"></i> {{curso.nombre_curso}} / Clases / Sesión</h1>
+
+    <md-toolbar class="md-table-toolbar md-default">
+        <div class="md-toolbar-tools">
+            <md-button class="md-raised" aria-label="Agregar Clase" ng-click="agregarPregunta()">
+                <i class="fa fa-search"></i> Agregar Pregunta
+            </md-button>
+            <md-button class="md-raised" aria-label="Agregar Clase" ng-click="crearPregunta()">
+                <i class="fa fa-plus-circle"></i> Crear Pregunta
+            </md-button>
+            <md-button class="md-raised" aria-label="Agregar Clase" ng-click="proyectarSesion()">
+                <i class="fa fa-desktop"></i> Proyectar
+            </md-button>
+            <md-button class="md-raised" aria-label="Agregar Clase" ng-click="finalizarSesion()">
+                <i class="fa fa-power-off"></i> Finalizar Sesion
+            </md-button>
+        </div>
+    </md-toolbar>
+
+    <br><br>
+    <md-table-container >
+        <table md-table class="tablaPreguntas alternarColor" md-progress="promesas">
+            <thead md-head>
+            <tr md-row >
+                <th md-column>Pregunta</th>
+                <th md-column>Acciones</th>
+            </tr>
+            </thead>
+            <tbody md-body>
+                <tr md-row data-ng-repeat="pregunta in listaPreguntasClase">
+                    <td md-cell ng-show="pregunta.edicion!=true">
+                        {{pregunta.pregunta}}
+                    </td>
+                    <td md-cell ng-show="pregunta.edicion==true">
+                        <md-input-container class="md-block">
+                            <label>Pregunta</label>
+                            <input md-no-asterisk name="pregunta" ng-model="pregunta.pregunta">
+                        </md-input-container>
+                    </td>
+
+                    <td md-cell ng-show="pregunta.edicion!=true">
+                        <md-button ng-if="pregunta.estado_pregunta=='sin_realizar'" aria-label="Lanzar pregunta" class="md-raised md-primary botonAccion" ng-click="lanzarPregunta(pregunta)">
+                            <i class="fa fa-play"></i>
+                        </md-button>
+                        <md-button ng-if="pregunta.estado_pregunta=='realizada'" aria-label="Lanzar pregunta" class="md-raised md-primary botonAccion" ng-click="editarGanadorPregunta(pregunta)">
+                            <i class="fa fa-lock"></i>
+                        </md-button>
+                        <md-button aria-label="Editar pregunta" ng-if="_.isNull(pregunta.id_b_pregunta)" class="md-raised md-primary botonAccion" ng-click="editarPregunta(pregunta)">
+                            <i class="fa fa-pencil"></i>
+                        </md-button>
+                        <md-button aria-label="Quitar pregunta" class="md-raised md-primary botonAccion" ng-click="eliminarPregunta(pregunta, $index)">
+                            <i class="fa fa-times"></i>
+                        </md-button>
+                    </td>
+                    <td md-cell ng-show="pregunta.edicion==true">
+                        <md-button aria-label="Guardar" class="md-raised md-primary botonAccion" ng-click="guardarPregunta(pregunta)">
+                            <i class="fa fa-floppy-o"></i>
+                        </md-button>
+                        <md-button aria-label="Cancelar" class="md-raised md-primary botonAccion" ng-click="cancelarPregunta(pregunta, $index)">
+                            <i class="fa fa-times"></i>
+                        </md-button>
+                    </td>
+            </tbody>
+        </table>
+    </md-table-container>
+    </div>
+</div>

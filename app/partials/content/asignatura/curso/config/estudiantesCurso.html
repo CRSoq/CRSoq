@@ -1,0 +1,78 @@
+
+    <md-toolbar class="md-table-toolbar md-default">
+    <div class="md-toolbar-tools">
+        <form class="form-horizontal" role="form">
+            <label>
+                Generar usuario simple
+            </label>
+            <input type="checkbox" ng-model="generarUsuario">
+            <label>
+                Generar clave simple
+            </label>
+            <input type="checkbox" ng-model="generarClave">
+        </form>
+        <button type="button" class="btn btn-primary" ng-click="agregarEstudiante()">
+            <i class="fa fa-plus-circle"></i> Agregar Estudiante
+        </button>
+        <button type="button" class="btn btn-primary" ng-click="importar()">
+            <i class="fa fa-file-excel-o"></i> Importar
+        </button>
+    </div>
+</md-toolbar>
+
+<md-table-container >
+    <table md-table md-progress="promesas">
+        <thead md-head>
+        <tr md-row>
+            <th md-column>RUT</th>
+            <th md-column>Nombre</th>
+            <th md-column>Apellido</th>
+            <th md-column>Usuario</th>
+            <th md-column>Clave</th>
+            <th md-column>Acciones</th>
+        </tr>
+        </thead>
+        <tbody md-body>
+        <tr ng-repeat="estudiante in listaEstudiantes">
+
+            <td md-cell ng-if="estudiante.edicion!=true">{{ estudiante.rut }}</td>
+            <td md-cell ng-if="estudiante.edicion==true">
+                <input type="text" name="estudianteRut" id="inputEstudianteRut" class="form-control" title="Rut del Estudiante" ng-model="estudiante.rut" ng-required="true" ng-maxlength="12" maxlength="12" ng-change="generarClaveEstudiante(estudiante); formatoRut(estudiante)" required/>
+            </td>
+
+            <td md-cell ng-if="estudiante.edicion!=true">
+                {{ estudiante.nombre }}
+            </td>
+            <td md-cell ng-if="estudiante.edicion==true">
+                <input type="text" name="estudianteNombre" id="inputEstudianteNombre" class="form-control" title="Nombre del Estudiante" ng-model="estudiante.nombre" ng-required="true" ng-change="generarUsuarioEstudiante(estudiante)" required/>
+            </td>
+            <td md-cell ng-if="estudiante.edicion!=true">
+                {{ estudiante.apellido }}
+            </td>
+            <td md-cell ng-if="estudiante.edicion==true">
+                <input type="text" name="estudianteApellido" id="inputEstudianteApellido" class="form-control" title="Apellido del Estudiante" ng-model="estudiante.apellido"  ng-required="true" ng-change="generarUsuarioEstudiante(estudiante)" required/>
+            </td>
+            <td md-cell ng-if="estudiante.edicion!=true">
+                {{estudiante.usuario}}
+            </td>
+            <td md-cell ng-if="estudiante.edicion==true">
+                <input ng-disabled="generarUsuario" type="text" name="estudianteUsuario" id="inputEstudianteUsuario" class="form-control" title="Usuario" ng-model="estudiante.usuario" required="required" />
+            </td>
+            <td md-cell ng-if="estudiante.edicion!=true">
+                {{estudiante.clave}}
+            </td>
+            <td md-cell ng-if="estudiante.edicion==true">
+                <input ng-disabled="generarClave" type="text" name="estudianteClave" id="inputEstudianteClave" class="form-control" title="Clave" ng-model="estudiante.clave" required="required" />
+            </td>
+            <td md-cell ng-if="estudiante.edicion!=true">
+                <button class="btn btn-primary" ng-click="editarEstudiante(estudiante)"><i class="fa fa-pencil"></i></button>
+                <button class="btn btn-primary" ng-click="eliminarEstudianteDelCurso(estudiante, $index)"><i class="fa fa-times"></i></button>
+            </td>
+            <td md-cell ng-if="estudiante.edicion==true">
+                <button class="btn btn-primary" ng-click="guardarEstudiante(estudiante)"><i class="fa fa-floppy-o"></i></button>
+                <button class="btn btn-primary" ng-click="cancelarEstudiante(estudiante, $index)"><i class="fa fa-times"></i></button>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</md-table-container>
