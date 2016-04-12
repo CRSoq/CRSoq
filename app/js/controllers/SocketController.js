@@ -1,21 +1,5 @@
 'use strict';
-crsApp.controller('SocketController', function ($scope,$rootScope,$timeout,SocketServices, SessionServices) {
-    // manejo de alertas.-
-    $scope.alerts = [];
-    $scope.closeAlert = function(index) {
-        $scope.alerts.splice(index, 1);
-    };
-    var closeAlert = function(id_alert) {
-        $timeout(function(){
-            $scope.alerts.splice(_.findIndex($scope.alerts,{id:id_alert}), 1);
-        }, 3000);
-    };
-
-    var closeAlertTime= function(id_alert, mlsec) {
-        $timeout(function(){
-            $scope.alerts.splice(_.findIndex($scope.alerts,{id:id_alert}), 1);
-        }, mlsec);
-    };
+crsApp.controller('SocketController', function ($scope,$rootScope,toastr,SocketServices, SessionServices) {
     // .-
     var dataSesion = SessionServices.getSessionData();
     if(_.isNull(SocketServices.getSocket())){
@@ -29,9 +13,7 @@ crsApp.controller('SocketController', function ($scope,$rootScope,$timeout,Socke
     //-----
     SocketServices.on('sesionAbierta', function (data) {
         //avisar de que se abrio una sala
-        var id_alert = $scope.alerts.length+1;
-        $scope.alerts.push({id: id_alert,type:'success', msg:'. '+data.semestre+' '+data.curso});
-        //closeAlertTime(id_alert, 10000);
+        toastr.success('En el curso de '+data.curso+' se ha iniciado una sesión de preguntas.','Sesión de preguntas');
         //cambia en el controlador el estado de la sesion
         $rootScope.$emit('activarSesion', data.id_clase);
     });
