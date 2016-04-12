@@ -6,5 +6,8 @@ module.exports = function (app) {
     app.use('/clases', require('./routes/clases'));
     app.use('/sesion', require('./routes/sesion'));
     app.use('/preguntas', require('./routes/preguntas'));
+    app.use('/biblioteca', require('./routes/biblioteca'));
+    app.use('/actividades', require('./routes/actividades'));
     app.use('/estudiante', require('./routes/estudiante'));
+    app.use('/info', require('./routes/info'));
 };
