@@ -1,79 +1,72 @@
 var querystring = require('querystring');
 var http        = require('http');
 var _           = require('lodash');
+var db          = require('./config');
+var mysql       = require('mysql');
+var connection  = mysql.createConnection(db.database);
 
 module.exports = function (io) {
     var usuarios = [];
     io.on('connection', function(socket){
 
         //obtener cursos del usuario
-        socket.on('EnviarDatos', function (data) {
-            var body = JSON.stringify(data);
-            var options = {
-                host: '127.0.0.1',
-                port: 3000,
-                path: '/cursos/obtenerCursos',
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json;charset=UTF-8',
-                    "Content-Length": Buffer.byteLength(body)
-                }
-            };
+        socket.on('EnviarDatos', function (req, res) {
+            connection.query('SELECT * FROM curso WHERE id_user = ?',[req.id_user], function (error, rows) {
+                if(!error){
+                    var user = _.findWhere(usuarios, {'usuario': req.usuario});
+                    var ingresoUsuario = function (data) {
+                        if(_.isUndefined(user)){
+                            usuarios.push({
+                                'usuario'   :req.usuario,
+                                'tipo'      :req.tipo,
+                                'token'     :req.token,
+                                'id_user'   :req.id_user,
+                                'socketId'  :socket.client.id,
+                                'cursos'    :data
+                            });
 
-            var req = new http.request(options, function(res) {
-                //console.log('STATUS: ' + res.statusCode);
-                //console.log('HEADERS: ' + JSON.stringify(res.headers));
-                res.setEncoding('utf8');
-                res.on('data', function (chunk) {
-                    var datos = JSON.parse(chunk);
-                    //console.log(datos);
-                    var user = _.findWhere(usuarios, {'usuario': data.usuario});
-                    if(_.isUndefined(user)){
-                        usuarios.push({
-                            'usuario'   :data.usuario,
-                            'tipo'      :data.tipo,
-                            'token'     :data.token,
-                            'id_user'   :data.id_user,
-                            'socketId'  :socket.client.id,
-                            'cursos'    :datos
+                        }else{
+                            user.socketId   = socket.client.id;
+                            user.cursos     = data;
+                        }
+                        console.log(usuarios.length);
+                        console.log("");
+                        console.log(usuarios);
+                    };
+
+                    if(req.tipo == 'profesor'){
+                        connection.query('SELECT id_curso, id_asignatura, id_calendario, ano, semestre, estado_curso, nombre_curso FROM curso WHERE id_user = ?',[req.id_user], function (error, rows) {
+                            if(!error) {
+                                ingresoUsuario(rows);
+                            }
                         });
 
+                    }else if(req.tipo == 'estudiante'){
+                            connection.query('SELECT c.id_curso, c.nombre_curso, c.semestre, c.ano, c.estado_curso FROM pertenece ec INNER JOIN estudiante e ON ec.id_user=e.id_user INNER JOIN curso c ON ec.id_curso = c.id_curso WHERE e.id_user = ?',[req.id_user], function (error, rows) {
+                                if (!error) {
+                                    ingresoUsuario(rows);
+                                }
+                            });
+                    }else if(req.tipo == 'administrador'){
+                            //retornar todos los cursos disponibles
                     }else{
-                        user.socketId   = socket.client.id;
-                        user.cursos     = datos;
-
+                            //no se le permite el acceso
                     }
-                    console.log(usuarios.length);
-                    console.log("");
-                    console.log(usuarios);
-                });
+                }
             });
-
-            req.on('error', function(e) {
-                //console.log('problem with request: ' + e.message);
-            });
-
-            req.write(body);
-            req.end();
-
-            //registar usuario, socket, cursos
-            }
-        );
+        });
 
         //crear la sesion de preguntas (por el profesor)
         socket.on('iniciarSesion', function (data) {
-            socket.join(data.nombreSala);
+            socket.join(data.sala);
             var i = 0;
             while(i<usuarios.length){
                 if(socket.id != usuarios[i].socketId){
-                    var user = _.findWhere(usuarios[i].cursos, {'nombre':data.semestre});
+                    var user = _.findWhere(usuarios[i].cursos, {'id_curso':data.id_curso});
                     if(!_.isUndefined(user)){
-                        var user_curso = _.findWhere(user.cursos, {'nombre_curso':data.curso});
-                        if(!_.isUndefined(user_curso)){
                             console.log(usuarios[i].usuario);
                             //emitir aviso de ingreso al usuario [i]
                             io.to(usuarios[i].socketId).emit('sesionAbierta', data);
-                        }
                     }
                 }
                 i++;
@@ -82,11 +75,11 @@ module.exports = function (io) {
 
         //ingresar a la sala
         socket.on('IngresarASala', function (data) {
-            socket.join(data.nombreSala);
+            socket.join(data.sala);
         });
 
         socket.on('SalirSala', function (data) {
-            socket.leave(data.nombreSala);
+            socket.leave(data.sala);
         });
 
         //realizar pregunta dentro de la sesion (por el profesor)
@@ -129,7 +122,7 @@ module.exports = function (io) {
         socket.on('finalizarSesion', function (data) {
             //avisar a los de la sala que la dejen porque se termino la sesion
             //yo dejo la sala
-            io.to(data.nombreSala).emit('finSesion',data);
+            io.to(data.sala).emit('finSesion',data);
         });
     });
 
