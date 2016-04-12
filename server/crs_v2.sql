@@ -1,6 +1,6 @@
 /*==============================================================*/
 /* DBMS name:      MySQL 5.0                                    */
-/* Created on:     31-03-2016 0:11:58                           */
+/* Created on:     12-04-2016 8:26:56                           */
 /*==============================================================*/
 
 
@@ -39,6 +39,7 @@ create table actividad
 (
    id_actividad         int not null auto_increment,
    id_clase             int,
+   id_curso             int not null,
    titulo_act           varchar(1024),
    primary key (id_actividad)
 );
@@ -205,6 +206,9 @@ create table profesor
 
 alter table actividad add constraint fk_se_realizan foreign key (id_clase)
 references clase (id_clase) on delete restrict on update restrict;
+
+alter table actividad add constraint fk_tiene foreign key (id_curso)
+references curso (id_curso) on delete restrict on update restrict;
 
 alter table biblioteca_preguntas add constraint fk_disponible foreign key (id_asignatura)
 references asignatura (id_asignatura) on delete restrict on update restrict;
