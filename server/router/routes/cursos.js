@@ -40,6 +40,34 @@ function ordenar (rows){
     //lista creada y retornada.
     return lista;
 };
+function ordenar2 (rows){
+    //primer se ordenan las filas por ano y semestre (desc ambos)
+    var listaOrdenada = _.map(_.sortByOrder(rows, ['nombre_curso','ano', 'semestre'], ['desc','desc', 'desc']));
+    //luego se mapean agrupandolas por ano y semestre, y se retorna un objeto con el nombre del semestre
+    //y los cursos correspondientes
+
+    var lista = _.chain(listaOrdenada)
+        .map(function (item) {
+            return _.extend({},item,{'asignatura':item.nombre_curso});
+        })
+        .groupBy('asignatura')
+        .pairs()
+        .map(function (item) {
+            _.forEach(item, function (element) {
+                var id_asignatura = null;
+                if(_.isArray(element)){
+                    _.forEach(element, function (element2) {
+                            id_asignatura = element2.id_asignatura;
+                        });
+                    item.push(id_asignatura);
+                }
+            });
+            return _.object(_.zip(['asignatura','cursos', 'id_asignatura'], item, item.id_asignatura));
+        });
+    var values = _(lista).reverse().value();
+    _.sortByOrder(values,['asignatura'],['desc']);
+    return values;
+};
 router.post('/obtenerCursos', function (req, res) {
     if(!req.body){
         return res.sendStatus(400);
@@ -47,17 +75,21 @@ router.post('/obtenerCursos', function (req, res) {
         if(req.body.tipo == 'profesor'){
             connection.query('SELECT id_curso, id_asignatura, id_calendario, ano, semestre, estado_curso, nombre_curso FROM curso WHERE id_user = ?',[req.body.id_user], function (error, rows) {
                 if(!error){
-                    return res.json(ordenar(rows));
+                    res.status(200);
+                    return res.json({'success':true, 'result':ordenar2(rows)});
                 }else{
-                    return res.json({'error':true,'err':error});
+                    res.status(500);
+                    return res.json({'success':false, 'err':error});
                 }
             });
         }else if(req.body.tipo == 'estudiante'){
             connection.query('SELECT c.id_curso, c.nombre_curso, c.semestre, c.ano, c.estado_curso FROM pertenece ec INNER JOIN estudiante e ON ec.id_user=e.id_user INNER JOIN curso c ON ec.id_curso = c.id_curso WHERE e.id_user = ?',[req.body.id_user], function (error, rows) {
                 if (!error) {
-                    return res.json(ordenar(rows));
+                    res.status(200);
+                    return res.json({'success':true, 'result':ordenar(rows)});
                 } else {
-                    return res.json({'error': true, 'err': error});
+                    res.status(500);
+                    return res.json({'success':false, 'err':error});
                 }
             });
         }else if(req.body.tipo == 'administrador'){
@@ -87,11 +119,12 @@ router.post('/obtenerModulos', function (req, res) {
         return res.sendStatus(400);
     }else{
         connection.query('SELECT * FROM modulo WHERE id_curso = ?',[req.body.id_curso], function (error, rows) {
-            if(!error && rows.length>=0){
-                return res.json(rows);
+            if(!error){
+                res.status(200);
+                return res.json({'success':true, 'result':rows});
             }else{
-                //algo pasa aqui ? ):
-                return res.json({'error':true});
+                res.status(500);
+                return res.json({'success':false, 'err':error});
             }
         });
     }
