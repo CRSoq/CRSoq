@@ -1,5 +1,7 @@
+/*
 body{
     /*font-family: "Source Sans Pro","Helvetica Neue",Helvetica,Arial,sans-serif;*/
+/*
     font-family: Roboto,Helvetica,Arial,sans-serif;
     font-size: 13px;
     line-height: 1.52857;
@@ -21,6 +23,7 @@ body{
         overflow-x: hidden;
         overflow-y: auto; /* Scrollable contents if viewport is shorter than content. */
         /*background-color: #1C2B36;*/
+/*
         background-color: #ffffff;
         border-right: 1px solid #eee;
         box-shadow: 0px 0px 4px rgba(0, 0, 0, 0.14), 2px 4px 8px rgba(0, 0, 0, 0.28);
@@ -51,7 +54,7 @@ body{
     font-weight: 700;
 }
 
-/*
+
 efecto entrada, por cada link menu...
 ul.ng-enter,
 ul.ng-leave
@@ -78,8 +81,7 @@ ul.ng-enter {
     top: -50px;
     height: 0px;
 }
-*/
-/*
+
 .ng-enter{
     transition: 2s;
     opacity: 0;
@@ -90,7 +92,7 @@ ul.ng-enter {
 .ng-leave{
 
 }
-.ng-leave-active*/
+.ng-leave-active
 
 .nav > li > div > a:hover, .nav > li > div > a:focus {
     text-decoration: none;
@@ -117,13 +119,124 @@ ul.ng-enter {
 .titulo{
     text-align: center;
 }
-.centrado{
-    text-align: center;
-}
+
 
 .table{
     background-color: white;
 }
 .seleccionado{
     background-color: green;
+}
+*/
+.botonMenu{
+    padding: 0;
+    margin: 0;
+    width: 100%;
+    border-radius: 0 0 0 0;
+    box-shadow: 0px 0px 0px 0px rgba(0, 0, 0, 0);
+}
+.botonMenu:not([disabled]):hover {
+    box-shadow: 0px 0px 0px 0px rgba(0, 0, 0, 0);
+}
+.botonMenu[disabled] {
+    box-shadow: 0px 0px 0px 0px rgba(0, 0, 0, 0);
+}
+.listaMenu{
+    padding: 0;
+}
+
+.itemListaMenu {
+    min-height: 0;
+}
+.botonAccion {
+    min-width: 40px;
+    margin: 0;
+}
+.botonParticipar {
+    width: 5.6rem;
+    height: 5.6rem;
+}
+/*
+tabla clases
+*/
+table.tablaClases > tbody > tr > td.column-fecha {
+    width: 8%;
+    max-width: 8%;
+}
+table.tablaClases > tbody > tr > td.column-descripcion {
+    width: 50%;
+    max-width: 50%;
+}
+table.tablaClases > tbody > tr > td.column-modulo{
+    width: 15%;
+    max-width: 15%;
+}
+table.tablaClases > tbody > tr > td.column-acciones{
+    width: 130px;
+    max-width: 130px;
+    min-width: 130px;
+}
+table.tablaClases:not(.md-row-select) td.md-cell:first-child, table.tablaClases:not(.md-row-select) th.md-column:first-child {
+    padding: 0 8px;
+}
+table.tablaClases:not(.md-row-select) td.md-cell:nth-child(n+2):nth-last-child(n+2), table.tablaClases:not(.md-row-select) th.md-column:nth-child(n+2):nth-last-child(n+2) {
+    padding: 0 8px;
+}
+/*
+tabla preguntas
+*/
+table.tablaPreguntas > tbody > tr > td.column-pregunta{
+    /*width: 8%;*/
+    max-width: 35%;
+}
+table.tablaPreguntas > tbody > tr > td.column-clase{
+    /*width: 50%;*/
+    max-width: 35%;
+}
+table.tablaPreguntas > tbody > tr > td.column-archivada{
+    /*width: 15%;*/
+    max-width: 10%;
+}
+table.tablaPreguntas > tbody > tr > td.column-acciones{
+    /*width: 130px;*/
+    /*max-width: 130px;*/
+    min-width: 20%;
+    max-width: 20%;
+}
+table.tablaPreguntas:not(.md-row-select) td.md-cell:first-child, table.tablaPreguntas:not(.md-row-select) th.md-column:first-child {
+    padding: 0 8px;
+}
+table.tablaPreguntas:not(.md-row-select) td.md-cell:nth-child(n+2):nth-last-child(n+2), table.tablaPreguntas:not(.md-row-select) th.md-column:nth-child(n+2):nth-last-child(n+2) {
+    padding: 0 8px;
+}
+/*
+*/
+.md-datepicker-button {
+    display: none !important;
+}
+.md-datepicker-input-container {
+    margin-left: 0 !important;
+}
+.md-datepicker-triangle-button.md-button.md-icon-button {
+    width: 30px;
+}
+.centrado{
+    text-align: center;
+}
+
+.alternarColor > tbody >tr:hover{
+    background-color: #E3F2FD;
+}
+md-toolbar.md-table-toolbar.alternate {
+    color: #1e88e5;
+    background-color: #e3f2fd;
+}
+md-toolbar.md-table-toolbar.alternate .md-toolbar-tools {
+    font-size: 16px;
+}
+.seleccionado{
+    background-color: #4caf50;
+}
+.alternarColor > tbody >tr.seleccionado:hover{
+    background-color: #388e3c;
 }
