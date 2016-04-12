@@ -1,6 +1,6 @@
 'use strict';
 
-crsApp.factory('ActividadesServices', function ($http, $q) {
+crsApp.factory('PreguntasBibliotecaServices', function($http, $q){
     var postHelper = function(ruta, data){
         var defered = $q.defer();
         var promise = defered.promise;
@@ -14,8 +14,8 @@ crsApp.factory('ActividadesServices', function ($http, $q) {
         return promise;
     };
     return{
-        obtenerActividadesCurso: function (curso) {
-            return postHelper('/actividades/obtenerActividadesCurso',curso);
+        obtenerBibliotecaDePreguntas: function (asignatura) {
+            return postHelper('/biblioteca/obtenerBibliotecaDePreguntas',asignatura);
         }
 
     }
