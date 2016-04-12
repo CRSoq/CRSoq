@@ -14,4 +14,48 @@
     </div>
 </div>
 -->
+<div ng-controller="CursosController" flex="90" flex-offset="5">
 Bienvenido
+
+    <form class="form-horizontal">
+        <div class="form-group">
+            <label for="AsignaturaSelect" class="col-sm-2 control-label">Asignatura: </label>
+            <div class="col-sm-9">
+                <select name="AsignaturaSelect" id="AsignaturaSelect"
+                        ng-options="option.nombre_asignatura for option in asignaturas"
+                        ng-model="asignaturaSeleccionada"></select>
+                <div ng-if="cargandoAsignaturas">
+                    <i class="fa fa-circle-o-notch fa-spin"></i>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="AñoSelect" class="col-sm-2 control-label">Año: </label>
+            <div class="col-sm-9">
+                <select name="AñoSelect" id="AñoSelect"
+                        ng-options="option.ano for option in anos"
+                        ng-model="anoSeleccionado"
+                        ng-change="cargarSemestre(anoSeleccionado)"></select>
+                <div ng-if="cargandoAno">
+                    <i class="fa fa-circle-o-notch fa-spin"></i>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="SemestreSelect" class="col-sm-2 control-label">Semestre: </label>
+            <div class="col-sm-9">
+                <select name="SemestreSelect" id="SemestreSelect"
+                        ng-options="option.semestre for option in semestres"
+                        ng-model="semestreSeleccionado"
+                        ng-change="guardarCalendario(semestreSeleccionado.calendario)"></select>
+                <div ng-if="cargandoSemestre">
+                    <i class="fa fa-circle-o-notch fa-spin"></i>
+                </div>
+            </div>
+        </div>
+        <md-button aria-label="Crear" class="botonMenu" ng-click="aceptar()">
+            Crear
+        </md-button>
+    </form>
+
+</div>
