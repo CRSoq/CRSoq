@@ -1,15 +1,78 @@
 ﻿crsApp.controller('MenuController', function($scope, $rootScope, $stateParams, $filter, $localStorage,CursosServices,SessionServices){
-    CursosServices.obtenerCursos(SessionServices.getSessionData()).then(function (data) {
-        if(data.error){
-            //error
-        }else{
-            $scope.menu=data;
-            CursosServices.almacenarCursos(data);
-        }
+
+    CursosServices.obtenerCursos(SessionServices.getSessionData()).then(
+        function (response) {
+            $scope.menu= _.cloneDeep(response.result);
+
+            CursosServices.almacenarCursos($scope.menu);
+    }, function (error) {
+        //error
     });
     $scope.listaCursos = [];
     $scope.mostrarSemestreLista = [];
     $scope.mostrarCursosLista = [];
+
+    $scope.listaDeSemestres = [];
+    $scope.listaDeAsignaturas = [];
+    $scope.listaDeCursos = [];
+    $scope.desplegarMenuAsignatura = function (asignatura) {
+        var exist = _.findIndex($scope.listaDeAsignaturas,{'id_asignatura':asignatura.id_asignatura});
+        if(exist>=0){
+            $scope.listaDeAsignaturas.splice(exist,1);
+            var cloneLista = _.cloneDeep($scope.listaDeCursos);
+            _.forEach(cloneLista, function (item) {
+                if(item.id_asignatura == asignatura.id_asignatura){
+                    $scope.listaDeCursos.splice(_.findIndex($scope.listaDeCursos,{'id_asignatura':asignatura.id_asignatura}),1);
+                }
+            })
+        }else{
+            $scope.listaDeAsignaturas.push(asignatura);
+        }
+    };
+    $scope.mostrarCursosAsignatura = function (curso) {
+        var exist = _.findLastIndex($scope.listaDeAsignaturas, {'id_asignatura':curso.id_asignatura});
+        return exist >= 0;
+    };
+
+    $scope.desplegarMenuCurso = function (curso) {
+        var exist = _.findIndex($scope.listaDeCursos,{'id_curso':curso.id_curso});
+        if(exist>=0){
+            $scope.listaDeCursos.splice(exist,1);
+        }else{
+            $scope.listaDeCursos.push(curso);
+        }
+    };
+    $scope.mostrarMenuCurso = function (curso) {
+        var exist = _.findLastIndex($scope.listaDeCursos, {'id_curso':curso.id_curso});
+        return exist >= 0;
+    };
+
+
+
+
+    $scope.desplegarMenuSemestre = function (semestre) {
+        var exist = _.findIndex($scope.listaDeSemestres,{'nombre':semestre.nombre});
+        if(exist>=0){
+            $scope.listaDeSemestres.splice(exist,1);
+            var cloneLista = _.cloneDeep($scope.listaDeCursos);
+            _.forEach(cloneLista, function (item) {
+                if(item.anoSemestre == semestre.nombre){
+                    $scope.listaDeCursos.splice(_.findIndex($scope.listaDeCursos,{'anoSemestre':semestre.nombre}),1);
+                }
+            })
+        }else{
+            $scope.listaDeSemestres.push(semestre);
+        }
+    };
+    $scope.mostrarCursosSemestre = function (curso) {
+        var exist = _.findLastIndex($scope.listaDeSemestres, {'nombre':curso.anoSemestre});
+        return exist >= 0;
+    };
+    $scope.mostrarMenu = function (curso) {
+        var exist = _.findLastIndex($scope.listaDeCursos, {'id_curso':curso.id_curso});
+        return exist >= 0;
+    };
+
 
     $scope.mostrarSemestre = function (variable){
         var indexSemestre = _.findIndex($scope.mostrarSemestreLista, {'id':variable});
@@ -63,11 +126,15 @@
     }
     // en caso de pasar los parametros por la url
     // se hace una consulta local
-    if(!_.isUndefined($stateParams.ano) && !_.isUndefined($stateParams.semestre)){
-        var cursos = CursosServices.obtenerCursosLocal();
-        var index =  _.findIndex(cursos, function (item) {
-            return (item.ano == $stateParams.ano && item.semestre == $stateParams.semestre);
-        });
-        $scope.mostrarSemestre(index);
+    if(_.size($stateParams)>0 && $rootScope.user=='profesor'){
+        if(!_.isUndefined($stateParams.nombre_asignatura)){
+            var asignaturas = CursosServices.obtenerCursosLocal();
+            var asignatura = _.findWhere(asignaturas,{'asignatura':$stateParams.nombre_asignatura});
+            $scope.desplegarMenuAsignatura(asignatura);
+            if(!_.isUndefined($stateParams.ano) && !_.isUndefined($stateParams.semestre) && !_.isUndefined($stateParams.id_curso)){
+                var curso = _.findWhere(asignatura.cursos, {'id_curso': Number($stateParams.id_curso)});
+                $scope.desplegarMenuCurso(curso);
+            }
+        }
     }
 });

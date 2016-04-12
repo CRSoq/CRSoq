@@ -1,147 +1,167 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-</head>
-<body>
-<div class="col-sm-3 col-md-2 sidebar" ng-controller="MenuController">
-    <div ng-if="user.tipo=='profesor'">
-        <ul class="nav nav-sidebar">
-            <li ng-repeat="opc in menu" ng-init="parentIndex = $index">
-                <div ng-if="!buscarSemestre($index)">
-                    <a ui-sref="crsApp.cursosSemestre({ano: opc.ano, semestre: opc.semestre})" ng-click="mostrarSemestre($index)">
-                        <span class="font-bold">{{opc.ano}} Semestre {{opc.semestre}}</span>
-                        <span class="pull-right text-muted"><i class="fa fa-fw fa-angle-right text"></i></span>
-                    </a>
-                </div>
-                <div ng-if="buscarSemestre($index)">
-                    <a ng-click="mostrarSemestre($index)" style="background-color: #3F51B5">
-                        <span class="font-bold" style="color: #ffffff;">{{opc.ano}} Semestre {{opc.semestre}}</span>
-                        <span class="pull-right text-muted"  style="color: #ffffff;"><i class="fa fa-fw fa-angle-down text"></i></span>
-                    </a>
-                </div>
-                <ul class="nav nav-sidebar" ng-if="buscarSemestre($index)">
-                    <li ng-repeat="curso in opc.cursos">
-                        <div ng-if="!buscarCurso(parentIndex,$index)">
-                        <a ui-sref="crsApp.cursosSemestre.curso({curso: curso.nombre_curso})" ng-click="mostrarCurso(parentIndex,$index)">
-                            <span class="font-bold">{{curso.nombre_curso}}</span>
-                            <span class="pull-right text-muted"><i class="fa fa-fw fa-angle-right text"></i></span>
-                        </a>
-                        </div>
-                        <div ng-if="buscarCurso(parentIndex,$index)">
-                            <a ng-click="mostrarCurso(parentIndex,$index)">
-                                <span class="font-bold">{{curso.nombre_curso}}</span>
-                                <span class="pull-right text-muted"><i class="fa fa-fw fa-angle-down text"></i></span>
-                            </a>
-                        </div>
+<md-sidenav ng-if="user.tipo=='profesor'" class="md-sidenav-left md-whiteframe-z2"
+            md-component-id="left"
+            md-is-locked-open="$mdMedia('min-width: 600px')">
 
-                        <ul class="nav nav-sidebar" ng-if="buscarCurso(parentIndex,$index) && curso.estado_curso !== 'creado'">
-                            <li>
-                                <a ui-sref="crsApp.cursosSemestre.clases({curso: curso.nombre_curso})">
-                                    <span class="font-bold">Clases</span>
-                                    <span class="pull-right text-muted"><i class="fa fa-fw fa-angle-right text"></i></span>
-                                </a>
-                            </li>
-                            <li>
-                                <a ui-sref="crsApp.cursosSemestre.preguntas({curso: curso.nombre_curso})">
-                                    <span class="font-bold">Preguntas</span>
-                                    <span class="pull-right text-muted"><i class="fa fa-fw fa-angle-right text"></i></span>
-                                </a>
-                            </li>
-                            <li>
-                                <a ui-sref="crsApp.cursosSemestre.actividades({curso: curso.nombre_curso})">
-                                    <span class="font-bold">Actividades</span>
-                                    <span class="pull-right text-muted"><i class="fa fa-fw fa-angle-right text"></i></span>
-                                </a>
-                            </li>
-                            <li>
-                                <a ui-sref="crsApp.cursosSemestre.info({curso: curso.nombre_curso})">
-                                    <span class="font-bold">Información</span>
-                                    <span class="pull-right text-muted"><i class="fa fa-fw fa-angle-right text"></i></span>
-                                </a>
-                            </li>
-                            <li>
-                                <a ui-sref="crsApp.cursosSemestre.config({curso: curso.nombre_curso})">
-                                    <span class="font-bold">Configuración</span>
-                                    <span class="pull-right text-muted"><i class="fa fa-fw fa-angle-right text"></i></span>
-                                </a>
-                            </li>
-                        </ul>
-                        <ul class="nav nav-sidebar" ng-if="buscarCurso(parentIndex,$index) && curso.estado_curso == 'creado'">
-                            <li>
-                                <a ui-sref="crsApp.cursosSemestre.config({curso: curso.nombre_curso})">
-                                    <span class="font-bold">Configuración</span>
-                                    <span class="pull-right text-muted"><i class="fa fa-fw fa-angle-right text"></i></span>
-                                </a>
-                            </li>
-                        </ul>
-                    </li>
-                </ul>
-            </li>
-        </ul>
-    </div>
-    <div ng-if="user.tipo=='estudiante'">
-        <ul class="nav nav-sidebar">
-            <li ng-repeat="opc in menu" ng-init="parentIndex = $index">
-                <div ng-if="!buscarSemestre($index)">
-                    <a ui-sref="crsApp.cursosSemestre({ano: opc.ano, semestre: opc.semestre})" ng-click="mostrarSemestre($index)">
-                        <span class="font-bold">{{opc.ano}} Semestre {{opc.semestre}}</span>
-                        <span class="pull-right text-muted"><i class="fa fa-fw fa-angle-right text"></i></span>
-                    </a>
-                </div>
-                <div ng-if="buscarSemestre($index)">
-                    <a ng-click="mostrarSemestre($index)">
-                        <span class="font-bold">{{opc.ano}} Semestre {{opc.semestre}}</span>
-                        <span class="pull-right text-muted"><i class="fa fa-fw fa-angle-right text"></i></span>
-                    </a>
-                </div>
-                <ul class="nav nav-sidebar" ng-if="buscarSemestre($index)">
-                    <li ng-repeat="curso in opc.cursos">
-                        <div ng-if="!buscarCurso(parentIndex,$index)">
-                            <a ui-sref="crsApp.cursosSemestre.curso({curso: curso.nombre_curso})" ng-click="mostrarCurso(parentIndex,$index)">
-                                <span class="font-bold">{{curso.nombre_curso}}</span>
-                                <span class="pull-right text-muted"><i class="fa fa-fw fa-angle-right text"></i></span>
-                            </a>
-                        </div>
-                        <div ng-if="buscarCurso(parentIndex,$index)">
-                            <a ng-click="mostrarCurso(parentIndex,$index)">
-                                <span class="font-bold">{{curso.nombre_curso}}</span>
-                                <span class="pull-right text-muted"><i class="fa fa-fw fa-angle-right text"></i></span>
-                            </a>
-                        </div>
+    <md-content role="navigation" ng-controller="MenuController">
 
-                        <ul class="nav nav-sidebar" ng-if="buscarCurso(parentIndex,$index) && curso.estado !== 'creado'">
-                            <li>
-                                <a ui-sref="crsApp.cursosSemestre.clases({curso: curso.nombre_curso})">
-                                    <span class="font-bold">Clases</span>
-                                    <span class="pull-right text-muted"><i class="fa fa-fw fa-angle-right text"></i></span>
-                                </a>
-                            </li>
-                            <li>
-                                <a ui-sref="crsApp.cursosSemestre.clases.sesion({curso: curso.nombre_curso})">
-                                    <span class="font-bold">Sesión</span>
-                                    <span class="pull-right text-muted"><i class="fa fa-fw fa-angle-right text"></i></span>
-                                </a>
-                            </li>
-                            <li>
-                                <a ui-sref="crsApp.cursosSemestre.actividades({curso: curso.nombre_curso})">
-                                    <span class="font-bold">Actividades</span>
-                                    <span class="pull-right text-muted"><i class="fa fa-fw fa-angle-right text"></i></span>
-                                </a>
-                            </li>
-                            <li>
-                                <a ui-sref="crsApp.cursosSemestre.info({curso: curso.nombre_curso})">
-                                    <span class="font-bold">Información</span>
-                                    <span class="pull-right text-muted"><i class="fa fa-fw fa-angle-right text"></i></span>
-                                </a>
-                            </li>
-                        </ul>
-                    </li>
-                </ul>
-            </li>
-        </ul>
-    </div>
+        <md-list class="listaMenu" ng-repeat="asignatura in menu" >
+            <md-list-item class="itemListaMenu">
+                <md-button class="md-raised md-primary botonMenu" ng-click="desplegarMenuAsignatura(asignatura)">
+                    <div layout="row" layout-align="space-between none">
+                        <div></div>
+                        <div>{{asignatura.asignatura}}</div>
+                        <div><i class="fa fa-fw fa-angle-right"></i></div>
+                    </div>
+                </md-button>
+            </md-list-item>
 
-</div>
-</body>
-</html>
+            <md-list class="listaMenu" ng-repeat="curso in asignatura.cursos">
+                <md-list-item ng-show="mostrarCursosAsignatura(curso)" class="itemListaMenu">
+                    <md-button class="botonMenu" ng-click="desplegarMenuCurso(curso)">
+                        <div layout="row">
+                            <div flex="8"><i class="fa fa-graduation-cap"></i></div>
+                            <div flex="80" align="left">{{curso.ano}} Sem {{curso.semestre}}</div>
+                            <div flex="10" align="right"><i class="fa fa-fw fa-angle-right"></i></div>
+                        </div>
+                    </md-button>
+                </md-list-item>
+
+                <md-list class="listaMenu" ng-show="mostrarMenuCurso(curso)">
+                    <md-list-item  class="itemListaMenu">
+                        <md-button ng-show="curso.estado_curso!='creado'" class="botonMenu" ui-sref="crsApp.asignatura.curso.clases({nombre_asignatura:asignatura.asignatura, id_curso:curso.id_curso, semestre:curso.semestre, ano:curso.ano})">
+                            <div layout="row">
+                                <div flex="8"></div>
+                                <div flex="7"><i class="fa fa-book"></i></div>
+                                <div flex="75" align="left">Clases</div>
+                                <div flex="10" align="right"><i class="fa fa-fw fa-angle-right"></i></div>
+                            </div>
+                        </md-button>
+                    </md-list-item>
+                    <md-list-item  class="itemListaMenu">
+                        <md-button ng-show="curso.estado_curso!='creado'" class="botonMenu" ui-sref="crsApp.asignatura.curso.preguntas({nombre_asignatura:asignatura.asignatura, id_curso:curso.id_curso, semestre:curso.semestre, ano:curso.ano})">
+                            <div layout="row">
+                                <div flex="8"></div>
+                                <div flex="7"><i class="fa fa-question"></i></div>
+                                <div flex="75" align="left">Preguntas</div>
+                                <div flex="10" align="right"><i class="fa fa-fw fa-angle-right"></i></div>
+                            </div>
+                        </md-button>
+                    </md-list-item>
+                    <md-list-item  class="itemListaMenu">
+                        <md-button ng-show="curso.estado_curso!='creado'" class="botonMenu" ui-sref="crsApp.asignatura.curso.actividades({nombre_asignatura:asignatura.asignatura, id_curso:curso.id_curso, semestre:curso.semestre, ano:curso.ano})">
+                            <div layout="row">
+                                <div flex="8"></div>
+                                <div flex="7"><i class="fa fa-tasks"></i></div>
+                                <div flex="75" align="left">Actividades</div>
+                                <div flex="10" align="right"><i class="fa fa-fw fa-angle-right"></i></div>
+                            </div>
+                        </md-button>
+                    </md-list-item>
+                    <md-list-item  class="itemListaMenu">
+                        <md-button ng-show="curso.estado_curso!='creado'" class="botonMenu" ui-sref="crsApp.asignatura.curso.info({nombre_asignatura:asignatura.asignatura, id_curso:curso.id_curso, semestre:curso.semestre, ano:curso.ano})">
+                            <div layout="row">
+                                <div flex="8"></div>
+                                <div flex="7"><i class="fa fa-info"></i></div>
+                                <div flex="75" align="left">Información</div>
+                                <div flex="10" align="right"><i class="fa fa-fw fa-angle-right"></i></div>
+                            </div>
+                        </md-button>
+                    </md-list-item>
+                    <md-list-item  class="itemListaMenu">
+                        <md-button class="botonMenu" ui-sref="crsApp.asignatura.curso.config({nombre_asignatura:asignatura.asignatura, id_curso:curso.id_curso, semestre:curso.semestre, ano:curso.ano})">
+                            <div layout="row">
+                                <div flex="8"></div>
+                                <div flex="7"><i class="fa fa-cogs"></i></div>
+                                <div flex="75" align="left">Configuración</div>
+                                <div flex="10" align="right"><i class="fa fa-fw fa-angle-right"></i></div>
+                            </div>
+                        </md-button>
+                    </md-list-item>
+                </md-list>
+            </md-list>
+
+            <md-button ng-show="mostrarCursosAsignatura(asignatura)" class="botonMenu" ui-sref="crsApp.asignatura({nombre_asignatura:asignatura.asignatura})">
+                <div layout="row">
+                    <div flex="8"><i class="fa fa-info"></i></div>
+                    <div flex="80" align="left">Información</div>
+                    <div flex="10" align="right"><i class="fa fa-fw fa-angle-right"></i></div>
+                </div>
+            </md-button>
+            <md-button ng-show="mostrarCursosAsignatura(asignatura)" class="botonMenu" ui-sref="crsApp.asignatura.biblioteca({nombre_asignatura:asignatura.asignatura})">
+                <div layout="row">
+                    <div flex="8"><i class="fa fa-archive"></i></div>
+                    <div flex="80" align="left">Biblioteca de Preguntas</div>
+                    <div flex="10" align="right"><i class="fa fa-fw fa-angle-right"></i></div>
+                </div>
+            </md-button>
+        </md-list>
+    </md-content>
+</md-sidenav>
+
+<md-sidenav ng-if="user.tipo=='estudiante'" class="md-sidenav-left md-whiteframe-z2"
+            md-component-id="left"
+            md-is-locked-open="$mdMedia('min-width: 600px')">
+
+    <md-content role="navigation" ng-controller="MenuController">
+
+        <md-list class="listaMenu" ng-repeat="semestre in menu" >
+            <md-list-item class="itemListaMenu">
+                <md-button aria-label="Semestres" class="md-raised md-primary botonMenu" ng-click="desplegarMenuSemestre(semestre)">
+                    <div layout="row" layout-align="space-between none">
+                        <div></div>
+                        <div>{{semestre.nombre}}</div>
+                        <div><i class="fa fa-fw fa-angle-right"></i></div>
+                    </div>
+                </md-button>
+            </md-list-item>
+
+            <md-list class="listaMenu" ng-repeat="curso in semestre.cursos">
+                <md-list-item ng-show="mostrarCursosSemestre(curso)" class="itemListaMenu">
+                    <md-button class="botonMenu" ng-click="desplegarMenuCurso(curso)">
+                        <div layout="row">
+                            <div flex="5"></div>
+                            <div flex="85" align="left"><i class="fa fa-graduation-cap"></i> {{curso.nombre_curso}}</div>
+                            <div flex="10" align="right"><i class="fa fa-fw fa-angle-right"></i></div>
+                        </div>
+                    </md-button>
+                </md-list-item>
+
+                <md-list class="listaMenu" ng-show="mostrarMenu(curso)">
+                    <md-list-item  class="itemListaMenu">
+                        <md-button ng-show="curso.estado_curso!='creado'" class="botonMenu" ui-sref="crsApp.asignatura.curso.clases({nombre_asignatura:curso.nombre_curso, id_curso:curso.id_curso, semestre:curso.semestre, ano:curso.ano})">
+                            <div layout="row">
+                                <div flex="8"></div>
+                                <div flex="7"><i class="fa fa-book"></i></div>
+                                <div flex="75" align="left">Clases</div>
+                                <div flex="10" align="right"><i class="fa fa-fw fa-angle-right"></i></div>
+                            </div>
+                        </md-button>
+                    </md-list-item>
+                    <md-list-item  class="itemListaMenu">
+                        <md-button ng-show="curso.estado_curso!='creado'" class="botonMenu" ui-sref="crsApp.asignatura.curso.preguntas({nombre_asignatura:curso.nombre_curso, id_curso:curso.id_curso, semestre:curso.semestre, ano:curso.ano})">
+                            <div layout="row">
+                                <div flex="8"></div>
+                                <div flex="7"><i class="fa fa-question"></i></div>
+                                <div flex="75" align="left">Preguntas</div>
+                                <div flex="10" align="right"><i class="fa fa-fw fa-angle-right"></i></div>
+                            </div>
+                        </md-button>
+                    </md-list-item>
+                    <md-list-item  class="itemListaMenu">
+                        <md-button ng-show="curso.estado_curso!='creado'" class="botonMenu" ui-sref="crsApp.asignatura.curso.actividades({nombre_asignatura:curso.nombre_curso, id_curso:curso.id_curso, semestre:curso.semestre, ano:curso.ano})">
+                            <div layout="row">
+                                <div flex="8"></div>
+                                <div flex="7"><i class="fa fa-tasks"></i></div>
+                                <div flex="75" align="left">Actividades</div>
+                                <div flex="10" align="right"><i class="fa fa-fw fa-angle-right"></i></div>
+                            </div>
+                        </md-button>
+                    </md-list-item>
+                </md-list>
+
+                </md-list>
+            </md-list>
+
+        </md-list>
+    </md-content>
+</md-sidenav>
