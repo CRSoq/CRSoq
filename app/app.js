@@ -10,7 +10,32 @@ var crsApp = angular.module('crsApp', [
     'nvd3'
 ]);
 
-crsApp.config(function($stateProvider, $urlRouterProvider) {
+crsApp.config(function($stateProvider, $urlRouterProvider, toastrConfig) {
+    angular.extend(toastrConfig, {
+        allowHtml: false,
+        closeButton: false,
+        closeHtml: '<button>&times;</button>',
+        extendedTimeOut: 1000,
+        iconClasses: {
+            error: 'toast-error',
+            info: 'toast-info',
+            success: 'toast-success',
+            warning: 'toast-warning'
+        },
+        messageClass: 'toast-message',
+        onHidden: null,
+        onShown: null,
+        onTap: null,
+        progressBar: false,
+        tapToDismiss: true,
+        templates: {
+            toast: 'directives/toast/toast.html',
+            progressbar: 'directives/progressbar/progressbar.html'
+        },
+        timeOut: 5000,
+        titleClass: 'toast-title',
+        toastClass: 'toast'
+    });
     $urlRouterProvider.otherwise('/');
     $stateProvider
         .state('crsApp', {
@@ -42,82 +67,6 @@ crsApp.config(function($stateProvider, $urlRouterProvider) {
                 }
             },
             authenticate:false
-        })
-        .state('crsApp.cursosSemestre', {
-            url: 'cursos/:ano/:semestre',
-            views: {
-                'main@crsApp': {
-                    templateUrl: 'partials/content/semestre/cursosSemestre.html'
-                }
-            },
-            authenticate:true
-        })
-        .state('crsApp.cursosSemestre.curso', {
-            url: '/:id_curso/:curso',
-            views: {
-                'main@crsApp': {
-                    templateUrl: 'partials/content/asignatura/curso/cursoGeneral.html'
-                }
-            },
-            authenticate:true
-        })
-        .state('crsApp.cursosSemestre.curso.clases', {
-            url: '/clases',
-            views: {
-                'main@crsApp': {
-                    templateProvider:
-                        function ($rootScope, $http) {
-                            if($rootScope.user.tipo=='estudiante'){
-                                return $http.get('partials/content/clases/estudianteClases.html')
-                                    .then(function (template) {
-                                        return  template.data;
-                                    });
-                            }else if($rootScope.user.tipo=='profesor'){
-                                return $http.get('partials/content/clases/clases.html')
-                                    .then(function (template) {
-                                        return  template.data;
-                                    });
-                            }
-                        }
-                }
-            },
-            authenticate:true
-        })
-        .state('crsApp.cursosSemestre.curso.preguntas', {
-            url: '/preguntas',
-            views: {
-                'main@crsApp': {
-                    templateUrl: 'partials/content/asignatura/curso/preguntas/preguntas.html'
-                }
-            },
-            authenticate:true
-        })
-        .state('crsApp.cursosSemestre.curso.actividades', {
-            url: '/:curso/actividades',
-            views: {
-                'main@crsApp': {
-                    templateUrl: 'partials/content/asignatura/curso/actividades/actividades.html'
-                }
-            },
-            authenticate:true
-        })
-        .state('crsApp.cursosSemestre.curso.info', {
-            url: '/:curso/info',
-            views: {
-                'main@crsApp': {
-                    templateUrl: 'partials/content/asignatura/curso/info/info.html'
-                }
-            },
-            authenticate:true
-        })
-        .state('crsApp.cursosSemestre.curso.config', {
-            url: '/:curso/config',
-            views: {
-                'main@crsApp': {
-                    templateUrl: 'partials/content/asignatura/curso/config/config.html'
-                }
-            },
-            authenticate:true
         })
         .state('crsApp.asignatura', {
             url: ':nombre_asignatura',
@@ -231,37 +180,6 @@ crsApp.config(function($stateProvider, $urlRouterProvider) {
             views: {
                 'main@crsApp': {
                     templateUrl: 'partials/content/asignatura/curso/config/config.html'
-                }
-            },
-            authenticate:true
-        })
-        .state('crsApp.cursosSemestre.clases.sesion', {
-            url: '/:id_clase/sesion',
-            views: {
-                'main@crsApp': {
-                    templateProvider:
-                        function ($rootScope, $http) {
-                            if($rootScope.user.tipo=='estudiante'){
-                                return $http.get('partials/content/clases/sesion/pregunta/_estudianteSesionPartial.html')
-                                    .then(function (template) {
-                                        return  template.data;
-                                    });
-                            }else if($rootScope.user.tipo=='profesor'){
-                                return $http.get('partials/content/clases/sesion/sesionPartial.html')
-                                    .then(function (template) {
-                                        return  template.data;
-                                    });
-                            }
-                        }
-                }
-            },
-            authenticate:true
-        })
-        .state('crsApp.cursosSemestre.clases.sesion.pregunta', {
-            url: '/:id_pregunta',
-            views: {
-                'main@crsApp': {
-                    templateUrl: 'partials/content/asignatura/curso/clases/sesion/pregunta/preguntaPartial.html'
                 }
             },
             authenticate:true
