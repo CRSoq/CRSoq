@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <title>CRS</title>
+    <title>CRSoq</title>
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="bower_components/angular-material/angular-material.css">
@@ -12,11 +12,12 @@
     <link rel="stylesheet" href="bower_components/html5-boilerplate/dist/css/main.css">
     <link rel="stylesheet" href="bower_components/nvd3/build/nv.d3.css">
     <link rel="stylesheet" href="font-awesome/css/font-awesome.min.css">
+    <link href='https://fonts.googleapis.com/css?family=Roboto:400,400italic,500,500italic,700,700italic,300italic,300' rel='stylesheet' type='text/css'>
     <link rel="stylesheet" href="css/app.css">
 </head>
-<body ng-app="crsApp" layout-fill ng-controller="SocketController"  ng-cloak>
+<body ng-app="crsApp" layout-fill ng-controller="SocketController">
 
-    <div ui-view="header" layout="row"  flex></div>
+    <!--<div ui-view="header" layout="row" hide-gt-xs  flex></div>-->
     <div ui-view="content" layout="row" style="min-height: 100%" flex></div>
 
     <script src="bower_components/angular/angular.js"></script>
@@ -32,8 +33,10 @@
     <script src="bower_components/nvd3/build/nv.d3.js"></script> <!-- or use another assembly -->
     <script src="bower_components/angular-nvd3/dist/angular-nvd3.js"></script>
     <script src="app.js"></script>
+    <script src="js/controllers/AdministracionController.js"></script>
     <script src="js/controllers/MenuController.js"></script>
     <script src="js/controllers/HeaderController.js"></script>
+    <script src="js/controllers/ToolbarController.js"></script>
     <script src="js/controllers/CursosController.js"></script>
     <script src="js/controllers/ClasesController.js"></script>
     <script src="js/controllers/PreguntasController.js"></script>
@@ -48,6 +51,7 @@
     <script src="js/services/SessionServices.js"></script>
     <script src="js/services/CalendarioServices.js"></script>
     <script src="js/services/AsignaturasServices.js"></script>
+    <script src="js/services/ProfesoresServices.js"></script>
     <script src="js/services/CursosServices.js"></script>
     <script src="js/services/ClasesServices.js"></script>
     <script src="js/services/ActividadesServices.js"></script>
