@@ -12,9 +12,9 @@ var crsApp = angular.module('crsApp', [
 
 crsApp.config(function($stateProvider, $urlRouterProvider, toastrConfig) {
     angular.extend(toastrConfig, {
-        allowHtml: false,
-        closeButton: false,
-        closeHtml: '<button>&times;</button>',
+        allowHtml: true,
+        closeButton: true,
+        closeHtml: '<button style="color: #3f51b5">&times;</button>',
         extendedTimeOut: 1000,
         iconClasses: {
             error: 'toast-error',
@@ -26,13 +26,13 @@ crsApp.config(function($stateProvider, $urlRouterProvider, toastrConfig) {
         onHidden: null,
         onShown: null,
         onTap: null,
-        progressBar: false,
+        progressBar: true,
         tapToDismiss: true,
         templates: {
             toast: 'directives/toast/toast.html',
             progressbar: 'directives/progressbar/progressbar.html'
         },
-        timeOut: 5000,
+        timeOut: 6000,
         titleClass: 'toast-title',
         toastClass: 'toast'
     });
@@ -41,14 +41,31 @@ crsApp.config(function($stateProvider, $urlRouterProvider, toastrConfig) {
         .state('crsApp', {
             url: '/',
             views: {
-                "header": {
-                    templateUrl: 'partials/content/header/header.html'
-                },
                 "content": {
                     templateUrl: 'partials/content/content.html'
                 },
                 "menu@crsApp": {
-                    templateUrl: 'partials/content/menu/menu.html'
+                    templateProvider:
+                        function ($rootScope, $http, SessionServices) {
+                            var user = SessionServices.getSessionData();
+                            if(user.tipo == 'profesor'){
+                                return $http.get('partials/content/menu/menuProfesor.html')
+                                    .then(function (template) {
+                                        return  template.data;
+                                    });
+                            }else if(user.tipo == 'estudiante'){
+                                    return $http.get('partials/content/menu/menuEstudiante.html')
+                                        .then(function (template) {
+                                            return  template.data;
+                                        });
+                            }else if(user.tipo == 'administrador'){
+                                return $http.get('partials/content/menu/menuAdministrador.html')
+                                    .then(function (template) {
+                                        return  template.data;
+                                    });
+                            }
+                        }
+
                 },
                 "main@crsApp": {
                     templateUrl: 'partials/content/main/main.html'
@@ -67,6 +84,36 @@ crsApp.config(function($stateProvider, $urlRouterProvider, toastrConfig) {
                 }
             },
             authenticate:false
+        })
+        .state('crsApp.adminProfesores', {
+            url: 'admin/profesores',
+            views: {
+                "main@crsApp": {
+                    templateUrl: 'partials/content/administracion/adminProfesores.html'
+                }
+            },
+            authenticate: true,
+            admin: true
+        })
+        .state('crsApp.adminAsignaturas', {
+            url: 'admin/asignaturas',
+            views: {
+                "main@crsApp": {
+                    templateUrl: 'partials/content/administracion/adminAsignaturas.html'
+                }
+            },
+            authenticate: true,
+            admin: true
+        })
+        .state('crsApp.adminCalendario', {
+            url: 'admin/calendario',
+            views: {
+                "main@crsApp": {
+                    templateUrl: 'partials/content/administracion/adminCalendario.html'
+                }
+            },
+            authenticate: true,
+            admin: true
         })
         .state('crsApp.asignatura', {
             url: ':nombre_asignatura',
@@ -88,11 +135,6 @@ crsApp.config(function($stateProvider, $urlRouterProvider, toastrConfig) {
         })
         .state('crsApp.asignatura.curso', {
             url: '/:ano/:semestre/:id_curso',
-            views: {
-                'main@crsApp': {
-                    templateUrl: 'partials/content/asignatura/curso/cursoGeneral.html'
-                }
-            },
             authenticate:true
         })
         .state('crsApp.asignatura.curso.clases', {
@@ -124,12 +166,12 @@ crsApp.config(function($stateProvider, $urlRouterProvider, toastrConfig) {
                     templateProvider:
                         function ($rootScope, $http) {
                             if($rootScope.user.tipo=='estudiante'){
-                                return $http.get('partials/content/asignatura/curso/clases/sesion/pregunta/_estudianteSesionPartial.html')
+                                return $http.get('partials/content/asignatura/curso/clases/sesion/pregunta/sesionEstudiante.html')
                                     .then(function (template) {
                                         return  template.data;
                                     });
                             }else if($rootScope.user.tipo=='profesor'){
-                                return $http.get('partials/content/asignatura/curso/clases/sesion/sesionPartial.html')
+                                return $http.get('partials/content/asignatura/curso/clases/sesion/sesionProfesor.html')
                                     .then(function (template) {
                                         return  template.data;
                                     });
@@ -143,7 +185,7 @@ crsApp.config(function($stateProvider, $urlRouterProvider, toastrConfig) {
             url: '/:id_pregunta',
             views: {
                 'main@crsApp': {
-                    templateUrl: 'partials/content/asignatura/curso/clases/sesion/pregunta/preguntaPartial.html'
+                    templateUrl: 'partials/content/asignatura/curso/clases/sesion/pregunta/preguntaSesionProfesor.html'
                 }
             },
             authenticate:true
@@ -152,7 +194,20 @@ crsApp.config(function($stateProvider, $urlRouterProvider, toastrConfig) {
             url: '/preguntas',
             views: {
                 'main@crsApp': {
-                    templateUrl: 'partials/content/asignatura/curso/preguntas/preguntas.html'
+                    templateProvider:
+                        function ($rootScope, $http) {
+                            if($rootScope.user.tipo=='estudiante'){
+                                return $http.get('partials/content/asignatura/curso/preguntas/preguntasEstudiante.html')
+                                    .then(function (template) {
+                                        return  template.data;
+                                    });
+                            }else if($rootScope.user.tipo=='profesor'){
+                                return $http.get('partials/content/asignatura/curso/preguntas/preguntasProfesor.html')
+                                    .then(function (template) {
+                                        return  template.data;
+                                    });
+                            }
+                        }
                 }
             },
             authenticate:true
@@ -161,7 +216,20 @@ crsApp.config(function($stateProvider, $urlRouterProvider, toastrConfig) {
             url: '/actividades',
             views: {
                 'main@crsApp': {
-                    templateUrl: 'partials/content/asignatura/curso/actividades/actividades.html'
+                    templateProvider:
+                        function ($rootScope, $http) {
+                            if($rootScope.user.tipo=='estudiante'){
+                                return $http.get('partials/content/asignatura/curso/actividades/actividadesEstudiante.html')
+                                    .then(function (template) {
+                                        return  template.data;
+                                    });
+                            }else if($rootScope.user.tipo=='profesor'){
+                                return $http.get('partials/content/asignatura/curso/actividades/actividadesProfesor.html')
+                                    .then(function (template) {
+                                        return  template.data;
+                                    });
+                            }
+                        }
                 }
             },
             authenticate:true
@@ -170,7 +238,20 @@ crsApp.config(function($stateProvider, $urlRouterProvider, toastrConfig) {
             url: '/info',
             views: {
                 'main@crsApp': {
-                    templateUrl: 'partials/content/asignatura/curso/info/info.html'
+                    templateProvider:
+                        function ($rootScope, $http) {
+                            if($rootScope.user.tipo=='estudiante'){
+                                return $http.get('partials/content/asignatura/curso/info/informacionEstudiante.html')
+                                    .then(function (template) {
+                                        return  template.data;
+                                    });
+                            }else if($rootScope.user.tipo=='profesor'){
+                                return $http.get('partials/content/asignatura/curso/info/informacionProfesor.html')
+                                    .then(function (template) {
+                                        return  template.data;
+                                    });
+                            }
+                        }
                 }
             },
             authenticate:true
@@ -186,14 +267,26 @@ crsApp.config(function($stateProvider, $urlRouterProvider, toastrConfig) {
         });
 });
 crsApp.run(function($rootScope, $state, SessionServices){
+
     $rootScope.$on('$stateChangeStart', function(event, toState){
-        if(toState.authenticate){
+        if(toState.authenticate && !toState.admin){
             SessionServices.checkToken().then(function (data) {
                 if(data.credencial){
                     $rootScope.user = SessionServices.getSessionData();
+                    //$state.reload(crsApp);
                 }else{
                     event.preventDefault();
                     $state.transitionTo("crsApp.login");
+                }
+            });
+        }else if(toState.authenticate && toState.admin){
+            SessionServices.checkToken().then(function (data) {
+                if(data.credencial){
+                    $rootScope.user = SessionServices.getSessionData();
+                    if($rootScope.user.tipo!='administrador'){
+                            event.preventDefault();
+                            $state.transitionTo("crsApp");
+                    }
                 }
             });
         }
