@@ -1,6 +1,6 @@
 /*==============================================================*/
 /* DBMS name:      MySQL 5.0                                    */
-/* Created on:     12-04-2016 8:26:56                           */
+/* Created on:     05-05-2016 8:07:28                           */
 /*==============================================================*/
 
 
@@ -41,6 +41,7 @@ create table actividad
    id_clase             int,
    id_curso             int not null,
    titulo_act           varchar(1024),
+   estado_actividad     varchar(50),
    primary key (id_actividad)
 );
 
@@ -114,6 +115,7 @@ create table curso
    id_user              int not null,
    estado_curso         varchar(250),
    nombre_curso         varchar(250),
+   meta                 int,
    primary key (id_curso)
 );
 
@@ -129,7 +131,8 @@ create table estudiante
    usuario              varchar(250) not null,
    clave                varchar(250) not null,
    token                varchar(129),
-   primary key (id_user)
+   primary key (id_user),
+   UNIQUE KEY unique_usuario (usuario)
 );
 
 /*==============================================================*/
@@ -140,7 +143,7 @@ create table modulo
    id_modulo            int not null auto_increment,
    id_curso             int not null,
    nombre_modulo        varchar(250),
-   posicion             varchar(200),
+   posicion             int,
    primary key (id_modulo)
 );
 
@@ -201,7 +204,8 @@ create table profesor
    usuario              varchar(250) not null,
    clave                varchar(250) not null,
    token                varchar(129),
-   primary key (id_user)
+   primary key (id_user),
+   UNIQUE KEY unique_usuario (usuario)
 );
 
 alter table actividad add constraint fk_se_realizan foreign key (id_clase)
