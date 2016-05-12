@@ -931,7 +931,7 @@ crsApp.controller('InformacionController', function ($scope, $stateParams, $mdSi
                     }else if(participante.participacion=='perdedor'){
                         perdedores.push(participante);
                         tamPerdedores++;
-                    }else if(participante.participacion=='noSeleccionado'){
+                    }else if(participante.participacion=='no seleccionado'){
                         noSeleccionados.push(participante);
                         tamNoSelec++;
                     }
@@ -1179,7 +1179,7 @@ crsApp.controller('InformacionEstudianteController', function ($scope, $statePar
     });
     $scope.promesas.push(prom3);
 });
-crsApp.controller('InformacionAsignaturaController', function ($scope, $stateParams, $mdSidenav, $timeout, $q, toastr, InformacionServices, CursosServices, ClasesServices, SessionServices, AsignaturasServices) {
+crsApp.controller('InformacionAsignaturaController', function ($scope, $stateParams, $mdSidenav, $timeout, $q, toastr, InformacionServices, CursosServices, ClasesServices, SessionServices, AsignaturasServices, PreguntasBibliotecaServices) {
     var asignaturas = CursosServices.obtenerCursosLocal();
     var asignatura = _.findWhere(asignaturas,{'asignatura':$stateParams.nombre_asignatura});
     $scope.curso = _.findWhere(asignatura.cursos, {'id_curso':Number($stateParams.id_curso)});
@@ -1191,7 +1191,8 @@ crsApp.controller('InformacionAsignaturaController', function ($scope, $statePar
     var participaciones=[];
     var cursosAsignatura = [];
     var promesasGrafoAsig1 = [];
-    var dataGrafoAsig1 = [];
+    var promesasGrafoAsig2 = [];
+    var fullData = [];
     var prom1 = AsignaturasServices.obtenerListaCursosAsignatura(asignatura).then(function (response) {
         if(response.success){
             cursosAsignatura = _.cloneDeep(response.result);
@@ -1199,7 +1200,7 @@ crsApp.controller('InformacionAsignaturaController', function ($scope, $statePar
                 var prom2 = InformacionServices.partEstudiantePregRelEnCurso(curso).then(function (response) {
                     if(response.success){
                         participaciones = _.cloneDeep(response.result);
-                        dataGrafoAsig1.push({
+                        fullData.push({
                             ano: curso.ano,
                             semestre: curso.semestre,
                             id_calendario: curso.id_calendario,
@@ -1217,19 +1218,19 @@ crsApp.controller('InformacionAsignaturaController', function ($scope, $statePar
         }
     });
     promesasGrafoAsig1.push(prom1);
-
+    promesasGrafoAsig2.push(prom1);
     var cargarData = function () {
         //console.log(dataGrafoAsig1);
-        dataGrafoAsig1=_.map(
-            _.sortByOrder(dataGrafoAsig1, ['ano', 'semestre'], ['asc', 'asc'])
+        fullData=_.map(
+            _.sortByOrder(fullData, ['ano', 'semestre'], ['asc', 'asc'])
         );
         var dataGanadores = [];
         var dataPerdedores = [];
         var dataNoSeleccionados = [];
         var dataNoParticipan = [];
 
-        _.forEach(dataGrafoAsig1, function (curso) {
-            var totalGanadores=0
+        _.forEach(fullData, function (curso) {
+            var totalGanadores=0;
             var ganadores=_.countBy(curso.participaciones, {participacion:'ganador'});
             if(!_.isUndefined(ganadores.true)){
                 totalGanadores=ganadores.true;
@@ -1316,8 +1317,39 @@ crsApp.controller('InformacionAsignaturaController', function ($scope, $statePar
         ];
 
     };
+    var pregBiblioteca = [];
+    var prom3 = PreguntasBibliotecaServices.obtenerBibliotecaDePreguntas(asignatura).then(function (response) {
+        if(response.success){
+            pregBiblioteca = _.cloneDeep(response.result)
+        }
+    });
+    promesasGrafoAsig2.push(prom3);
 
+    $q.all(promesasGrafoAsig2).then(function () {
+        _.forEach(pregBiblioteca, function (pregunta) {
+            _.forEach(fullData, function (curso) {
+                var dataPB = _.filter(curso.participacion, {id_b_pregunta: pregunta.id_b_pregunta});
+                var ganador = 0;
+                var perdedores = 0;
+                var noSelec = 0;
+                var noPart = 0;
+                _.forEach(dataPB, function (pB) {
+                    if(pB.participacion=='ganador'){
+                        ganador++;
+                    }else if(pB.participacion=='perdedor'){
+                        perdedores++;
+                    }else if(pB.participacion=='no seleccionado'){
+                        noSelec++;
+                    }else if(pB.participacion=='no participa'){
+                        noPart++;
+                    }
+                });
+                var participacion = ganador+perdedores+noSelec;
 
+            });
+
+        });
+    });
     $timeout(function() {
         $scope.mostrar = !$scope.mostrar;
     }, 1000);
