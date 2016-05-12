@@ -1,36 +1,33 @@
-crsApp.controller('LoginController', function($scope, $state, LoginService, SessionServices, SocketServices){
-    'use strict';
+'use strict';
+crsApp.controller('LoginController', function($scope, $state, $stateParams, toastr, LoginService, SessionServices, SocketServices){
     $scope.login = function() {
         var usuario = {
             usuario : $scope.usuario,
             clave : $scope.clave
         };
-        LoginService.logIn(usuario).then(function(data){
-            if(data.error){
-                console.log('alert login fail... '+data.err.code);
-            }else{
-                if(data.usuario.token != ""){
-                    SessionServices.asignarToken(data.usuario).then(function (data) {
-                        if(data.error){
-                            console.log('error actualizar token '+data.err.code);
-                        }else{
-                            SocketServices.connect();
-                            var dataSesion = SessionServices.getSessionData();
-                            if(!_.isUndefined(dataSesion.usuario)){
-                                SocketServices.emit('EnviarDatos', dataSesion);
+        LoginService.logIn(usuario).then(function(response){
+            if (response.success) {
+                if (response.usuario.token != "") {
+                    SessionServices.asignarToken(response.usuario).then(
+                        function (response) {
+                            if (response.success) {
+                                SocketServices.connect();
+                                var dataSesion = SessionServices.getSessionData();
+                                if (!_.isUndefined(dataSesion.usuario)) {
+                                    SocketServices.emit('EnviarDatos', dataSesion);
+                                }
+                                $state.transitionTo("crsApp", $stateParams, {
+                                    reload: true, inherit: false, notify: true
+                                });
                             }
-                            $state.transitionTo("crsApp");
-                        }
-                    });
-                }else{
+                        });
+                } else {
+                    toastr.error('No se pudo asignar token.', 'Error');
                     $state.transitionTo("crsApp.login");
                 }
+            } else {
+                toastr.error('Usuario o contraseña incorrecta.','Error');
             }
         });
-
-    };
-    $scope.logOut = function(){
-        SessionServices.destroyToken();
-        $state.transitionTo("crsApp");
     };
 });

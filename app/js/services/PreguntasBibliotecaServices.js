@@ -16,6 +16,9 @@ crsApp.factory('PreguntasBibliotecaServices', function($http, $q){
     return{
         obtenerBibliotecaDePreguntas: function (asignatura) {
             return postHelper('/biblioteca/obtenerBibliotecaDePreguntas',asignatura);
+        },
+        crearPreguntaBibliotecaDePreguntas: function (asignatura, pregunta) {
+            return postHelper('/biblioteca/crearPreguntaBibliotecaDePreguntas',{'id_asignatura':asignatura.id_asignatura,'b_pregunta':pregunta.b_pregunta});
         }
 
     }

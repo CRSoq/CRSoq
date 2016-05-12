@@ -23,20 +23,12 @@ crsApp.factory('PreguntasServices', function($http, $q){
         crearPreguntaCurso: function (pregunta) {
             return postHelper('/preguntas/crearPreguntaCurso',pregunta);
         },
-        crearPreguntaAsignatura: function (pregunta) {
-            return postHelper('/preguntas/crearPreguntaAsignatura',pregunta);
-        },
         obtenerPreguntasCurso: function (curso) {
             return postHelper('/preguntas/obtenerPreguntasCurso',curso);
         },
-        obtenerPreguntasListaClases: function (clases) {
-            return postHelper('/preguntas/obtenerPreguntasListaClases',clases);
-        },
+        //usar servicio de biblioteca
         obtenerPreguntasAsignatura: function (curso) {
             return postHelper('/preguntas/obtenerPreguntasAsignatura',curso);
-        },
-        obtenerPreguntasPorSesion: function (sesion) {
-            return postHelper('/preguntas/obtenerPreguntasPorSesion',sesion);
         },
         actualizarPregunta: function (pregunta) {
             return postHelper('/preguntas/actualizarPregunta',pregunta);
@@ -47,14 +39,14 @@ crsApp.factory('PreguntasServices', function($http, $q){
         actualizarID_B_Pregunta: function (pregunta) {
             return postHelper('/preguntas/actualizarID_B_Pregunta',pregunta);
         },
-        eliminarPreguntaDeLaAsignatura: function (pregunta) {
-            return postHelper('/preguntas/eliminarPreguntaDeLaAsignatura',pregunta);
-        },
         eliminarPreguntaDelCurso: function (pregunta) {
             return postHelper('/preguntas/eliminarPreguntaDelCurso',pregunta);
         },
         eliminarPreguntaDeLaClase: function (pregunta) {
             return postHelper('/preguntas/eliminarPreguntaDeLaClase',pregunta);
+        },
+        eliminarParticipacionPregunta: function (pregunta) {
+            return postHelper('/preguntas/eliminarParticipacionPregunta', pregunta)
         },
         asignarPreguntaClase: function (data) {
             return postHelper('/preguntas/asignarPreguntaClase',data);
@@ -67,6 +59,12 @@ crsApp.factory('PreguntasServices', function($http, $q){
         },
         archivarPregunta : function (pregunta) {
             return postHelper('/preguntas/archivarPregunta',pregunta);
+        },
+        obtenerParticipantesPregunta: function(curso, pregunta){
+            return postHelper('/preguntas/obtenerParticipantesPregunta',{id_curso:curso.id_curso,id_pregunta:pregunta.id_pregunta});
+        },
+        obtenerParticipacionesXEstudiante: function(estudiante){
+            return postHelper('/preguntas/obtenerParticipacionesXEstudiante',estudiante);
         }
     }
 });

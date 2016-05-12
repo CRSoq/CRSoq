@@ -1,5 +1,4 @@
 'use strict';
-
 crsApp.factory('EstudiantesServices', function ($http, $q) {
     var postHelper = function(ruta, data){
         var defered = $q.defer();
@@ -14,14 +13,14 @@ crsApp.factory('EstudiantesServices', function ($http, $q) {
         return promise;
     };
     return{
-        CrearEstudiante: function(data){
-            return postHelper('/estudiante/crearEstudiante',data);
+        CrearEstudiante: function(estudiante){
+            return postHelper('/estudiante/crearEstudiante',estudiante);
         },
-        ObtenerEstudiante: function (data) {
-            return postHelper('/estudiante/obtenerEstudiante',data);
+        ObtenerEstudiante: function (estudiante) {
+            return postHelper('/estudiante/obtenerEstudiante',estudiante);
         },
-        ObtenerListaEstudiantes: function (data) {
-            return postHelper('/estudiante/obtenerEstudiantesPorCurso',data);
+        obtenerEstudiantesPorCurso: function (curso) {
+            return postHelper('/estudiante/obtenerEstudiantesPorCurso',curso);
         },
         AsignarCursoAEstudiante: function (data) {
             return postHelper('/estudiante/asignarCursoAEstudiante',data);

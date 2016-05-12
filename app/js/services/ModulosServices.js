@@ -17,8 +17,14 @@ crsApp.factory('ModulosServices', function ($http, $q) {
         obtenerModulos: function (curso) {
             return postHelper('/cursos/obtenerModulos',curso);
         },
-        guardarModulos: function (modulos) {
-            return postHelper('/cursos/guardarModulos',modulos);
+        crearModulo: function (modulo) {
+            return postHelper('/cursos/crearModulo',modulo);
+        },
+        actualizarModulo: function (modulo) {
+            return postHelper('/cursos/actualizarModulo',modulo);
+        },
+        eliminarModulo: function (modulo) {
+            return postHelper('/cursos/eliminarModulo',modulo);
         }
 
     }

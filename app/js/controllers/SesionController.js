@@ -1,4 +1,4 @@
-crsApp.controller('SesionController', function($scope, $rootScope, $state, $stateParams, $timeout, $mdDialog, toastr, SessionServices, CursosServices, ClasesServices, PreguntasServices, SocketServices){
+crsApp.controller('SesionController', function($scope, $rootScope, $state, $stateParams, $q, $timeout, $mdDialog, toastr, SessionServices, CursosServices, ClasesServices, PreguntasServices, SocketServices){
     $scope.listaPreguntasClase=[];
     $scope.listaPreguntasClaseEdit=[];
     $scope.id_curso = null;
@@ -20,12 +20,25 @@ crsApp.controller('SesionController', function($scope, $rootScope, $state, $stat
     PreguntasServices.obtenerPreguntasClase({'id_clase':$stateParams.id_clase})
         .then(callbackPreguntas, callbackErrorPreguntas);
 
+    var infoSesion = {
+        ano: Number($stateParams.ano),
+        semestre: Number($stateParams.semestre),
+        curso: $stateParams.nombre_asignatura,
+        id_clase: Number($stateParams.id_clase),
+        id_curso: Number($stateParams.id_curso),
+        sala: $stateParams.ano+$stateParams.semestre+$stateParams.nombre_asignatura+$stateParams.id_clase
+    };
+    SocketServices.emit('SolicitarEstado', infoSesion);
+    $rootScope.$on('cargarPregunta', function (event, data) {
+        $state.transitionTo('crsApp.asignatura.curso.clases.sesion.pregunta',{nombre_asignatura:$stateParams.nombre_asignatura,ano:$stateParams.ano,semestre:$stateParams.semestre,id_curso:$stateParams.id_curso,id_clase:$stateParams.id_clase,id_pregunta:data.pregunta.id_pregunta});
+        //$rootScope.$emit('cargarEstadoPregunta', data);
+        event.stopPropagation();
+    });
     //boton añadir pregunta de la biblioteca
     $scope.agregarPregunta = function () {
-
         $mdDialog
             .show({
-                templateUrl: '/partials/content/asignatura/curso/preguntas/_agregarPreguntaPartial.html',
+                templateUrl: '/partials/content/asignatura/curso/preguntas/modalAgregarPregunta.html',
                 locals : {
                     id_curso : curso.id_curso,
                     id_asignatura: asignatura.id_asignatura
@@ -57,9 +70,7 @@ crsApp.controller('SesionController', function($scope, $rootScope, $state, $stat
 
                     PreguntasServices.obtenerPreguntasClase({'id_clase':$stateParams.id_clase})
                         .then(callbackPreguntas, callbackErrorPreguntas);
-                },function () {
-                //error
-            });
+                });
     };
 
     $scope.crearPregunta = function () {
@@ -79,7 +90,6 @@ crsApp.controller('SesionController', function($scope, $rootScope, $state, $stat
         };
         $scope.listaPreguntasClase.push(pregunta);
     };
-
     $scope.guardarPregunta = function (pregunta) {
         if(pregunta.pregunta!=null){
             if(pregunta.nuevo){
@@ -102,7 +112,6 @@ crsApp.controller('SesionController', function($scope, $rootScope, $state, $stat
                         toastr.error('No se pudo actualizar la pregunta."'+error.err.code,'Error');
                     });
             }
-
         }else{
             toastr.error('Debe ingresar una pregunta','Error');
         }
@@ -126,17 +135,28 @@ crsApp.controller('SesionController', function($scope, $rootScope, $state, $stat
 
     //boton eliminar pregunta?
     $scope.eliminarPregunta = function (pregunta, $index) {
-        //eliminar pregunta de la clase solamente
-        if(pregunta.nuevo){
-            $scope.listaPreguntasClase.splice(_.findIndex($scope.listaPreguntasClase,{'$$hashKey':pregunta.$$hashKey}),1);
-        }else{
-            PreguntasServices.eliminarPreguntaDeLaClase(pregunta)
-                .then(function (response) {
-                       $scope.listaPreguntasClase.splice($index,1);
-                }, function (error) {
-                    toastr.error('No se pudo eliminar la pregunta: '+error.err.code, 'Error.');
-                });
-        }
+        $mdDialog
+            .show({
+                templateUrl: '/partials/content/asignatura/curso/clases/sesion/modalEliminarPregunta.html',
+                locals : {
+                    pregunta:pregunta
+                },
+                controller: 'modalEliminarPreguntaClaseController'
+            })
+            .then(
+            function () {
+                if(pregunta.nuevo){
+                    $scope.listaPreguntasClase.splice(_.findIndex($scope.listaPreguntasClase,{'$$hashKey':pregunta.$$hashKey}),1);
+                }else{
+                    PreguntasServices.eliminarPreguntaDeLaClase(pregunta)
+                        .then(function (response) {
+                            toastr.success('Pregunta eliminada de la clase.');
+                            $scope.listaPreguntasClase.splice($index,1);
+                        }, function (error) {
+                            toastr.error('No se pudo eliminar la pregunta: '+error.err.code, 'Error.');
+                        });
+                }
+            });
     };
 
     //boton lanzar pregunta
@@ -151,59 +171,55 @@ crsApp.controller('SesionController', function($scope, $rootScope, $state, $stat
     };
     //boton editar ganador
     $scope.editarGanadorPregunta = function (pregunta) {
-        //modal
-        //var modalInstance = $uibModal.open({
-        //    animation   : true,
-        //    templateUrl : '/partials/content/clases/sesion/_editarGanadorPreguntaPartial.html',
-        //    controller  : 'ModalEditarGanadorPreguntaController',
-        //    size        : 'lg',
-        //    backdrop    : 'static',
-        //    resolve     : {
-        //        id_curso: function () {
-        //            return $scope.id_curso;
-        //        },
-        //        pregunta: function () {
-        //            return pregunta;
-        //        }
-        //    }
-        //});
-        //
-        //modalInstance.result.then(function (ganadorSeleccionado){
-        //    var data = {
-        //        pregunta : pregunta,
-        //        id_user  : ganadorSeleccionado.id_user
-        //    };
-        //    PreguntasServices.asignarGanador(data).then(function (response) {
-        //        if(!response.error){
-        //            PreguntasServices.obtenerPreguntasClase({'id_clase':$stateParams.id_clase}).then(function (data) {
-        //                if(data.error){
-        //                    alerta('danger', 'Error. "'+data.error.err.code+'"');
-        //                }else{
-        //                    $scope.listaPreguntasClase= _.cloneDeep(data);
-        //                    alerta('success', 'Nuevo ganador asignado.');
-        //                }
-        //            });
-        //        }else{
-        //            alerta('danger', 'No se pudo asignar ganador. "'+data.error.err.code+'"');
-        //        }
-        //    });
-        //});
+        $mdDialog
+            .show({
+                templateUrl: '/partials/content/asignatura/curso/clases/sesion/modalEditarGanadorPregunta.html',
+                locals:{
+                    pregunta: pregunta,
+                    id_curso: $stateParams.id_curso
+                },
+                controller: 'ModalEditarGanadorPreguntaController'
+            })
+            .then(
+            function (listas) {
+                if (listas.nueva.length>0) {
+                    var promesas = [];
+                    _.forEach(listas.nueva, function (estudiante) {
+                        var estd_ant = _.findWhere(listas.back, {id_user: estudiante.id_user});
+                        if (!_.isUndefined(estd_ant)) {
+                            if (estd_ant.estado_part_preg != estudiante.estado_part_preg) {
+                                var promesa = PreguntasServices.asignarEstadoParticipacionPregunta(estudiante);
+                                promesas.push(promesa);
+                            }
+                        }
+                    });
+                    $q.all(promesas).then(function (response) {
+                            toastr.success('La participación de la pregunta ha sido modificada.');
+                    });
+                }
+            });
     };
-    //boton finalizar sesion
     $scope.finalizarSesion = function () {
-        //var data ={
-        //    nombreSala: $stateParams.semestre+$stateParams.curso+$stateParams.id_clase
-        //};
-        //SocketServices.emit('finalizarSesion', data);
-        //var dataClase = {
-        // 'id_clase':$stateParams.id_clase,
-        //  'estado_sesion':'cerrada'
-        //};
-        //ClasesServices.actualizarSesionClase(dataClase).then(function (data) {
-        //    if(!data.error){
-        //        $state.transitionTo('crsApp.cursosSemestre.clases', {ano:$stateParams.ano,semestre:$stateParams.semestre,curso:$stateParams.curso});
-        //    }
-        //});
+        var data ={
+            sala: $stateParams.ano+$stateParams.semestre+$stateParams.nombre_asignatura+$stateParams.id_clase
+        };
+        SocketServices.emit('finalizarSesion', data);
+        var dataClase = {
+         id_clase:$stateParams.id_clase,
+         estado_sesion:'cerrada'
+        };
+        ClasesServices.actualizarSesionClase(dataClase).then(function (response) {
+            if(response.success){
+                $state.transitionTo('crsApp.asignatura.curso.clases', {
+                    ano:$stateParams.ano,
+                    semestre:$stateParams.semestre,
+                    nombre_asignatura:$stateParams.nombre_asignatura,
+                    id_curso:$scope.curso.id_curso});
+                SocketServices.emit('actualizarListaClase', curso);
+            }else{
+                toastr.error('No se pudo finalizar la sesión: '+response.err.code,'Error');
+            }
+        });
     };
     //boton proyectar sesion
     $scope.proyectarSesion = function () {
@@ -212,24 +228,53 @@ crsApp.controller('SesionController', function($scope, $rootScope, $state, $stat
 
 });
 
-crsApp.controller('ModalEditarGanadorPreguntaController', function ($scope, $uibModalInstance, EstudiantesServices, PreguntasServices, id_curso, pregunta) {
+crsApp.controller('ModalEditarGanadorPreguntaController', function ($scope, $mdDialog, EstudiantesServices, PreguntasServices, id_curso, pregunta) {
+    $scope.pregunta = pregunta;
+    $scope.ganador = {'id_user':null};
+    $scope.listaParticipantes = [];
+    $scope.listaParticipantesBack = [];
+    PreguntasServices.obtenerParticipantesPregunta({id_curso:id_curso}, pregunta).then(function (response) {
+        if(response.success){
+            if(!_.isUndefined(response.result) && response.result.length>0){
+                $scope.listaParticipantes = _.cloneDeep(response.result);
+                $scope.listaParticipantesBack = _.cloneDeep(response.result);
+            }
+        }
+    });
 
-    //$scope.pregunta = pregunta;
-    //$scope.sin_ganador = {'id_user':null};
-    //EstudiantesServices.ObtenerListaEstudiantes({id_curso:id_curso}).then(function (data) {
-    //    if(!data.error){
-    //        $scope.listaEstudiantes = _.cloneDeep(data.estudiantes);
-    //        if(!_.isNull(pregunta.id_user)){
-    //            $scope.ganadorActual = _.findWhere($scope.listaEstudiantes,{id_user:pregunta.id_user});
-    //            $scope.listaEstudiantes.ganador = _.cloneDeep($scope.ganadorActual);
-    //        }
-    //    }
-    //});
-    //$scope.aceptar = function () {
-    //    $uibModalInstance.close(angular.fromJson($scope.listaEstudiantes.ganador));
-    //};
-    //
-    //$scope.cancelar = function () {
-    //    $uibModalInstance.dismiss();
-    //}
+    $scope.cambiarParticipacion = function (estudiante) {
+        var index = _.findIndex($scope.listaParticipantes, {estado_part_preg:"ganador"});
+        if(index>-1){
+            if(estudiante.estado_part_preg=="perdedor"){
+                estudiante.estado_part_preg="noSeleccionado"
+            }else{
+                estudiante.estado_part_preg="perdedor"
+            }
+        }else{
+            if(estudiante.estado_part_preg=="perdedor"){
+                estudiante.estado_part_preg="noSeleccionado"
+            }else if(estudiante.estado_part_preg=="noSeleccionado"){
+                estudiante.estado_part_preg="ganador"
+            }else{
+                estudiante.estado_part_preg="perdedor"
+            }
+        }
+    };
+    $scope.cancelar = function() {
+        $mdDialog.cancel();
+    };
+
+    $scope.aceptar = function() {
+        $mdDialog.hide({nueva:$scope.listaParticipantes,back:$scope.listaParticipantesBack});
+    };
+});
+crsApp.controller('modalEliminarPreguntaClaseController', function ($scope, $mdDialog, pregunta) {
+    $scope.pregunta = _.cloneDeep(pregunta);
+    $scope.cancelar = function() {
+        $mdDialog.cancel();
+    };
+
+    $scope.aceptar = function() {
+        $mdDialog.hide();
+    };
 });

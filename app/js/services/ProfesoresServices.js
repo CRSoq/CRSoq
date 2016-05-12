@@ -1,5 +1,6 @@
 'use strict';
-crsApp.factory('CalendarioServices', function ($http, $q) {
+
+crsApp.factory('ProfesoresServices', function ($http, $q) {
     var postHelper = function(ruta, data){
         var defered = $q.defer();
         var promise = defered.promise;
@@ -12,16 +13,15 @@ crsApp.factory('CalendarioServices', function ($http, $q) {
             });
         return promise;
     };
-
     return{
-        obtenerCalendario: function () {
-            return postHelper('/calendario/obtenerCalendario');
+        obtenerProfesores: function () {
+            return postHelper('/profesores/obtenerProfesores');
         },
-        crearCalendario: function (calendario) {
-            return postHelper('/calendario/crearCalendario', calendario);
+        crearProfesor: function (profesor) {
+            return postHelper('/profesores/crearProfesor',profesor);
         },
-        editarCalendario: function (calendario) {
-            return postHelper('/calendario/editarCalendario', calendario);
+        editarProfesor: function (profesor) {
+            return postHelper('/profesores/editarProfesor',profesor);
         }
     }
 });

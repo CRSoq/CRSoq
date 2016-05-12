@@ -1,5 +1,5 @@
 'use strict';
-crsApp.controller('PreguntasController', function ($scope, $stateParams, $timeout, $mdDialog, toastr, PreguntasServices, CursosServices, ClasesServices, ModulosServices) {
+crsApp.controller('PreguntasController', function ($scope, $stateParams, $timeout, $q, $mdDialog, toastr, PreguntasServices, CursosServices, ClasesServices, ModulosServices) {
     var asignaturas = CursosServices.obtenerCursosLocal();
     var asignatura = _.findWhere(asignaturas,{'asignatura':$stateParams.nombre_asignatura});
     var curso = _.findWhere(asignatura.cursos, {'id_curso':Number($stateParams.id_curso)});
@@ -60,12 +60,14 @@ crsApp.controller('PreguntasController', function ($scope, $stateParams, $timeou
         $scope.listaModulos= _.cloneDeep(response.result);
         $scope.listaModulos= _.map(_.sortByOrder($scope.listaModulos,['posicion'],['asc']));
 
-        $scope.promesas = ClasesServices.obtenerClases($scope.listaModulos)
-            .then(callbackClases, callbackClasesError);
+        if($scope.listaModulos.length>0){
+            $scope.promesas = ClasesServices.obtenerClases($scope.listaModulos)
+                .then(callbackClases, callbackClasesError);
+        }
     };
 
     var callBackModulosError = function (error) {
-        toastr.error(error.err.code,'Error m�dulos');
+        toastr.error(error.err.code,'Error módulos');
     };
 
     $scope.promesas = ModulosServices.obtenerModulos(curso)
@@ -82,7 +84,7 @@ crsApp.controller('PreguntasController', function ($scope, $stateParams, $timeou
     $scope.agregarPregunta = function () {
         $mdDialog
             .show({
-                templateUrl: '/partials/content/asignatura/curso/preguntas/_agregarPreguntaPartial.html',
+                templateUrl: '/partials/content/asignatura/curso/preguntas/modalAgregarPregunta.html',
                 locals : {
                     id_curso : curso.id_curso,
                     id_asignatura: asignatura.id_asignatura
@@ -91,9 +93,26 @@ crsApp.controller('PreguntasController', function ($scope, $stateParams, $timeou
             })
             .then(
             function (listaPreguntaSeleccionadas) {
-                //asignar al curso
-            },function () {
-                //error
+                var promesas = [];
+                _.forEach(listaPreguntaSeleccionadas, function (pregunta) {
+                    var preguntaLocal =  {
+                        pregunta: pregunta.b_pregunta,
+                        id_b_pregunta: pregunta.id_b_pregunta,
+                        id_clase: null,
+                        id_curso: Number($stateParams.id_curso),
+                        estado_pregunta:'sin_realizar'
+                    };
+                    var promesa = PreguntasServices.crearPreguntaCurso(preguntaLocal).then(function (response) {
+                        if(response.success){
+                            preguntaLocal.id_pregunta=response.id_pregunta;
+                            $scope.listaPreguntasCurso.push(preguntaLocal);
+                        }
+                    });
+                    promesas.push(promesa);
+                });
+                $q.all(promesas).then(function (response) {
+                    toastr.success('Preguntas agregadas al curso.');
+                });
             });
     };
 
@@ -104,7 +123,6 @@ crsApp.controller('PreguntasController', function ($scope, $stateParams, $timeou
             'id_b_pregunta': null,
             'id_clase': null,
             'pregunta': null,
-            'id_user': null,
             'id_modulo':null,
             'nombre_modulo': null,
             'edicion': true,
@@ -127,26 +145,32 @@ crsApp.controller('PreguntasController', function ($scope, $stateParams, $timeou
     $scope.editarPregunta = function (pregunta) {
         pregunta.edicion = true;
     };
-    $scope.eliminarPregunta = function (pregunta) {
-        PreguntasServices.eliminarPreguntaDelCurso(pregunta)
-            .then(function (response) {
-                PreguntasServices.obtenerPreguntasCurso(curso)
-                    .then(function (response) {
-                        $scope.listaPreguntasCurso = _.cloneDeep(response.result);
-                        _.forEach($scope.listaPreguntasCurso, function(pregunta){
-                            if(_.isNull(pregunta.id_clase)){
-                                pregunta.clase = '';
-                            } else{
-                                pregunta.clase = _.findWhere($scope.listaClases,{'id_clase':pregunta.id_clase}).descripcion;
-                            }
-                        });
-
-                    }, function (error) {
-                        toastr.error('No se pudo obtener preguntas del curso: '+error.err.code,'Error');
-                    });
-
-            }, function (error) {
-                toastr.error('No se pudo eliminar la pregunta: '+error.err.code,'Error');
+    $scope.eliminarPregunta = function (pregunta, $index) {
+        $mdDialog
+            .show({
+                templateUrl: '/partials/content/asignatura/curso/preguntas/modalEliminarPregunta.html',
+                locals : {
+                    pregunta: pregunta
+                },
+                controller: 'ModalEliminarPreguntaController'
+            })
+            .then(
+            function () {
+                PreguntasServices.eliminarParticipacionPregunta(pregunta).then(function (response) {
+                    if (response.success) {
+                        PreguntasServices.eliminarPreguntaDelCurso(pregunta)
+                            .then(function (response) {
+                                if (response.success) {
+                                    toastr.success('Pregunta eliminada del curso de forma exitosa.');
+                                    $scope.listaPreguntasCurso.splice($index, 1);
+                                } else {
+                                    toastr.error('No se pudo eliminar la pregunta del curso: ' + response.err.code, 'Error');
+                                }
+                            });
+                    } else {
+                        toastr.error('No se pudo eliminar participación: '+response.err.code,'Error');
+                    }
+                });
             });
     };
 
@@ -187,18 +211,21 @@ crsApp.controller('PreguntasController', function ($scope, $stateParams, $timeou
     };
 
     $scope.archivarPregunta = function (pregunta) {
-        $scope.promesas = PreguntasServices.archivarPregunta(pregunta)
+        PreguntasServices.archivarPregunta(pregunta)
             .then(function (response) {
-                _.findWhere($scope.listaPreguntasCurso, {'id_pregunta':pregunta.id_pregunta}).id_b_pregunta = response.id_b_pregunta;
-                $scope.promesas = PreguntasServices.actualizarID_B_Pregunta(pregunta)
-                    .then(function () {
+                if(response.success){
+                    pregunta.id_b_pregunta = response.id_b_pregunta;
+                    PreguntasServices.actualizarID_B_Pregunta(pregunta)
+                        .then(function (response) {
+                            if(response.success){
+                                toastr.success('Pregunta agregada a la biblioteca de preguntas de la asignatura.');
+                            }else{
+                                toastr.error('No se pudo agregar pregunta a la biblioteca de preguntas de la asignatura: '+response.err.code,'Error');
+                            }
+                        });
+                }else{
 
-                    }, function (error) {
-                        toastr.error('No se pudo actualizar pregunta: '+error.err.code,'Error');
-                    });
-
-            }, function (error) {
-                //erroralerta('danger','Error al archivar la pregunta en la Biblioteca del curso.');
+                }
             });
     };
 
@@ -289,4 +316,68 @@ crsApp.controller('ModalAgregarPreguntaCursoController', function ($scope, $mdDi
     $scope.cancelar = function () {
         $mdDialog.cancel();
     }
+});
+crsApp.controller('ModalEliminarPreguntaController', function ($scope, $mdDialog, pregunta) {
+    $scope.pregunta = _.cloneDeep(pregunta);
+    $scope.cancelar = function() {
+        $mdDialog.cancel();
+    };
+
+    $scope.aceptar = function() {
+        $mdDialog.hide();
+    };
+});
+crsApp.controller('PreguntasEstudianteController', function ($scope, $stateParams, $mdDialog, toastr, PreguntasServices, CursosServices, ClasesServices, SessionServices) {
+    var semestres = CursosServices.obtenerCursosLocal();
+    var estudiante = SessionServices.getSessionData();
+    var semestre = _.findWhere(semestres,{'ano':Number($stateParams.ano),'semestre':Number($stateParams.semestre)});
+    $scope.curso = _.findWhere(semestre.cursos, {'id_curso': Number($stateParams.id_curso)});
+
+    //preguntas curso
+    $scope.listaPreguntasCurso = [];
+    //mis preguntas
+    $scope.misParticipaciones = [];
+
+    $scope.promesas = [];
+
+    var promesaPreguntas = PreguntasServices.obtenerPreguntasCurso($scope.curso).then(function (response) {
+        if(response.success){
+            $scope.listaPreguntasCurso = _.cloneDeep(response.result);
+            cargarClases();
+            obtenerParticipacion();
+        }else{
+            toastr.error('No se pudieron obtener las preguntas del curso: '+response.err.code,'Error');
+        }
+    });
+    $scope.promesas.push(promesaPreguntas);
+    var cargarClases = function () {
+        _.forEach($scope.listaPreguntasCurso, function (pregunta) {
+            if(!_.isNull(pregunta.id_clase)){
+                ClasesServices.obtenerClasesPorID({id_clase:pregunta.id_clase}).then(function (response) {
+                    if (response.success) {
+                        pregunta.clase = response.result[0].descripcion;
+                    }
+                });
+            }
+
+        });
+    };
+    var obtenerParticipacion = function () {
+        PreguntasServices.obtenerParticipacionesXEstudiante(estudiante).then(function (response) {
+            if(response.success){
+                _.forEach($scope.listaPreguntasCurso, function (pregunta) {
+                    var preguntaPart = _.findWhere(response.result,{id_pregunta:pregunta.id_pregunta});
+                    if(!_.isUndefined(preguntaPart)){
+                        if(preguntaPart.estado_part_preg=='noSeleccionado'){
+                            pregunta.estado_participacion = 'participante';
+                        }else{
+                            pregunta.estado_participacion = preguntaPart.estado_part_preg;
+                        }
+                    }else{
+                        pregunta.estado_participacion = 'Sin participación';
+                    }
+                });
+            }
+        });
+    };
 });

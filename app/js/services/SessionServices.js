@@ -6,9 +6,13 @@ crsApp.factory('SessionServices', function($http, $q, $localStorage){
             $localStorage.usuario  = data.usuario;
             $localStorage.tipo = data.tipo;
             $localStorage.id_user = data.id_user;
-            if(!_.isUndefined(data.nombre) && !_.isUndefined(data.apellido) && !_.isUndefined(data.rut)){
+            if(!_.isUndefined(data.nombre)){
                 $localStorage.nombre = data.nombre;
+            }
+            if(!_.isUndefined(data.apellido)){
                 $localStorage.apellido = data.apellido;
+            }
+            if(!_.isUndefined(data.rut)){
                 $localStorage.rut = data.rut;
             }
             return true;
@@ -39,30 +43,36 @@ crsApp.factory('SessionServices', function($http, $q, $localStorage){
                 });
             return promise;
         },
-        destroyToken: function(){
+        destroySession: function(){
             delete  $localStorage.token;
             delete  $localStorage.usuario;
             delete  $localStorage.tipo;
             delete  $localStorage.id_user;
-            if(!_.isUndefined($localStorage.nombre) && !_.isUndefined($localStorage.apellido) && !_.isUndefined($localStorage.rut)){
+            if(!_.isUndefined($localStorage.nombre)){
                 delete  $localStorage.nombre;
+            }
+            if(!_.isUndefined($localStorage.apellido)){
                 delete  $localStorage.apellido;
+            }
+            if(!_.isUndefined($localStorage.rut)){
                 delete  $localStorage.rut;
             }
             return true;
         },
         getSessionData: function () {
             var data = null;
-            if(!_.isUndefined($localStorage.nombre) && !_.isUndefined($localStorage.apellido) && !_.isUndefined($localStorage.rut)){
+            if(!_.isUndefined($localStorage.nombre) && !_.isUndefined($localStorage.apellido)){
                 data = {
                     token : $localStorage.token,
                     usuario: $localStorage.usuario,
                     tipo: $localStorage.tipo,
                     id_user: $localStorage.id_user,
                     nombre: $localStorage.nombre,
-                    apellido: $localStorage.apellido,
-                    rut: $localStorage.rut
+                    apellido: $localStorage.apellido
                 };
+                if(!_.isUndefined($localStorage.rut)){
+                    data.rut = $localStorage.rut;
+                }
             }else{
                 data = {
                     token : $localStorage.token,

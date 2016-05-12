@@ -21,8 +21,8 @@ crsApp.factory('ClasesServices', function ($http, $q) {
         obtenerClases: function (listaModulos) {
             return postHelper('/clases/obtenerClases',listaModulos);
         },
-        obtenerClasePorIDSesion: function (sesion) {
-            return postHelper('/clases/obtenerClasePorIDSesion',sesion);
+        obtenerClasesPorID: function (clase) {
+            return postHelper('/clases/obtenerClasesPorID',clase);
         },
         actualizarClase: function (clase) {
             return postHelper('/clases/actualizarClase',clase);
@@ -32,6 +32,12 @@ crsApp.factory('ClasesServices', function ($http, $q) {
         },
         actualizarSesionClase: function (clase) {
             return postHelper('/clases/actualizarSesionClase',clase);
+        },
+        contarClasesPorModulo: function (modulo) {
+            return postHelper('/clases/contarClasesPorModulo',modulo);
+        },
+        obtenerEstadoSesion: function (clase) {
+            return postHelper('/clases/obtenerEstadoSesion',clase);
         }
     }
 });

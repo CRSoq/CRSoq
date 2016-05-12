@@ -1,5 +1,4 @@
 'use strict';
-
 crsApp.factory('AsignaturasServices', function ($http, $q) {
     var postHelper = function(ruta, data){
         var defered = $q.defer();
@@ -17,6 +16,15 @@ crsApp.factory('AsignaturasServices', function ($http, $q) {
     return{
         obtenerAsignaturas: function () {
             return postHelper('/asignaturas/obtenerAsignaturas');
+        },
+        crearAsignatura: function (asignatura) {
+            return postHelper('/asignaturas/crearAsignatura', asignatura);
+        },
+        editarAsignatura: function (asignatura) {
+            return postHelper('/asignaturas/editarAsignatura', asignatura);
+        },
+        obtenerListaCursosAsignatura: function (asignatura) {
+            return postHelper('/asignaturas/obtenerListaCursosAsignatura', asignatura);
         }
     }
 });

@@ -1,8 +1,6 @@
-crsApp.controller('ClasesController', function($scope, $rootScope, $mdDialog, $filter, $timeout, $state, $stateParams, toastr, ClasesServices, ModulosServices, CursosServices, SessionServices, SocketServices){
+crsApp.controller('ClasesController', function($scope, $rootScope, $mdDialog, $q, $state, $stateParams, toastr, ClasesServices, ModulosServices, CursosServices, SessionServices, SocketServices){
     $scope.listaClases = [];
     $scope.promesas = [];
-
-
     if($rootScope.user.tipo=='profesor'){
         var asignaturas = CursosServices.obtenerCursosLocal();
         var asignatura = _.findWhere(asignaturas,{'asignatura':$stateParams.nombre_asignatura});
@@ -14,49 +12,49 @@ crsApp.controller('ClasesController', function($scope, $rootScope, $mdDialog, $f
     }
     $scope.curso = _.cloneDeep(curso);
     $scope.selected = [];
-    var callbackClases = function (response) {
-        var lista = _.cloneDeep(response.result);
-        if(lista.length>0){
-            _.forEach(lista, function (item) {
-                if(_.isArray(item)){
-                    _.forEach(item, function (elemento) {
-                        elemento.fecha = new Date(elemento.fecha);
-                        elemento.modulo = _.findWhere($scope.listaModulos,{'id_modulo': elemento.id_modulo}).nombre_modulo;
-                        $scope.listaClases.push(elemento);
-                    });
-                }else{
-                    item.fecha = new Date(item.fecha);
-                    item.modulo = _.findWhere($scope.listaModulos,{'id_modulo': item.id_modulo}).nombre_modulo;
-                    $scope.listaClases.push(item);
-                }
-            });
-        }
-    };
+     var promesaModulos = ModulosServices.obtenerModulos(curso)
+        .then(function (response) {
+             if(response.success){
+                 $scope.listaModulos= _.cloneDeep(response.result);
+                 $scope.listaModulos= _.map(_.sortByOrder($scope.listaModulos,['posicion'],['asc']));
 
-    var callbackClasesError = function (error) {
-        toastr.error(error.err.code,'Error clases');
-    };
+                 if($scope.listaModulos.length>0){
+                     var promesaClases = ClasesServices.obtenerClases($scope.listaModulos)
+                         .then(function (response) {
+                             if(response.success){
+                                 var lista = _.cloneDeep(response.result);
 
-    var callbackModulos = function (response) {
-        $scope.listaModulos= _.cloneDeep(response.result);
-        $scope.listaModulos= _.map(_.sortByOrder($scope.listaModulos,['posicion'],['asc']));
+                                 if(lista.length>0){
+                                     _.forEach(lista, function (item) {
+                                         if(_.isArray(item)){
+                                             _.forEach(item, function (elemento) {
+                                                 elemento.fecha = new Date(elemento.fecha);
+                                                 elemento.modulo = _.findWhere($scope.listaModulos,{'id_modulo': elemento.id_modulo}).nombre_modulo;
+                                                 $scope.listaClases.push(elemento);
+                                             });
+                                         }else{
+                                             item.fecha = new Date(item.fecha);
+                                             item.modulo = _.findWhere($scope.listaModulos,{'id_modulo': item.id_modulo}).nombre_modulo;
+                                             $scope.listaClases.push(item);
+                                         }
+                                     });
+                                 }
 
-        if($scope.listaModulos.length>0){
-            $scope.promesas = ClasesServices.obtenerClases($scope.listaModulos)
-                .then(callbackClases, callbackClasesError);
-        }
+                             }else{
+                                 toastr.error('No se pudo obtener lista de clase: '+response.err.code,'Error');
+                             }
+                         });
+                     $scope.promesas.push(promesaClases);
+                 }
+             }else{
+                 toastr.error('No se pudo obtener lista de módulos: '+response.err.code,'Error');
+             }
+         });
+    $scope.promesas.push(promesaModulos);
+    //se obtienen los módulos
+    $q.all(promesaModulos).then(function (response) {
 
-    };
-
-    var callBackModulosError = function (error) {
-        toastr.error(error.err.code,'Error módulos');
-    };
-
-    $scope.promesas = ModulosServices.obtenerModulos(curso)
-        .then(callbackModulos, callBackModulosError);
-
-
-
+    });
     $scope.agregarClase = function () {
         var clase = {
             'fecha': new Date(),
@@ -69,7 +67,63 @@ crsApp.controller('ClasesController', function($scope, $rootScope, $mdDialog, $f
         };
         $scope.listaClases.push(clase);
     };
-
+    $scope.editarClaseMin = function (clase, index) {
+        var claseLocal = clase;
+        if(_.isUndefined(claseLocal)){
+            claseLocal = {
+                'fecha': new Date(),
+                'descripcion': '',
+                'id_modulo':null,
+                'estado_sesion':'noIniciada',
+                'modulo': null,
+                'edicion':true,
+                'nuevo': true
+            };
+        }
+        $mdDialog.show({
+            templateUrl: '/partials/content/asignatura/curso/clases/modalEdicionClase.html',
+            locals : {
+                clase: claseLocal,
+                listaModulos: $scope.listaModulos
+            },
+            controller: 'ModalEdicionClaseController'
+        })
+            .then(
+            function (clase) {
+                if(!_.isNull(clase.modulo)) {
+                    clase.id_modulo = _.findWhere($scope.listaModulos,{'nombre_modulo':clase.modulo}).id_modulo;
+                    if(_.isUndefined(clase.nuevo)){
+                        $scope.promesas = ClasesServices.actualizarClase(clase)
+                            .then(function (response) {
+                                if(response.success){
+                                    clase.edicion = false;
+                                    toastr.success('Clase actualizada correctamente');
+                                    SocketServices.emit('actualizarListaClase', curso);
+                                    $scope.listaClases[index]= _.cloneDeep(clase);
+                                }else{
+                                    toastr.error('No se pudo actualizar la clase: '+response.err.code,'Error');
+                                }
+                            });
+                    }else{
+                        delete clase['nuevo'];
+                        $scope.promesas = ClasesServices.crearClase(clase)
+                            .then(function (response) {
+                                if(response.success){
+                                    clase.edicion = false;
+                                    clase.id_clase = response.id_clase;
+                                    SocketServices.emit('actualizarListaClase', curso);
+                                    toastr.success('Clase creada correctamente');
+                                    $scope.listaClases.push(clase);
+                                }else{
+                                    toastr.error('No se pudo crear la clase: '+response.err.code,'Error');
+                                }
+                            });
+                    }
+                }else{
+                    toastr.error('Debe seleccionar un módulo para la clase.','Error');
+                }
+            });
+    };
     $scope.editarClase = function (clase) {
         if(_.isNull(clase.fecha)){
             clase.fecha = new Date();
@@ -83,22 +137,32 @@ crsApp.controller('ClasesController', function($scope, $rootScope, $mdDialog, $f
         if(!_.isNull(clase.modulo)) {
             clase.id_modulo = _.findWhere($scope.listaModulos,{'nombre_modulo':clase.modulo}).id_modulo;
             if(_.isUndefined(clase.nuevo)){
-                $scope.promesas = ClasesServices.actualizarClase(clase).then(function () {
-                    clase.edicion = false;
-                }, function (error) {
-                    toastr.error(error.err.code,'Error al actualizar clase');
-                });
+                $scope.promesas = ClasesServices.actualizarClase(clase)
+                    .then(function (response) {
+                        if(response.success){
+                            clase.edicion = false;
+                            toastr.success('Clase actualizada correctamente');
+                            SocketServices.emit('actualizarListaClase', curso);
+                        }else{
+                            toastr.error('No se pudo actualizar la clase: '+response.err.code,'Error');
+                        }
+                    });
             }else{
                 delete clase['nuevo'];
-                $scope.promesas = ClasesServices.crearClase(clase).then(function (response) {
-                        clase.edicion = false;
-                        clase.id_clase = response.id_clase;
-                }, function (error) {
-                    toastr.error(error.err.code,'Error al crear clase');
-                });
+                $scope.promesas = ClasesServices.crearClase(clase)
+                    .then(function (response) {
+                        if(response.success){
+                            clase.edicion = false;
+                            clase.id_clase = response.id_clase;
+                            SocketServices.emit('actualizarListaClase', curso);
+                            toastr.success('Clase creada correctamente');
+                        }else{
+                            toastr.error('No se pudo crear la clase: '+response.err.code,'Error');
+                        }
+                    });
             }
         }else{
-            toastr.warning('Debe seleccionar un módulo para la clase.','Advertencia');
+            toastr.error('Debe seleccionar un módulo para la clase.','Error');
         }
     };
 
@@ -129,14 +193,15 @@ crsApp.controller('ClasesController', function($scope, $rootScope, $mdDialog, $f
             function () {
                 ClasesServices.eliminarClase(clase).then(
                     function (response) {
-                        toastr.success('Clase eliminada.');
-                        $scope.listaClases.splice(_.findIndex($scope.listaClases,{'id_clase':clase.id_clase}), 1);
-                    },
-                    function (error) {
-                        toastr.error(error.err.code,'Error al eliminar clase.');
+                        if(response.success){
+                            toastr.success('Clase eliminada.');
+                            SocketServices.emit('actualizarListaClase', curso);
+                            $scope.listaClases.splice(_.findIndex($scope.listaClases,{'id_clase':clase.id_clase}), 1);
+                        }else{
+                            toastr.error('No se pudo eliminar la clase: '+response.err.code,'Error.');
+                        }
                     }
                 );
-            },function () {
             });
     };
 
@@ -151,58 +216,62 @@ crsApp.controller('ClasesController', function($scope, $rootScope, $mdDialog, $f
         };
         //iniciar y cambiar estado a iniciado
         if(clase.estado_sesion=='noIniciada'){
-
             clase.estado_sesion = 'iniciada';
             ClasesServices.actualizarSesionClase(clase).then(function (response) {
-                SocketServices.emit('iniciarSesion',infoSesion);
-                $state.transitionTo('crsApp.asignatura.curso.clases.sesion', {nombre_asignatura:curso.nombre_curso,ano:curso.ano,semestre:curso.semestre,id_curso:curso.id_curso,id_clase:clase.id_clase});
-            }, function (error) {
-                toastr.error('Motivo: '+error.err.code,'Error al iniciar sesión.');
-            });
-
-        }else if(clase.estado_sesion=='iniciada'){
-
-            $state.transitionTo('crsApp.asignatura.curso.clases.sesion', {nombre_asignatura:curso.nombre_curso,ano:curso.ano,semestre:curso.semestre,id_curso:curso.id_curso,id_clase:clase.id_clase});
-            SocketServices.emit('IngresarASala',infoSesion);
-
-        }else if(clase.estado_sesion=='cerrada'){
-
-            $mdDialog
-                .show({
-
-                })
-                .then(
-                    function () {
-
-                    },function () {
-                    //error
-                });
-
-            /*
-            var modalAbrirSesionCerrada = $uibModal.open({
-                animation: true,
-                templateUrl: '/partials/content/clases/_sesioncerradaPartial.html',
-                controller: 'ModalAbrirSesionCerradaController',
-                backdrop: 'static',
-                size: 'md',
-                resolve: {
-                    titulo: function () {
-                        return "Sesión de preguntas cerrada";
-                    },
-                    clase: function(){
-                        return clase;
-                    }
+                if(response.success){
+                    SocketServices.emit('iniciarSesion',infoSesion);
+                    $state.transitionTo('crsApp.asignatura.curso.clases.sesion', {
+                        nombre_asignatura:curso.nombre_curso,
+                        ano:curso.ano,
+                        semestre:curso.semestre,
+                        id_curso:curso.id_curso,
+                        id_clase:clase.id_clase});
+                }else{
+                    toastr.error('No se pudo iniciar sesión: '+response.err.code,'Error');
                 }
             });
 
-            modalAbrirSesionCerrada.result.then(function () {
+        }else if(clase.estado_sesion=='iniciada'){
+            $state.transitionTo('crsApp.asignatura.curso.clases.sesion', {
+                nombre_asignatura:curso.nombre_curso,
+                ano:curso.ano,semestre:curso.semestre,
+                id_curso:curso.id_curso,
+                id_clase:clase.id_clase});
+            SocketServices.emit('ContinuarSesion',infoSesion);
 
-            });
-            */
-             //modal
-            //preguntar si se desea abrir la sesion nuevamente
+        }else if(clase.estado_sesion=='cerrada'){
+            $mdDialog.show({
+                templateUrl: '/partials/content/asignatura/curso/clases/modalSesionCerrada.html',
+                controller: 'modalSesionCerradaController'
+            }).then(
+                function (respuesta) {
+                    if(respuesta.opcion==1){
+                        //abrir de nuevo
+                        clase.estado_sesion = 'iniciada';
+                        ClasesServices.actualizarSesionClase(clase).then(function (response) {
+                            if(response.success){
+                                SocketServices.emit('iniciarSesion',infoSesion);
+                                $state.transitionTo('crsApp.asignatura.curso.clases.sesion', {
+                                    nombre_asignatura:curso.nombre_curso,
+                                    ano:curso.ano,
+                                    semestre:curso.semestre,
+                                    id_curso:curso.id_curso,
+                                    id_clase:clase.id_clase});
+                            }else{
+                                toastr.error('No se pudo iniciar sesión: '+response.err.code,'Error');
+                            }
+                        });
+                    }else{
+                        $state.transitionTo('crsApp.asignatura.curso.clases.sesion', {
+                            nombre_asignatura:curso.nombre_curso,
+                            ano:curso.ano,
+                            semestre:curso.semestre,
+                            id_curso:curso.id_curso,
+                            id_clase:clase.id_clase});
+                    }
+                });
         }else{
-            toastr.error('Error al iniciar sesión.');
+            toastr.error('No se pudo iniciar sesión.','Error');
         }
     };
 
@@ -216,9 +285,45 @@ crsApp.controller('ClasesController', function($scope, $rootScope, $mdDialog, $f
         var data ={
             sala: $stateParams.ano+$stateParams.semestre+$stateParams.nombre_asignatura+clase.id_clase
         };
+
         SocketServices.emit('IngresarASala', data);
         $state.transitionTo('crsApp.asignatura.curso.clases.sesion', {nombre_asignatura:curso.nombre_curso,ano:curso.ano,semestre:curso.semestre,id_curso:curso.id_curso,id_clase:clase.id_clase});
     };
+
+    $rootScope.$on('actualizarListaDeClases', function () {
+        if($rootScope.user.tipo=='estudiante'){
+            $scope.listaClases = [];
+            $scope.listaModulos = [];
+            $scope.promesas = ModulosServices.obtenerModulos(curso)
+                .then(function (response) {
+                    $scope.listaModulos= _.cloneDeep(response.result);
+                    $scope.listaModulos= _.map(_.sortByOrder($scope.listaModulos,['posicion'],['asc']));
+
+                    if($scope.listaModulos.length>0){
+                        $scope.promesas = ClasesServices.obtenerClases($scope.listaModulos)
+                            .then(function (response) {
+                                var lista = _.cloneDeep(response.result);
+                                if(lista.length>0){
+                                    _.forEach(lista, function (item) {
+                                        if(_.isArray(item)){
+                                            _.forEach(item, function (elemento) {
+                                                elemento.fecha = new Date(elemento.fecha);
+                                                elemento.modulo = _.findWhere($scope.listaModulos,{'id_modulo': elemento.id_modulo}).nombre_modulo;
+                                                $scope.listaClases.push(elemento);
+                                            });
+                                        }else{
+                                            item.fecha = new Date(item.fecha);
+                                            item.modulo = _.findWhere($scope.listaModulos,{'id_modulo': item.id_modulo}).nombre_modulo;
+                                            $scope.listaClases.push(item);
+                                        }
+                                    });
+                                }
+                            });
+                    }
+                });
+        }
+
+    });
 
 });
 
@@ -238,13 +343,23 @@ crsApp.controller('ModalEliminarClaseController',function($scope, $mdDialog, Cla
 });
 
 
-crsApp.controller('ModalAbrirSesionCerradaController',function($scope, $uibModalInstance, titulo, clase){
-    $scope.modalTitulo=titulo;
-
-    $scope.cerrarModal = function(){
-        $uibModalInstance.dismiss();
+crsApp.controller('modalSesionCerradaController',function($scope, $mdDialog){
+    $scope.cancelar = function() {
+        $mdDialog.cancel();
     };
-    $scope.aceptarModal = function(){
-        $uibModalInstance.close();
+
+    $scope.aceptar = function(opcion) {
+        $mdDialog.hide(opcion);
+    };
+});
+crsApp.controller('ModalEdicionClaseController',function($scope, $mdDialog, clase, listaModulos){
+    $scope.clase= _.cloneDeep(clase);
+    $scope.listaModulos = _.cloneDeep(listaModulos);
+    $scope.cancelar = function() {
+        $mdDialog.cancel();
+    };
+
+    $scope.aceptar = function() {
+        $mdDialog.hide($scope.clase);
     };
 });
