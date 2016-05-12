@@ -54,6 +54,25 @@
                 <md-divider></md-divider>
                 <nvd3 options="optGrafoAsig1" data="dataGrafoAsig1" config="{refreshDataOnly: true, deepWatchData: true}"></nvd3>
             </div>
+            <div></div>
+            <div class="md-whiteframe-4dp">
+                <div layout="row">
+                    <span flex></span>
+                    <span flex>
+                        <h2 class="md-title centrado tituloBox">
+                            Participación de los estudiantes en los cursos
+                        </h2>
+                    </span>
+                    <span flex style="text-align: right">
+                        <md-button class="rotacionInfinitaContenido" aria-label="Config gráfico"
+                                   ng-click="configurarGrafoAsig1()" ng-disabled="deshabilitarConfig">
+                            <i class="fa fa-cog rotar"></i>
+                        </md-button>
+                    </span>
+                </div>
+                <md-divider></md-divider>
+                <nvd3 options="optGrafoAsig2" data="dataGrafoAsig2" config="{refreshDataOnly: true, deepWatchData: true}"></nvd3>
+            </div>
         </div>
     </div>
 </div>

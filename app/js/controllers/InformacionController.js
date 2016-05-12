@@ -717,7 +717,7 @@ crsApp.controller('InformacionController', function ($scope, $stateParams, $mdSi
                     },
                     duration: 50,
                     xAxis: {
-                        axisLabel: 'X Axis',
+                        axisLabel: 'Clases (Fecha)',
                         tickFormat: function(d){
                             return d3.time.format('%d/%m/%y')(new Date(d));
                         }
@@ -728,7 +728,7 @@ crsApp.controller('InformacionController', function ($scope, $stateParams, $mdSi
                         }
                     },
                     yAxis: {
-                        axisLabel: 'Y Axis',
+                        axisLabel: 'Participación',
                         tickFormat: function(d){
                             return d;
                         },
@@ -1214,6 +1214,7 @@ crsApp.controller('InformacionAsignaturaController', function ($scope, $statePar
             });
             $q.all(promesasGrafoAsig1).then(function () {
                 cargarData();
+                cargarData2();
             });
         }
     });
@@ -1318,38 +1319,89 @@ crsApp.controller('InformacionAsignaturaController', function ($scope, $statePar
 
     };
     var pregBiblioteca = [];
-    var prom3 = PreguntasBibliotecaServices.obtenerBibliotecaDePreguntas(asignatura).then(function (response) {
-        if(response.success){
-            pregBiblioteca = _.cloneDeep(response.result)
-        }
-    });
-    promesasGrafoAsig2.push(prom3);
-
-    $q.all(promesasGrafoAsig2).then(function () {
-        _.forEach(pregBiblioteca, function (pregunta) {
-            _.forEach(fullData, function (curso) {
-                var dataPB = _.filter(curso.participacion, {id_b_pregunta: pregunta.id_b_pregunta});
-                var ganador = 0;
-                var perdedores = 0;
-                var noSelec = 0;
-                var noPart = 0;
-                _.forEach(dataPB, function (pB) {
-                    if(pB.participacion=='ganador'){
-                        ganador++;
-                    }else if(pB.participacion=='perdedor'){
-                        perdedores++;
-                    }else if(pB.participacion=='no seleccionado'){
-                        noSelec++;
-                    }else if(pB.participacion=='no participa'){
-                        noPart++;
-                    }
-                });
-                var participacion = ganador+perdedores+noSelec;
-
-            });
-
+    var cargarData2 = function () {
+        PreguntasBibliotecaServices.obtenerBibliotecaDePreguntas(asignatura).then(function (response) {
+            if(response.success){
+                pregBiblioteca = _.cloneDeep(response.result);
+                cargarGrafo();
+            }
         });
-    });
+        var cargarGrafo = function () {
+            var dataPorPregunta = [];
+            _.forEach(pregBiblioteca, function (pregunta) {
+                var partPreg = [];
+                _.forEach(fullData, function (curso) {
+                    var dataPB = _.filter(curso.participaciones, {id_b_pregunta: pregunta.id_b_pregunta});
+                    var ganador = 0;
+                    var perdedores = 0;
+                    var noSelec = 0;
+                    var noPart = 0;
+                    _.forEach(dataPB, function (pB) {
+                        if(pB.participacion=='ganador'){
+                            ganador++;
+                        }else if(pB.participacion=='perdedor'){
+                            perdedores++;
+                        }else if(pB.participacion=='no seleccionado'){
+                            noSelec++;
+                        }else if(pB.participacion=='no participa'){
+                            noPart++;
+                        }
+                    });
+
+                    var participacion = ganador+perdedores+noSelec;
+                    partPreg.push({
+                        key: {
+                            ano:curso.ano,
+                            semestre:curso.semestre
+                        },
+                        value:participacion
+                    });
+                });
+                dataPorPregunta.push({
+                    key: pregunta.b_pregunta,
+                    values: partPreg
+                });
+            });
+            $scope.optGrafoAsig2 = {
+                chart: {
+                    type: 'lineWithFocusChart',
+                    height: 450,
+                    margin : {
+                        top: 20,
+                        right: 20,
+                        bottom: 60,
+                        left: 40
+                    },
+                    duration: 50,
+                    xAxis: {
+                        axisLabel: 'Semestres',
+                        tickFormat: function(d){
+                            return d;
+                        }
+                    },
+                    x2Axis: {
+                        tickFormat: function(d){
+                            return d;
+                        }
+                    },
+                    yAxis: {
+                        axisLabel: 'Participación',
+                        tickFormat: function(d){
+                            return d3.format(',.2f')(d);
+                        },
+                        rotateYLabel: false
+                    },
+                    y2Axis: {
+                        tickFormat: function(d){
+                            return d3.format(',.2f')(d);
+                        }
+                    }
+                }
+            };
+            $scope.dataGrafoAsig2 = dataPorPregunta
+        };
+    };
+
     $timeout(function() {
         $scope.mostrar = !$scope.mostrar;
     }, 1000);

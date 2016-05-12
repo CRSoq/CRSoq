@@ -202,7 +202,7 @@ router.post('/partEstudiantePregRelEnCurso', function (req, res) {
         return res.sendStatus(400);
     }else{
         connection.query(
-            'SELECT  e.id_user, e.nombre, e.apellido, e.rut, c.id_clase, c.fecha, q.id_pregunta, q.pregunta, ' +
+            'SELECT  e.id_user, e.nombre, e.apellido, e.rut, c.id_clase, c.fecha, q.id_pregunta, q.id_b_pregunta, q.pregunta, ' +
             ' IF(ppr.estado_part_preg is NULL , "no participa", ' +
             '   IF(ppr.estado_part_preg="noSeleccionado","no seleccionado",ppr.estado_part_preg)) AS participacion'+
             ' FROM pertenece p'+
