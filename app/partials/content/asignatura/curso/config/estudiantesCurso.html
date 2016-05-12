@@ -1,76 +1,128 @@
-
-    <md-toolbar class="md-table-toolbar md-default">
+<md-toolbar class="md-table-toolbar md-default">
+    <md-toolbar>
+        <div class="md-toolbar-tools">
+            <h2>Estudiantes del curso {{curso.nombre_curso}}</h2>
+        </div>
+    </md-toolbar>
+    <br>
     <div class="md-toolbar-tools">
-        <form class="form-horizontal" role="form">
-            <label>
-                Generar usuario simple
-            </label>
-            <input type="checkbox" ng-model="generarUsuario">
-            <label>
-                Generar clave simple
-            </label>
-            <input type="checkbox" ng-model="generarClave">
-        </form>
-        <button type="button" class="btn btn-primary" ng-click="agregarEstudiante()">
-            <i class="fa fa-plus-circle"></i> Agregar Estudiante
-        </button>
-        <button type="button" class="btn btn-primary" ng-click="importar()">
-            <i class="fa fa-file-excel-o"></i> Importar
-        </button>
+        <div flex="100" layout="row">
+            <div flex="30" class="centrado">
+                <md-button class="md-raised" aria-label="Agregar Estudiante" ng-click="agregarEstudiante()">
+                    <md-tooltip md-direction="top" class="md-body-1">
+                        Agrega un nuevo estudiante al curso
+                    </md-tooltip>
+                    <i class="fa fa-plus-circle"></i> Nuevo Estudiante
+                </md-button>
+            </div>
+            <div flex="30" class="centrado">
+                <md-checkbox ng-model="generarUsuario" class="md-primary md-body-2" aria-label="Generar usuario simple">
+                    <md-tooltip md-direction="top" class="md-body-1">
+                        Generar usuario con el nombre y apellido del estudiante
+                    </md-tooltip>
+                    Generar usuario
+                </md-checkbox>
+            </div>
+            <div flex="30" class="centrado">
+                <md-checkbox ng-model="generarClave" class="md-primary md-body-2" aria-label="Generar clave simple">
+                    <md-tooltip md-direction="top" class="md-body-1">
+                        Generar clave con el rut del estudiante
+                    </md-tooltip>
+                    Generar clave
+                </md-checkbox>
+            </div>
+        </div>
     </div>
 </md-toolbar>
-
 <md-table-container >
-    <table md-table md-progress="promesas">
+    <table md-table class="tablaEstudiantes" md-progress="promesas">
         <thead md-head>
         <tr md-row>
-            <th md-column>RUT</th>
-            <th md-column>Nombre</th>
-            <th md-column>Apellido</th>
-            <th md-column>Usuario</th>
-            <th md-column>Clave</th>
-            <th md-column>Acciones</th>
+            <th md-column class="column-rut">RUT</th>
+            <th md-column class="column-nombre">Nombre</th>
+            <th md-column class="column-apellido">Apellido</th>
+            <th md-column class="column-usuario">Usuario</th>
+            <th md-column class="column-clave">Clave</th>
+            <th md-column class="column-acciones">Acciones</th>
         </tr>
         </thead>
         <tbody md-body>
         <tr ng-repeat="estudiante in listaEstudiantes">
-
-            <td md-cell ng-if="estudiante.edicion!=true">{{ estudiante.rut }}</td>
-            <td md-cell ng-if="estudiante.edicion==true">
-                <input type="text" name="estudianteRut" id="inputEstudianteRut" class="form-control" title="Rut del Estudiante" ng-model="estudiante.rut" ng-required="true" ng-maxlength="12" maxlength="12" ng-change="generarClaveEstudiante(estudiante); formatoRut(estudiante)" required/>
+            <pre>{{estudiante|json}}</pre>
+            <td md-cell ng-if="!estudiante.edicion" class="column-rut">
+                {{ estudiante.rut }}
             </td>
-
-            <td md-cell ng-if="estudiante.edicion!=true">
+            <td md-cell ng-if="!estudiante.edicion" class="column-nombre">
                 {{ estudiante.nombre }}
             </td>
-            <td md-cell ng-if="estudiante.edicion==true">
-                <input type="text" name="estudianteNombre" id="inputEstudianteNombre" class="form-control" title="Nombre del Estudiante" ng-model="estudiante.nombre" ng-required="true" ng-change="generarUsuarioEstudiante(estudiante)" required/>
-            </td>
-            <td md-cell ng-if="estudiante.edicion!=true">
+            <td md-cell ng-if="!estudiante.edicion" class="column-apellido">
                 {{ estudiante.apellido }}
             </td>
-            <td md-cell ng-if="estudiante.edicion==true">
-                <input type="text" name="estudianteApellido" id="inputEstudianteApellido" class="form-control" title="Apellido del Estudiante" ng-model="estudiante.apellido"  ng-required="true" ng-change="generarUsuarioEstudiante(estudiante)" required/>
-            </td>
-            <td md-cell ng-if="estudiante.edicion!=true">
+            <td md-cell ng-if="!estudiante.edicion" class="column-usuario">
                 {{estudiante.usuario}}
             </td>
-            <td md-cell ng-if="estudiante.edicion==true">
-                <input ng-disabled="generarUsuario" type="text" name="estudianteUsuario" id="inputEstudianteUsuario" class="form-control" title="Usuario" ng-model="estudiante.usuario" required="required" />
-            </td>
-            <td md-cell ng-if="estudiante.edicion!=true">
+            <td md-cell ng-if="!estudiante.edicion" class="column-clave">
                 {{estudiante.clave}}
             </td>
-            <td md-cell ng-if="estudiante.edicion==true">
-                <input ng-disabled="generarClave" type="text" name="estudianteClave" id="inputEstudianteClave" class="form-control" title="Clave" ng-model="estudiante.clave" required="required" />
+            <td md-cell ng-if="!estudiante.edicion" class="column-acciones">
+                <md-button aria-label="Editar" class="md-raised md-primary botonAccion" ng-click="editarEstudiante(estudiante)">
+                    <md-tooltip md-direction="top" class="md-body-1">
+                        Editar estudiante
+                    </md-tooltip>
+                    <i class="fa fa-pencil"></i>
+                </md-button>
+                <md-button aria-label="Eliminar" class="md-raised md-primary botonAccion" ng-click="eliminarEstudianteDelCurso(estudiante, $index)">
+                    <md-tooltip md-direction="top" class="md-body-1">
+                        Eliminar estudiante del curso
+                    </md-tooltip>
+                    <i class="fa fa-times"></i>
+                </md-button>
             </td>
-            <td md-cell ng-if="estudiante.edicion!=true">
-                <button class="btn btn-primary" ng-click="editarEstudiante(estudiante)"><i class="fa fa-pencil"></i></button>
-                <button class="btn btn-primary" ng-click="eliminarEstudianteDelCurso(estudiante, $index)"><i class="fa fa-times"></i></button>
+            <td md-cell ng-if="estudiante.edicion" class="column-rut">
+                <md-input-container class="md-block">
+                    <label>RUT</label>
+                    <input name="estudianteRut" ng-model="estudiante.rut" ng-change="generarClaveEstudiante(estudiante); buscarCoincidencia(estudiante, $index, estudiante.$$hashKey)" ng-pattern="/^[0-9]{1,2}[.]{1}[0-9]{3}[.]{1}[0-9]{3}[-]{1}[0-9Kk]{1}$/" ng-required="true" required />
+                    <div ng-hide="estudiante.rut">##.###.###-#</div>
+                </md-input-container>
+
             </td>
-            <td md-cell ng-if="estudiante.edicion==true">
-                <button class="btn btn-primary" ng-click="guardarEstudiante(estudiante)"><i class="fa fa-floppy-o"></i></button>
-                <button class="btn btn-primary" ng-click="cancelarEstudiante(estudiante, $index)"><i class="fa fa-times"></i></button>
+            <td md-cell ng-if="estudiante.edicion" class="column-nombre">
+                <md-input-container class="md-block">
+                    <label>Nombre</label>
+                    <input name="estudianteNombre" ng-model="estudiante.nombre" ng-change="generarUsuarioEstudiante(estudiante)" ng-required="true" required>
+                </md-input-container>
+            </td>
+            <td md-cell ng-if="estudiante.edicion" class="column-apellido">
+                <md-input-container class="md-block">
+                    <label>Apellido</label>
+                    <input name="estudianteApellido" ng-model="estudiante.apellido" ng-change="generarUsuarioEstudiante(estudiante)" ng-required="true" required>
+                </md-input-container>
+            </td>
+            <td md-cell ng-if="estudiante.edicion" class="column-usuario">
+                <md-input-container class="md-block">
+                    <label>Usuario</label>
+                    <input ng-disabled="generarUsuario" name="estudianteUsuario" ng-model="estudiante.usuario" ng-required="true" required>
+                </md-input-container>
+            </td>
+            <td md-cell ng-if="estudiante.edicion" class="column-clave">
+                <md-input-container class="md-block">
+                    <label>Clave</label>
+                    <input ng-disabled="generarClave" name="estudianteApellido" ng-model="estudiante.clave" ng-required="true" required>
+                </md-input-container>
+            </td>
+            <td md-cell ng-if="estudiante.edicion" class="column-acciones">
+                <md-button aria-label="Guardar" ng-disabled="camposCompletos(estudiante)" class="md-raised md-primary botonAccion" ng-click="guardarEstudiante(estudiante)">
+                    <md-tooltip md-direction="top" class="md-body-1">
+                        Guardar cambios
+                    </md-tooltip>
+                    <i class="fa fa-floppy-o"></i>
+                </md-button>
+                <md-button aria-label="Cancelar" class="md-raised md-primary botonAccion" ng-click="cancelarEstudiante(estudiante, $index)">
+                    <md-tooltip md-direction="top" class="md-body-1">
+                        Cancelar
+                    </md-tooltip>
+                    <i class="fa fa-times"></i>
+                </md-button>
             </td>
         </tr>
         </tbody>

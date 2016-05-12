@@ -1,0 +1,176 @@
+<div ng-controller="PreguntaSesionProfesorController">
+    <h1 class="centrado">{{pregunta.pregunta}}</h1>
+    <md-content hide-gt-sm show-sm show-xs>
+        <div layout="row" flex="100">
+            <md-button style="width: 100%" class="md-raised" aria-label="Finalizar pregunta" ng-click="finalizarPregunta(pregunta)">
+                <i class="fa fa-power-off"></i> Finalizar pregunta
+            </md-button>
+        </div>
+        <div layout="row" flex="100">
+            <md-button style="width: 100%"  ng-hide="preguntaFinalizada" class="md-raised" aria-label="Cerrar participación" ng-click="cerrarParticipacion()">
+                <i class="fa fa-stop"></i> Detener participación
+            </md-button>
+        </div>
+        <div flex="100">
+            <md-table-container ng-show="!responder">
+                <table md-table class="tablaPreguntas alternarColor">
+                    <thead md-head>
+                    <tr md-row>
+                        <th md-column>#</th>
+                        <th md-column>estudiante</th>
+                        <th md-column></th>
+                    </tr>
+                    </thead>
+                    <tbody md-body>
+                    <tr ng-repeat="participante in listaParticipantes">
+                        <td md-cell>{{$index+1}}</td>
+                        <td md-cell>
+                            <md-card class="customCard" ng-class="{'seleccionado': participante.estado_part_preg !='noSeleccionado'}">
+                                <md-card-content>
+                                    <table md-table class="tablaPreguntas">
+                                        <tbody md-body>
+                                        <tr>
+                                            <td style="font-weight: bold; font-size: 16px">{{participante.nombre}} {{participante.apellido}}
+                                                {{participante.rut}}</td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                    <table md-table class="tablaPreguntas alternarColor">
+                                        <thead md-head>
+                                        <tr md-row>
+                                            <th md-column></th>
+                                            <th md-column>Total Preguntas</th>
+                                            <th md-column>Participa</th>
+                                            <th md-column>No Participa</th>
+                                            <th md-column>Correctas</th>
+                                            <th md-column>Incorrectas</th>
+                                            <th md-column>No Seleccionado</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody md-body>
+                                        <tr>
+                                            <td md-cell>Semestre</td>
+                                            <td md-cell>{{participante.semestre.totalPreguntas}}</td>
+                                            <td md-cell>{{participante.semestre.participa}}</td>
+                                            <td md-cell>{{participante.semestre.noParticipa}}</td>
+                                            <td md-cell>{{participante.semestre.correctas}}</td>
+                                            <td md-cell>{{participante.semestre.incorrectas}}</td>
+                                            <td md-cell>{{participante.semestre.noSeleccionado}}</td>
+                                        </tr>
+                                        <tr>
+                                            <td md-cell>Sesión</td>
+                                            <td md-cell>{{participante.sesion.totalPreguntas}}</td>
+                                            <td md-cell>{{participante.sesion.participa}}</td>
+                                            <td md-cell>{{participante.sesion.noParticipa}}</td>
+                                            <td md-cell>{{participante.sesion.correctas}}</td>
+                                            <td md-cell>{{participante.sesion.incorrectas}}</td>
+                                            <td md-cell>{{participante.sesion.noSeleccionado}}</td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </md-card-content>
+                            </md-card>
+                        </td>
+                        <td md-cell>
+                            <md-button ng-show="preguntaFinalizada" aria-label="Seleccionar estudiante" class="md-raised md-primary botonAccion" ng-click="seleccionarEstudiante(participante)">
+                                <i ng-if="participante.estado_part_preg=='noSeleccionado'" class="fa fa-play"></i>
+                                <i ng-if="participante.estado_part_preg!='noSeleccionado'" class="fa fa-warning"></i>
+                            </md-button>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </md-table-container>
+        </div>
+    </md-content>
+    <md-toolbar class="md-table-toolbar md-default" show-gt-sm hide-sm hide-xs>
+        <div class="md-toolbar-tools">
+            <md-button class="md-raised" aria-label="Finalizar pregunta" ng-click="finalizarPregunta(pregunta)">
+                <i class="fa fa-power-off"></i> Finalizar pregunta
+            </md-button>
+            <md-button  ng-hide="preguntaFinalizada" class="md-raised" aria-label="Cerrar participación" ng-click="cerrarParticipacion()">
+                <i class="fa fa-stop"></i> Detener participación
+            </md-button>
+        </div>
+    </md-toolbar>
+    <br><br>
+    <md-table-container ng-show="!responder" show-gt-sm hide-sm hide-xs>
+        <table md-table class="tablaPreguntas alternarColor">
+            <thead md-head>
+            <tr md-row>
+                <th md-column>#</th>
+                <th md-column>estudiante</th>
+                <th md-column></th>
+            </tr>
+            </thead>
+            <tbody md-body>
+            <tr ng-repeat="participante in listaParticipantes">
+                <td md-cell>{{$index+1}}</td>
+                <td md-cell>
+                    <md-card class="customCard" ng-class="{'seleccionado': participante.estado_part_preg !='noSeleccionado'}">
+                        <md-card-content>
+                            <table md-table class="tablaPreguntas">
+                                 <tbody md-body>
+                                <tr>
+                                    <td style="font-weight: bold; font-size: 16px">{{participante.nombre}} {{participante.apellido}}
+                                    {{participante.rut}}</td>
+                                </tr>
+                                </tbody>
+                            </table>
+                            <table md-table class="tablaPreguntas alternarColor">
+                                <thead md-head>
+                                <tr md-row>
+                                    <th md-column></th>
+                                    <th md-column>Total Preguntas</th>
+                                    <th md-column>Participa</th>
+                                    <th md-column>No Participa</th>
+                                    <th md-column>Correctas</th>
+                                    <th md-column>Incorrectas</th>
+                                    <th md-column>No Seleccionado</th>
+                                </tr>
+                                </thead>
+                                <tbody md-body>
+                                <tr>
+                                    <td md-cell>Semestre</td>
+                                    <td md-cell>{{participante.semestre.totalPreguntas}}</td>
+                                    <td md-cell>{{participante.semestre.participa}}</td>
+                                    <td md-cell>{{participante.semestre.noParticipa}}</td>
+                                    <td md-cell>{{participante.semestre.correctas}}</td>
+                                    <td md-cell>{{participante.semestre.incorrectas}}</td>
+                                    <td md-cell>{{participante.semestre.noSeleccionado}}</td>
+                                </tr>
+                                <tr>
+                                    <td md-cell>Sesión</td>
+                                    <td md-cell>{{participante.sesion.totalPreguntas}}</td>
+                                    <td md-cell>{{participante.sesion.participa}}</td>
+                                    <td md-cell>{{participante.sesion.noParticipa}}</td>
+                                    <td md-cell>{{participante.sesion.correctas}}</td>
+                                    <td md-cell>{{participante.sesion.incorrectas}}</td>
+                                    <td md-cell>{{participante.sesion.noSeleccionado}}</td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </md-card-content>
+                    </md-card>
+                </td>
+                <td md-cell>
+                    <md-button ng-show="preguntaFinalizada" aria-label="Seleccionar estudiante" class="md-raised md-primary botonAccion" ng-click="seleccionarEstudiante(participante)">
+                        <i ng-if="participante.estado_part_preg=='noSeleccionado'" class="fa fa-play"></i>
+                        <i ng-if="participante.estado_part_preg!='noSeleccionado'" class="fa fa-warning"></i>
+                    </md-button>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </md-table-container>
+
+    <div ng-show="responder" class="centrado">
+        <h1>{{estudianteSeleccionado.nombre}} {{estudianteSeleccionado.apellido}} {{estudianteSeleccionado.rut}}</h1>
+        <md-button aria-label="Correcto" class="md-raised md-primary botonAccion" ng-click="respuestaCorrecta(pregunta)">
+            <i class="fa fa-check"></i> Correcto
+        </md-button>
+        <md-button aria-label="Incorrecto" class="md-raised md-primary botonAccion" ng-click="respuestaIncorrecta(pregunta)">
+            <i class="fa fa-close"></i> Incorrecto
+        </md-button>
+    </div>
+</div>

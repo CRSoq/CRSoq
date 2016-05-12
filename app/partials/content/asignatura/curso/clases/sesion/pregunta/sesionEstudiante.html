@@ -1,22 +1,20 @@
-<div ng-controller="PreguntaSesionController" flex="90" flex-offset="5">
-    <div ng-show="esperar" class="row centrado">
-        <br><br>
+<div ng-controller="PreguntaSesionController" layout="column" layout-align="none none" flex="100">
+    <div flex="20" ng-hide="participantes"></div>
+    <div ng-show="esperar" layout="column" layout-align="center center">
         <h1>Por favor espere mientras se realiza la pregunta</h1>
-        <br><br>
-        <i class="fa fa-spinner fa-pulse fa-5x"></i>
+        <div>
+            <i class="fa fa-spinner fa-pulse fa-5x"></i>
+        </div>
     </div>
-    <div ng-show="preguntaRealizada" class="row centrado">
-        <br><br>
+    <div ng-show="preguntaRealizada" layout="column" layout-align="center center">
         <h1>{{pregunta.pregunta}}</h1>
-        <br><br>
     </div>
-    <div ng-show="participar" class="row centrado">
-        <br><br>
-        <md-button class="md-raised md-warn" aria-label="Participar" ng-click="responderPregunta(pregunta)">
+    <div ng-show="participar" layout="column" layout-align="center center">
+        <md-button class="md-fab md-raised md-warn btnParticipar" aria-label="Participar" ng-click="responderPregunta(pregunta)">
             Participar
         </md-button>
-        <br><br>
     </div>
+    <div flex ng-hide="participantes || responder"></div>
     <md-table-container ng-show="participantes">
         <table md-table class="tablaPreguntas alternarColor" md-progress="cargando">
             <thead md-head>
@@ -28,7 +26,7 @@
             </tr>
             </thead>
             <tbody md-body>
-            <tr ng-repeat="participante in listaParticipantes" ng-class="{'seleccionado':participante.seleccionado}">
+            <tr ng-repeat="participante in listaParticipantes" ng-class="{'seleccionado': participante.estado_part_preg !='noSeleccionado'}">
                 <td md-cell>{{$index+1}}</td>
                 <td md-cell>{{participante.nombre}}</td>
                 <td md-cell>{{participante.apellido}}</td>
@@ -37,12 +35,12 @@
             </tbody>
         </table>
     </md-table-container>
-    <div ng-show="responder" class="row centrado">
+    <div ng-show="responder" class="centrado">
         <br><br>
         <h1>Es su turno para responder.</h1>
         <br><br>
     </div>
-    <div ng-show="resultado" class="row centrado">
+    <div ng-show="resultado" class="centrado">
         <br><br>
         <h1>{{msjResultado}}</h1>
         <br><br>

@@ -1,0 +1,57 @@
+<div ng-controller="AdministracionController" ng-if="user.tipo=='administrador'">
+    <h1><i class="fa fa-users"></i> Profesores</h1>
+
+    <md-toolbar class="md-table-toolbar md-default">
+        <div class="md-toolbar-tools">
+            <md-button class="md-raised" aria-label="Agregar profesor" ng-click="nuevoProfesor()">
+                <i class="fa fa-user-plus"></i> Agregar profesor
+            </md-button>
+        </div>
+    </md-toolbar>
+
+    <md-table-container ng-if="listaProfesores.length>0">
+        <table md-table class="alternarColor"  md-progress="promesas">
+            <thead md-head>
+            <tr md-row>
+                <th md-column>Nombre</th>
+                <th md-column>Apellido</th>
+                <th md-column>Usuario</th>
+                <th md-column>Clave</th>
+                <th md-column>Acciones</th>
+            </tr>
+            </thead>
+            <tbody md-body>
+            <tr md-row ng-repeat="profesor in listaProfesores">
+                <td md-cell >{{profesor.nombre}}</td>
+                <td md-cell >{{profesor.apellido}}</td>
+                <td md-cell >{{profesor.usuario}}</td>
+                <td md-cell >{{profesor.clave}}</td>
+                <td class="column-acciones" md-cell>
+                    <md-button aria-label="Editar" class="md-raised md-primary botonAccion" ng-click="editarProfesor(profesor)">
+                        <i class="fa fa-pencil"></i>
+                    </md-button>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </md-table-container>
+    <md-table-container ng-if="listaProfesores.length==0">
+        <table md-table md-progress="promesas">
+            <thead md-head>
+            <tr md-row>
+                <th md-column>Nombre</th>
+                <th md-column>Apellido</th>
+                <th md-column>Usuario</th>
+                <th md-column>Clave</th>
+                <th md-column>Acciones</th>
+            </tr>
+            </thead>
+            <tbody md-body>
+            <tr>
+                <td class="md-title">Sin profesores.</td>
+            </tr>
+            </tbody>
+        </table>
+    </md-table-container>
+</div>
+

@@ -1,61 +1,47 @@
-<!--<div  ng-controller="CursosController">
-    <div ng-if="user.tipo=='profesor'">
-        <h1>Semestre Año</h1>
-        <button ng-click="crearCurso()" class="btn btn-primary">
-            <span>
-                <i class="fa fa-plus-circle"></i>
-            </span>
-            Crear Curso
-        </button>
-    </div>
+<div ng-controller="CursosController" ng-if="user.tipo=='profesor'">
+    <h1><i class="fa fa-book"></i> CRSoq</h1>
 
-    <div ng-if="user.tipo=='estudiante'">
-        <h1>Semestre Año</h1>
-    </div>
+    <md-toolbar class="md-table-toolbar md-default">
+        <div class="md-toolbar-tools">
+            <md-button class="md-raised" aria-label="Crear curso" ng-click="crearCurso()">
+                <i class="fa fa-plus"></i> Crear curso
+            </md-button>
+        </div>
+    </md-toolbar>
+    <md-content ng-controller="ResumenController">
+        <div layout="column" ng-if="mostrar">
+
+            <div layout="row" layout-align="space-between none"   layout-margin>
+                <div class="md-whiteframe-4dp" flex="24" ng-repeat="meta in ultimosCursos">
+                    <h2 class="md-title centrado tituloBox" style="height: 40px">Meta {{meta.nombre_curso}} {{meta.ano}} Sem {{meta.semestre}}</h2>
+                    <md-divider></md-divider>
+                    <nvd3 options="meta.opcionesMeta" data="meta.dataMeta"></nvd3>
+                </div>
+            </div>
+        </div>
+    </md-content>
 </div>
--->
-<div ng-controller="CursosController" flex="90" flex-offset="5">
-Bienvenido
 
-    <form class="form-horizontal">
-        <div class="form-group">
-            <label for="AsignaturaSelect" class="col-sm-2 control-label">Asignatura: </label>
-            <div class="col-sm-9">
-                <select name="AsignaturaSelect" id="AsignaturaSelect"
-                        ng-options="option.nombre_asignatura for option in asignaturas"
-                        ng-model="asignaturaSeleccionada"></select>
-                <div ng-if="cargandoAsignaturas">
-                    <i class="fa fa-circle-o-notch fa-spin"></i>
-                </div>
-            </div>
-        </div>
-        <div class="form-group">
-            <label for="AñoSelect" class="col-sm-2 control-label">Año: </label>
-            <div class="col-sm-9">
-                <select name="AñoSelect" id="AñoSelect"
-                        ng-options="option.ano for option in anos"
-                        ng-model="anoSeleccionado"
-                        ng-change="cargarSemestre(anoSeleccionado)"></select>
-                <div ng-if="cargandoAno">
-                    <i class="fa fa-circle-o-notch fa-spin"></i>
-                </div>
-            </div>
-        </div>
-        <div class="form-group">
-            <label for="SemestreSelect" class="col-sm-2 control-label">Semestre: </label>
-            <div class="col-sm-9">
-                <select name="SemestreSelect" id="SemestreSelect"
-                        ng-options="option.semestre for option in semestres"
-                        ng-model="semestreSeleccionado"
-                        ng-change="guardarCalendario(semestreSeleccionado.calendario)"></select>
-                <div ng-if="cargandoSemestre">
-                    <i class="fa fa-circle-o-notch fa-spin"></i>
-                </div>
-            </div>
-        </div>
-        <md-button aria-label="Crear" class="botonMenu" ng-click="aceptar()">
-            Crear
-        </md-button>
-    </form>
+<div ng-if="user.tipo=='administrador'">
+    <h1 class="centrado"><i class="fa fa-cogs"></i> Administración de CRSoq</h1>
 
+    <md-toolbar class="md-table-toolbar md-default">
+        <div flex="100" layout="row">
+            <div flex="30" class="centrado">
+                <md-button class="md-raised" aria-label="Administrar Profesores" ui-sref="crsApp.adminProfesores">
+                    <i class="fa fa-users"></i> Profesores
+                </md-button>
+            </div>
+            <div flex="30" class="centrado">
+                <md-button class="md-raised" aria-label="Administrar Asignaturas" ui-sref="crsApp.adminAsignaturas">
+                    <i class="fa fa-book"></i> Asignaturas
+                </md-button>
+            </div>
+            <div flex="30" class="centrado">
+                <md-button class="md-raised" aria-label="Administrar Calendario" ui-sref="crsApp.adminCalendario">
+                    <i class="fa fa-calendar-o"></i> Calendario
+                </md-button>
+            </div>
+        </div>
+    </md-toolbar>
 </div>

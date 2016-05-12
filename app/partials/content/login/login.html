@@ -1,22 +1,39 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-</head>
-<body>
-<div ng-controller="LoginController">
-    <h1 class="col-md-offset-4">Bienvenido</h1>
-    <form ng-submit="login()" class="form col-md-10 center-block">
-        <div class="form-group">
-            <input type="text" class="form-control input-lg" placeholder="Usuario" ng-model="usuario" required>
-        </div>
-        <div class="form-group">
-            <input type="password" class="form-control input-lg" placeholder="Contraseña" ng-model="clave" required>
-        </div>
-        <div class="form-group">
-            <button type="submit" class="btn btn-primary btn-block">Ingresar</button>
-        </div>
-    </form>
+<div ng-controller="LoginController" layout="column" flex="100">
+    <div layout="row" flex="15">
+
+    </div>
+    <div layout="row">
+        <form name="ingreso" flex-gt-sm="40" flex-sm="70" flex-xs="90" flex-offset-gt-sm="30" flex-offset-xs="5" flex-offset-sm="15" layout="column" layout-align="center none" class="md-whiteframe-24dp" style="background-color: #e1f5fe" layout-padding>
+            <h1 class="centrado">CRSoq</h1>
+
+            <p class="centrado">Bienvenido a CRSoq, por favor ingrese sus datos.</p>
+
+            <div layout="column">
+                <md-input-container>
+                    <label>Usuario</label>
+                    <input name="usuario" ng-model="usuario" type="text" ng-required="true">
+
+                    <div ng-messages="ingreso.usuario.$error">
+                        <div ng-message="required">Debe ingresar su usuario.</div>
+                    </div>
+                </md-input-container>
+            </div>
+            <div layout="column">
+                <md-input-container>
+                    <label>Contraseña</label>
+                    <input name="clave" ng-model="clave" type="password" ng-required="true">
+
+                    <div ng-messages="ingreso.clave.$error">
+                        <div  ng-message="required">Debe ingresar su contraseña.</div>
+                    </div>
+                </md-input-container>
+            </div>
+            <div layout="column">
+                <md-button class="md-raised" aria-label="Ingresar" ng-click="login()" ng-disabled="ingreso.$invalid">
+                    Ingresar
+                </md-button>
+            </div>
+        </form>
+    </div>
+    <div layout="row" flex="25"></div>
 </div>
-</body>
-</html>

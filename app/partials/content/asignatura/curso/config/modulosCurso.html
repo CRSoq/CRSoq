@@ -1,31 +1,70 @@
-
-<form class="form-horizontal" role="form">
-    <div class="form-group" ng-repeat="modulo in modulos">
-        <label for="inputNombreModulo" class="col-sm-2 control-label">Nombre módulo #{{modulo.posicion}}</label>
-        <div class="col-md-8">
-            <input type="text" class="form-control" id="inputNombreModulo" ng-model="modulo.nombre_modulo" placeholder="Nombre del módulo" required>
-        </div>
-        <button ng-if="modulos.length>1 && modulo.posicion>1" type="button" class="btn btn-primary" ng-click="subirModulo(modulo.posicion)">
-            <i class="fa fa-angle-up"></i>
-        </button>
-        <button ng-if="modulos.length>1" type="button" class="btn btn-primary" ng-click="bajarmodulo(modulo.posicion)">
-            <i class="fa fa-angle-down"></i>
-        </button>
-        <button ng-if="modulos.length>1" type="button" class="btn btn-primary" ng-click="eliminarModulo(modulo.posicion)">
-            <i class="fa fa-minus"></i>
-        </button>
+<md-toolbar>
+    <div class="md-toolbar-tools">
+        <h2>Módulos del curso {{curso.nombre_curso}}</h2>
     </div>
-    <div class="form-group">
-        <div class="col-sm-10 col-sm-offset-2">
-            <button type="button" class="btn btn-primary" ng-click="agregarModulo()">
-                <i class="fa fa-plus"></i> Agregar módulo
-            </button>
+</md-toolbar>
+<div class="md-toolbar-tools">
+    <md-button class="md-raised" aria-label="Agrega módulo" ng-click="agregarModulo();">
+        <md-tooltip md-direction="top" class="md-body-1">
+            Agrega módulo
+        </md-tooltip>
+        <i class="fa fa-plus"></i> Agrega módulo
+    </md-button>
+</div>
+<br>
+<form layout="column" layout-align="center none" layout-padding>
+    <div layout="row" flex ng-repeat="modulo in modulos" >
+        <div flex="10">
         </div>
-    </div>
-    <div class="form-group">
-        <div class="col-sm-10 col-sm-offset-2">
-            <button type="submit" class="btn btn-primary" ng-click="guardarConfig()">Guardar</button>
-            <button type="submit" class="btn btn-primary" ng-click="cancelarConfig()">Cancelar</button>
+        <md-input-container flex="70" ng-if="!modulo.edicion">
+            <label>Nombre del módulo #{{modulo.posicion}}</label>
+            <input ng-model="modulo.nombre_modulo" ng-readonly="true">
+        </md-input-container>
+        <md-input-container flex="50" ng-if="modulo.edicion">
+            <label>Nombre del módulo #{{modulo.posicion}}</label>
+            <input ng-model="modulo.nombre_modulo" ng-required="true" required>
+        </md-input-container>
+        <md-input-container flex="20" ng-show="modulo.edicion">
+            <label>Posicion del módulo</label>
+            <md-select ng-model="modulo.posicion" required>
+                <md-option ng-repeat="posicion in _.range(1,modulos.length+1)"  ng-value="posicion">
+                    {{posicion}}
+                </md-option>
+            </md-select>
+        </md-input-container>
+        <!-- -->
+        <div ng-show="modulo.edicion">
+            <md-button aria-label="Guardar modulo" class="md-raised md-primary botonAccion" ng-click="guardarModulo(modulo)">
+                <md-tooltip md-direction="top" class="md-body-1">
+                    Guardar módulo
+                </md-tooltip>
+                <i class="fa fa-floppy-o"></i>
+            </md-button>
+        </div>
+        <div ng-show="modulo.edicion">
+            <md-button aria-label="Cancelar" class="md-raised md-primary botonAccion" ng-click="cancelarModulo(modulo, $index)">
+                <md-tooltip md-direction="top" class="md-body-1">
+                    Cancelar
+                </md-tooltip>
+                <i class="fa fa-times"></i>
+            </md-button>
+        </div>
+        <div ng-hide="modulo.edicion">
+            <md-button aria-label="Editar modulo" class="md-raised md-primary botonAccion" ng-click="editarModulo(modulo)">
+                <md-tooltip md-direction="top" class="md-body-1">
+                    Editar módulo
+                </md-tooltip>
+                <i class="fa fa-pencil"></i>
+            </md-button>
+        </div>
+        <div ng-hide="modulo.edicion">
+            <md-button aria-label="Eliminar módulo" class="md-raised md-primary botonAccion" ng-click="eliminarModulo(modulo, $index)">
+                <md-tooltip md-direction="top" class="md-body-1">
+                    Eliminar módulo
+                </md-tooltip>
+                <i class="fa fa-times"></i>
+            </md-button>
         </div>
     </div>
 </form>
+

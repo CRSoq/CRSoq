@@ -1,0 +1,22 @@
+<md-dialog aria-label="Asignar ganador" flex="50" ng-cloak>
+    <md-toolbar>
+        <div class="md-toolbar-tools">
+            <h2>Eliminar pregunta</h2>
+            <span flex></span>
+            <md-button aria-label="Cancelar" class="md-icon-button" ng-click="cancelar()">
+                <i class="fa fa-times"></i>
+            </md-button>
+        </div>
+    </md-toolbar>
+    <md-subheader class="md-primary">Pregunta: {{pregunta.pregunta}}</md-subheader>
+    <md-dialog-content>
+        <md-content class="md-padding">
+            <p>Advertencia: la pregunta será eliminada del curso, si fue realizada se eliminarán posibles participaciones.
+                <br><strong>¿Desea continuar?</strong></p>
+        </md-content>
+    </md-dialog-content>
+    <md-dialog-actions layout-align="center center">
+        <md-button aria-label="Aceptar" ng-click="aceptar()" class="md-raised md-primary">Si</md-button>
+        <md-button aria-label="Cancelar" ng-click="cancelar()" class="md-raised md-primary">No</md-button>
+    </md-dialog-actions>
+</md-dialog>

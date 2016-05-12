@@ -1,6 +1,6 @@
-<div ng-controller="ClasesController" flex="90" flex-offset="5">
+<div ng-controller="ClasesController">
     <div ng-if="user.tipo=='estudiante'"  layout="column">
-        <h1><i class="fa fa-book"></i> {{curso.nombre_curso}} / Clases</h1>
+        <h1><i class="fa fa-book"></i> Clases</h1>
         <md-table-container >
             <table md-table class="tablaClases alternarColor"  md-progress="promesas">
                 <thead md-head>
@@ -14,7 +14,8 @@
                 <tbody md-body>
                 <tr md-row ng-repeat="clase in listaClases">
 
-                    <td class="column-fecha" md-cell>{{clase.fecha | date:'dd-MM-yyyy'}}</td>
+                    <td class="column-fecha" show-gt-sm hide-sm hide-xs md-cell>{{clase.fecha | date:'dd-MM-yyyy'}}</td>
+                    <td class="column-fecha-min" hide-gt-sm show-sm show-xs md-cell>{{clase.fecha | date:'dd-MM-yyyy'}}</td>
 
                     <td class="column-descripcion" md-cell>{{clase.descripcion}}</td>
 

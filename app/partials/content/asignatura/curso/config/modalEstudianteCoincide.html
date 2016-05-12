@@ -1,0 +1,63 @@
+<md-dialog aria-label="Estudiante ingresado" ng-cloak>
+    <form>
+        <md-toolbar>
+            <div class="md-toolbar-tools">
+                <h2>Estudiante ya ingresado.</h2>
+                <span flex></span>
+                <md-button aria-label="Cancelar" class="md-icon-button" ng-click="cancelar()">
+                    <i class="fa fa-times"></i>
+                </md-button>
+            </div>
+        </md-toolbar>
+
+        <md-dialog-content>
+            <md-toolbar class="md-table-toolbar alternate" ng-hide="listaPreguntasSeleccionadas.length">
+                <div class="md-toolbar-tools">
+                    <span>Desea asociar al siguiente estudiante al curso de {{curso}}, año {{ano}},
+                        <span ng-show="semestre==1">primer semestre.</span>
+                        <span ng-show="semestre==2">segundo semestre.</span>
+                        <span ng-show="semestre>2">semestre {{semestre}}.</span>
+                    </span>
+                </div>
+            </md-toolbar>
+            <md-table-container >
+                <table md-table class="tablaEstudiantes">
+                    <thead md-head>
+                    <tr md-row >
+                        <th md-column class="column-rut">RUT</th>
+                        <th md-column class="column-nombre">Nombre</th>
+                        <th md-column class="column-apellido">Apellido</th>
+                        <th md-column class="column-usuario">Usuario</th>
+                        <th md-column class="column-clave">Clave</th>
+                    </tr>
+                    </thead>
+                    <tbody md-body>
+                    <tr md-row >
+                        <td md-cell class="column-rut">
+                            {{rut}}
+                        </td>
+                        <td md-cell class="column-nombre">
+                            {{nombre}}
+                        </td>
+                        <td md-cell class="column-apellido">
+                            {{apellido}}
+                        </td>
+                        <td md-cell class="column-usuario">
+                            {{usuario}}
+                        </td>
+                        <td md-cell class="column-clave">
+                            {{clave}}
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </md-table-container>
+        </md-dialog-content>
+        <md-dialog-actions layout-align="center center">
+            <md-button aria-label="Aceptar" ng-click="aceptar()" class="md-raised md-primary">Si</md-button>
+            <md-button aria-label="Cancelar" ng-click="cancelar()" class="md-raised md-primary">No</md-button>
+        </md-dialog-actions>
+    </form>
+</md-dialog>
+
+

@@ -1,0 +1,43 @@
+<md-dialog aria-label="Edición clase" ng-cloak>
+    <form>
+        <md-toolbar>
+            <div class="md-toolbar-tools">
+                <h2>Edición clase</h2>
+                <span flex></span>
+                <md-button aria-label="Cancelar" class="md-icon-button" ng-click="cancelar()">
+                    <i class="fa fa-times"></i>
+                </md-button>
+            </div>
+        </md-toolbar>
+        <md-dialog-content>
+            <md-content class="md-padding" >
+                    <div>
+                        <md-datepicker ng-model="clase.fecha" md-placeholder="Fecha"></md-datepicker>
+                    </div>
+                    <div>
+                        <md-input-container>
+                            <label>Descripción</label>
+                            <input md-maxlength="200"  md-no-asterisk name="description" ng-model="clase.descripcion">
+                            <div ng-messages="description.$error">
+                                <div ng-message="md-maxlength">La descripción debe tener menos de 200 caracteres.</div>
+                            </div>
+                        </md-input-container>
+                    </div>
+                    <div>
+                        <md-input-container style="width: 100%;">
+                            <label>Módulo</label>
+                            <md-select ng-model="clase.modulo" required>
+                                <md-option ng-repeat="modulo in listaModulos" ng-model="clase.nombre_modulo" value="{{modulo.nombre_modulo}}">
+                                    {{modulo.nombre_modulo}}
+                                </md-option>
+                            </md-select>
+                        </md-input-container>
+                    </div>
+            </md-content>
+        </md-dialog-content>
+        <md-dialog-actions layout-align="center center">
+            <md-button aria-label="Aceptar" ng-click="aceptar()" class="md-raised md-primary">Guardar</md-button>
+            <md-button aria-label="Cancelar" ng-click="cancelar()" class="md-raised md-primary">Cancelar</md-button>
+        </md-dialog-actions>
+    </form>
+</md-dialog>

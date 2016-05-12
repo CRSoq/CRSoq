@@ -1,1 +1,59 @@
-Info general asignatura
+<div ng-controller="InformacionAsignaturaController" flex="100">
+    <h1><i class="fa fa-bar-chart"></i> Información asginatura</h1>
+
+    <md-sidenav ng-if="user.tipo=='profesor'"
+                class="md-sidenav-right"
+                md-component-id="ConfigGrafoAsig1"
+                md-whiteframe="4">
+
+        <md-content role="navigation">
+            <md-toolbar class="md-theme-light">
+                <div layout="row">
+                    <h1 class="md-toolbar-tools">Configurar gráfico</h1>
+                    <md-button ng-click="configurarGrafoAsig1()" aria-label="Cerrar" class="md-primary">
+                        <i class="fa fa-times"></i>
+                    </md-button>
+                </div>
+
+            </md-toolbar>
+            <md-content layout-padding>
+                <div layout="row">
+                    <md-switch class="md-primary" ng-model="optGrafoAsig1.chart.stacked" aria-label="Gráfico apilado">
+                        Tipo de gráfico: {{ optGrafoAsig1.chart.stacked ? 'Apilado' : 'Agrupado' }}
+                    </md-switch>
+                </div>
+            </md-content>
+        </md-content>
+    </md-sidenav>
+
+    <md-toolbar md-scroll-shrink>
+        <div class="md-toolbar-tools">Estadística general</div>
+    </md-toolbar>
+    <md-content ng-if="!mostrar">
+        <div layout="row" layout-sm="column" layout-align="space-around">
+            <md-progress-circular md-mode="indeterminate"></md-progress-circular>
+        </div>
+    </md-content>
+    <div layout="column" ng-if="mostrar">
+        <div layout="column" layout-margin>
+            <div class="md-whiteframe-4dp">
+                <div layout="row">
+                    <span flex></span>
+                    <span flex>
+                        <h2 class="md-title centrado tituloBox">
+                            Participación de los estudiantes en los cursos
+                        </h2>
+                    </span>
+                    <span flex style="text-align: right">
+                        <md-button class="rotacionInfinitaContenido" aria-label="Config gráfico"
+                                   ng-click="configurarGrafoAsig1()" ng-disabled="deshabilitarConfig">
+                            <i class="fa fa-cog rotar"></i>
+                        </md-button>
+                    </span>
+                </div>
+                <md-divider></md-divider>
+                <nvd3 options="optGrafoAsig1" data="dataGrafoAsig1" config="{refreshDataOnly: true, deepWatchData: true}"></nvd3>
+            </div>
+        </div>
+    </div>
+</div>

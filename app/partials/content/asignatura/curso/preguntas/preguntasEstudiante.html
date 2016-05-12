@@ -1,0 +1,28 @@
+<div ng-controller="PreguntasEstudianteController" ng-if="user.tipo=='estudiante'">
+    <h1><i class="fa fa-question"></i> Preguntas</h1>
+    <md-table-container >
+        <table md-table class="tablaPreguntas" md-progress="promesas">
+            <thead md-head>
+            <tr md-row>
+                <th md-column>#</th>
+                <th md-column>Pregunta</th>
+                <th md-column>Clase</th>
+                <th md-column>Participación</th>
+            </tr>
+            </thead>
+            <tbody md-body>
+            <tr ng-repeat="pregunta in listaPreguntasCurso">
+                <td md-cell>{{$index+1}}</td>
+                <td md-cell>{{pregunta.pregunta}}</td>
+                <td md-cell>{{pregunta.clase}}</td>
+                <td md-cell>
+                    <md-chips>
+                    <md-chip>{{pregunta.estado_participacion}}</md-chip>
+                </md-chips>
+                </td>
+            </tr>
+
+            </tbody>
+        </table>
+    </md-table-container>
+</div>

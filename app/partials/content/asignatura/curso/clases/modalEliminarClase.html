@@ -1,60 +1,4 @@
-<!--
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-</head>
-<body>
-<div ng-controller="ClasesController">
-    <div class="modal-content">
-        <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal" aria-hidden="true" ng-click="cerrarModal()">&times;</button>
-            <h4 class="modal-title">{{modalTitulo}}</h4>
-        </div>
-        <form class="form-horizontal">
-            <div class="modal-body">
-                <div class="form-group">
-                    <label for="fecha" class="col-sm-4 control-label">Fecha:</label>
-                    <div class="col-sm-8" id="fecha">
-                        {{fechaClase | date:'dd-MM-yyyy'}}
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label for="modulo" class="col-sm-4 control-label">Modulo:</label>
-                    <div class="col-sm-8" id="modulo">
-                        {{moduloClase}}
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label for="descripcion" class="col-sm-4 control-label">Descripcion:</label>
-                    <div class="col-sm-8" id="descripcion">
-                        {{descripcionClase}}
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label for="estado_sesion" class="col-sm-4 control-label">Estado de la sesión:</label>
-                    <div class="col-sm-8" id="estado_sesion">
-                        Sesión {{estado_sesion}}
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-md-10 centrado">
-                    <p>Las preguntas asociadas a esta clase serán movidas al curso.</p>
-                </div>
-            </div>
-        </form>
-        <div class="modal-footer">
-            <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="cerrarModal()">No</button>
-            <button type="button" class="btn btn-primary" ng-click="aceptarModal()">Si</button>
-        </div>
-    </div>
-</div>
-</body>
-</html>
--->
-
-<md-dialog aria-label="List dialog" ng-cloak>
+<md-dialog aria-label="Eliminar clase" ng-cloak>
     <form>
         <md-toolbar>
             <div class="md-toolbar-tools">
@@ -66,34 +10,31 @@
             </div>
         </md-toolbar>
         <md-dialog-content>
-        <div class="md-dialog-content">
-            <p>Al eliminar esta clase, las preguntas asociadas a ésta clase serán dejadas en el curso.</p>
-            <div><p>{{fecha | date:"dd-MM-yyyy"}}</p></div>
-            <div><p>{{modulo}}</p></div>
-            <div style="max-width: 450px"><p>{{descripcion}}</p></div>
-            <div><p>{{estado_sesion}}</p></div>
-<!--//'       <div layout="row" layout-align="center none" style="max-width: 400px">' +-->
-    <!--//'           <div flex="35" style="background-color: #006600">Fecha</div>' +-->
-    <!--//'           <div flex="5" style="background-color: #408080"></div>' +-->
-    <!--//'           <div flex="60" style="background-color: #006600">Estado</div>' +-->
-    <!--//'       </div>' +-->
-<!--//'       <div layout="row" layout-align="center none" style="max-width: 400px">' +-->
-    <!--//'           <div flex="35" style="background-color: #00d6b2">{{fecha | date:"dd-MM-yyyy"}}</div>' +-->
-    <!--//'           <div flex="5" style="background-color: #408080"></div>' +-->
-    <!--//'           <div flex="60" style="background-color: #00d6b2" >{{estado_sesion}}</div>' +-->
-    <!--//'       </div>' +-->
-<!--//'       <br><br>' +-->
-<!--//'       <div layout="row" layout-align="center none" style="max-width: 400px">' +-->
-    <!--//'           <div flex="35" style="background-color:#2b81af">Módulo</div>' +-->
-    <!--//'           <div flex="65" style="background-color:#2b81af">Descripción</div>' +-->
-    <!--//'       </div>' +-->
-<!--//'       <div layout="row" layout-align="center none" style="max-width: 400px">' +-->
-    <!--//'           <div flex="35" style="background-color: #408080">{{modulo}}</div>' +-->
-    <!--//'           <div flex="65" style="background-color: #408080">{{descripcion}}</div>' +-->
-    <!--//'       </div>' +-->
-                <br><br>
+            <md-content class="md-padding">
+                <div layout="column" flex="100" show-gt-sm hide-sm hide-xs>
+                <p style="text-align: justify">Al eliminar esta clase, las preguntas asociadas a ésta clase serán dejadas en el curso.</p>
+
+                <div layout="row" flex="100">
+                    <div layout="row" flex="30"><strong>Fecha: </strong> {{fecha | date:"dd-MM-yyyy"}}</div>
+                    <div layout="row" flex="35"><strong>módulo: </strong> {{modulo}}</div>
+                    <div layout="row" flex="35"><strong>Estado: </strong> {{estado_sesion}}</div>
+                </div>
+                <div layout="row" flex="100">
+                    <strong>Título: </strong> {{descripcion}}
+                </div><br><br>
                 <div align="center">¿Desea continuar?</div>
-            </div>
+                </div>
+                <div layout="column" flex="100" hide-gt-sm show-sm show-xs>
+                    <p style="text-align: justify">Al eliminar esta clase, las preguntas asociadas a ésta clase serán dejadas en el curso.</p>
+
+                    <div layout="row"><strong>Fecha: </strong> {{fecha | date:"dd-MM-yyyy"}}</div>
+                    <div layout="row"><strong>módulo: </strong> {{modulo}}</div>
+                    <div layout="row"><strong>Estado: </strong> {{estado_sesion}}</div>
+                    <div layout="row" style="word-break: normal"><strong>Título: </strong> {{descripcion}}</div>
+                    <br><br>
+                    <div align="center">¿Desea continuar?</div>
+                </div>
+            </md-content>
         </md-dialog-content>
         <md-dialog-actions layout-align="center center">
             <md-button aria-label="Aceptar" ng-click="aceptar()" class="md-raised md-primary">Si</md-button>

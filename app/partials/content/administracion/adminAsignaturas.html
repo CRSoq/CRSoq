@@ -1,0 +1,47 @@
+<div ng-controller="AdministracionController" ng-if="user.tipo=='administrador'">
+    <h1><i class="fa fa-book"></i> Asignaturas </h1>
+
+    <md-toolbar class="md-table-toolbar md-default">
+        <div class="md-toolbar-tools">
+            <md-button class="md-raised" aria-label="Crear asignatura" ng-click="agregarAsignatura()">
+                <i class="fa fa-plus"></i> Crear asignatura
+            </md-button>
+        </div>
+    </md-toolbar>
+
+    <md-table-container ng-if="listaAsignaturas.length>0">
+        <table md-table class="alternarColor"  md-progress="promesas">
+            <thead md-head>
+            <tr md-row>
+                <th md-column>Nombre</th>
+                <th md-column>Acciones</th>
+            </tr>
+            </thead>
+            <tbody md-body>
+            <tr md-row ng-repeat="asignatura in listaAsignaturas">
+                <td md-cell >{{asignatura.nombre_asignatura}}</td>
+                <td md-cell>
+                    <md-button aria-label="Editar" class="md-raised md-primary botonAccion" ng-click="editarAsignatura(asignatura)">
+                        <i class="fa fa-pencil"></i>
+                    </md-button>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </md-table-container>
+    <md-table-container ng-if="listaAsignaturas.length==0">
+        <table md-table md-progress="promesas">
+            <thead md-head>
+            <tr md-row>
+                <th md-column>Nombre</th>
+                <th md-column>Acciones</th>
+            </tr>
+            </thead>
+            <tbody md-body>
+            <tr>
+                <td class="md-title">Sin asignaturas.</td>
+            </tr>
+            </tbody>
+        </table>
+    </md-table-container>
+</div>
