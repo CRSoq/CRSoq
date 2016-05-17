@@ -1,0 +1,46 @@
+<div ng-controller="ClasesController">
+    <div ng-if="user.tipo=='estudiante'"  layout="column">
+        <h1><i class="fa fa-book"></i> Clases</h1>
+        <md-table-container >
+            <table md-table class="tablaClases alternarColor"  md-progress="promesas">
+                <thead md-head>
+                <tr md-row >
+                    <th md-column>Fecha</th>
+                    <th md-column>Descripción</th>
+                    <th md-column>Módulo</th>
+                    <th md-column>Acciones</th>
+                </tr>
+                </thead>
+                <tbody md-body>
+                <tr md-row ng-repeat="clase in listaClases">
+
+                    <td class="column-fecha" show-gt-sm hide-sm hide-xs md-cell>{{clase.fecha | date:'dd-MM-yyyy'}}</td>
+                    <td class="column-fecha-min" hide-gt-sm show-sm show-xs md-cell>{{clase.fecha | date:'dd-MM-yyyy'}}</td>
+
+                    <td class="column-descripcion" md-cell>{{clase.descripcion}}</td>
+
+                    <td class="column-modulo" md-cell>{{clase.modulo}}</td>
+
+                    <td md-cell>
+                        <div ng-if="clase.estado_sesion=='iniciada'">
+                            <md-button aria-label="Sesión"  class="md-raised md-primary botonAccion" ng-click="ingresarSesion(clase)">
+                                <i class="fa fa-play"></i>
+                            </md-button>
+                        </div>
+                        <div ng-if="clase.estado_sesion=='noIniciada'">
+                            <md-button aria-label="Sesión"  class="md-raised md-primary botonAccion">
+                                <i class="fa fa-clock-o"></i>
+                            </md-button>
+                        </div>
+                        <div ng-if="clase.estado_sesion=='cerrada'">
+                            <md-button aria-label="Sesión"  class="md-raised md-primary botonAccion">
+                                <i class="fa fa-lock"></i>
+                            </md-button>
+                        </div>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </md-table-container>
+    </div>
+</div>

@@ -1,0 +1,27 @@
+<md-dialog aria-label="Sesión cerrada" flex="50" ng-cloak>
+    <md-toolbar>
+        <div class="md-toolbar-tools">
+            <h2>Sesión Cerrada</h2>
+            <span flex></span>
+            <md-button aria-label="Cancelar" class="md-icon-button" ng-click="cancelar()">
+                <i class="fa fa-times"></i>
+            </md-button>
+        </div>
+    </md-toolbar>
+
+    <md-dialog-content>
+        <md-content class="md-padding">
+            <p>Como la sesión de preguntas se encuentra cerrada, usted puede:<br><br>
+            <strong>Iniciar sesión:</strong> Se informa a los estudiantes pertenecientes al curso, que la sesión de preguntas se ha iniciado.<br>
+            <strong>Modificar sesión:</strong> Solo podrá editar los resultados de las preguntas correspondientes a la sesión.<br>
+            <strong>Cancelar:</strong> Cerrar esta ventana.</p>
+        </md-content>
+    </md-dialog-content>
+    <md-dialog-actions layout-align="center center">
+        <md-button aria-label="Iniciar sesión" ng-click="aceptar({opcion:1})" class="md-raised md-primary">Iniciar sesión</md-button>
+        <md-button aria-label="Modificar sesión" ng-click="aceptar({opcion:2})" class="md-raised md-primary">Modificar sesión</md-button>
+        <md-button aria-label="Cancelar" ng-click="cancelar()" class="md-raised md-primary">Cancelar</md-button>
+    </md-dialog-actions>
+</md-dialog>
+
+

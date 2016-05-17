@@ -1,0 +1,113 @@
+<md-sidenav ng-if="user.tipo=='estudiante'"
+            class="md-sidenav-left"
+            md-component-id="left"
+            md-is-locked-open="menuCerrado && $mdMedia('gt-sm')"
+            md-disable-backdrop
+            md-whiteframe="4">
+
+    <md-content role="navigation" flex="100" layout="column" style="height: 100%">
+        <md-toolbar layout="column" layout-align="center center" style="height: 160px">
+            <div class="md-toolbar-tools" layout-align="center center">
+                <div layout="column">
+                    <h1 style="text-align: center;">
+                        <span>
+                            <a ui-sref="crsApp" class="logo" ng-click="cerrarMenu()">
+                                CRSoq
+                            </a>
+                        </span>
+                    </h1>
+                    <h2 style="text-align: center; font-size: 16px; font-weight: lighter">
+                    <span>{{user.nombre}} {{user.apellido}} |
+                        <md-button ng-click="logOut()">
+                            Salir
+                        </md-button>
+                    </span>
+                    </h2>
+                </div>
+            </div>
+        </md-toolbar>
+
+        <md-divider class="divisor"></md-divider>
+
+        <md-list class="listaMenu" ng-repeat="semestre in menu" layout="column" >
+            <md-list-item class="itemListaMenu">
+                <md-button aria-label="Semestres" class="md-raised md-primary botonMenu" ng-click="desplegarMenuSemestre(semestre)">
+                    <div layout="row" layout-align="space-between none">
+                        <div></div>
+                        <div>{{semestre.nombre}}</div>
+                        <div><i class="fa fa-fw fa-angle-right"></i></div>
+                    </div>
+                </md-button>
+            </md-list-item>
+
+            <md-list class="listaMenu" ng-repeat="curso in semestre.cursos">
+                <md-list-item ng-show="mostrarCursosSemestre(curso)" class="itemListaMenu">
+                    <md-button class="botonMenu" ng-click="desplegarMenuCurso(curso)">
+                        <div layout="row">
+                            <div flex="5"></div>
+                            <div flex="85" align="left"><i class="fa fa-graduation-cap"></i> <span class="md-body-2">{{curso.nombre_curso}}</span></div>
+                            <div flex="10" align="right"><i class="fa fa-fw fa-angle-right"></i></div>
+                        </div>
+                    </md-button>
+                </md-list-item>
+
+                <md-list class="listaMenu" ng-show="mostrarMenu(curso)">
+                    <md-list-item  class="itemListaMenu">
+                        <md-button ng-click="cerrarMenu()" class="botonMenu" ui-sref="crsApp.asignatura.curso.clases({nombre_asignatura:curso.nombre_curso, id_curso:curso.id_curso, semestre:curso.semestre, ano:curso.ano})">
+                            <div layout="row">
+                                <div flex="8"></div>
+                                <div flex="7"><i class="fa fa-book"></i></div>
+                                <div flex="75" align="left"><span class="md-body-1">Clases</span></div>
+                                <div flex="10" align="right"><i class="fa fa-fw fa-angle-right"></i></div>
+                            </div>
+                        </md-button>
+                    </md-list-item>
+                    <md-list-item  class="itemListaMenu">
+                        <md-button ng-click="cerrarMenu()" class="botonMenu" ui-sref="crsApp.asignatura.curso.preguntas({nombre_asignatura:curso.nombre_curso, id_curso:curso.id_curso, semestre:curso.semestre, ano:curso.ano})">
+                            <div layout="row">
+                                <div flex="8"></div>
+                                <div flex="7"><i class="fa fa-question"></i></div>
+                                <div flex="75" align="left"><span class="md-body-1">Preguntas</span></div>
+                                <div flex="10" align="right"><i class="fa fa-fw fa-angle-right"></i></div>
+                            </div>
+                        </md-button>
+                    </md-list-item>
+                    <md-list-item  class="itemListaMenu">
+                        <md-button ng-click="cerrarMenu()" class="botonMenu" ui-sref="crsApp.asignatura.curso.actividades({nombre_asignatura:curso.nombre_curso, id_curso:curso.id_curso, semestre:curso.semestre, ano:curso.ano})">
+                            <div layout="row">
+                                <div flex="8"></div>
+                                <div flex="7"><i class="fa fa-tasks"></i></div>
+                                <div flex="75" align="left"><span class="md-body-1">Actividades</span></div>
+                                <div flex="10" align="right"><i class="fa fa-fw fa-angle-right"></i></div>
+                            </div>
+                        </md-button>
+                    </md-list-item>
+                    <md-list-item  class="itemListaMenu">
+                        <md-button ng-click="cerrarMenu()" class="botonMenu" ui-sref="crsApp.asignatura.curso.info({nombre_asignatura:curso.nombre_curso, id_curso:curso.id_curso, semestre:curso.semestre, ano:curso.ano})">
+                            <div layout="row">
+                                <div flex="8"></div>
+                                <div flex="7"><i class="fa fa-bar-chart"></i></div>
+                                <div flex="75" align="left"><span class="md-body-1">Información</span></div>
+                                <div flex="10" align="right"><i class="fa fa-fw fa-angle-right"></i></div>
+                            </div>
+                        </md-button>
+                    </md-list-item>
+                </md-list>
+
+            </md-list>
+        </md-list>
+        <div layout="column" flex hide-xs hide-sm show-gt-sm></div>
+
+        <div layout="column" layout-align="end end" hide-xs hide-sm show-gt-sm>
+
+            <md-button ng-show="cerrar" class="md-icon-button lock" aria-label="Menu bloqueado" ng-click="bloquearMenu()">
+                <i class="fa fa-lock icon-unlock" aria-hidden="true"></i>
+                <i class="fa fa-unlock icon-lock" aria-hidden="true"></i>
+            </md-button>
+            <md-button ng-hide="cerrar" class="md-icon-button lock" aria-label="Menu bloqueado" ng-click="bloquearMenu()">
+                <i class="fa fa-unlock icon-unlock" aria-hidden="true"></i>
+                <i class="fa fa-lock icon-lock" aria-hidden="true"></i>
+            </md-button>
+        </div>
+    </md-content>
+</md-sidenav>

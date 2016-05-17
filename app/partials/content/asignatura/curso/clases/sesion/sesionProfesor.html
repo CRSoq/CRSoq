@@ -1,0 +1,150 @@
+<div ng-controller="SesionController">
+    <h1><i class="fa fa-book"></i> {{curso.nombre_curso}} / Clases / Sesión</h1>
+
+    <md-content hide-gt-sm show-sm show-xs>
+        <div layout="row" flex="100">
+            <md-button style="width: 100%" class="md-raised" aria-label="Agregar Clase" ng-click="agregarPregunta()">
+                <i class="fa fa-search"></i> Agregar Pregunta
+            </md-button>
+        </div>
+        <div layout="row">
+            <md-button style="width: 100%" class="md-raised" aria-label="Agregar Clase" ng-click="crearPregunta()">
+                <i class="fa fa-plus-circle"></i> Crear Pregunta
+            </md-button>
+        </div>
+        <div layout="row">
+            <md-button style="width: 100%" class="md-raised" aria-label="Agregar Clase" ng-click="proyectarSesion()">
+                <i class="fa fa-desktop"></i> Proyectar
+            </md-button>
+        </div>
+        <div layout="row">
+            <md-button style="width: 100%" class="md-raised" aria-label="Agregar Clase" ng-click="finalizarSesion()">
+                <i class="fa fa-power-off"></i> Finalizar Sesion
+            </md-button>
+        </div>
+        <div flex="100">
+            <md-table-container>
+                <table md-table class="tablaPreguntas alternarColor" md-progress="promesas">
+                    <thead md-head>
+                    <tr md-row>
+                        <th md-column>Pregunta</th>
+                        <th md-column>Acciones</th>
+                    </tr>
+                    </thead>
+                    <tbody md-body>
+                    <tr md-row data-ng-repeat="pregunta in listaPreguntasClase">
+                        <td md-cell ng-show="pregunta.edicion!=true">
+                            {{pregunta.pregunta}}
+                        </td>
+                        <td md-cell ng-show="pregunta.edicion==true">
+                            <md-input-container class="md-block">
+                                <label>Pregunta</label>
+                                <input md-no-asterisk name="pregunta" ng-model="pregunta.pregunta">
+                            </md-input-container>
+                        </td>
+
+                        <td class="column-acciones-min" md-cell ng-hide="pregunta.edicion">
+                            <md-button ng-if="pregunta.estado_pregunta=='sin_realizar'" aria-label="Lanzar pregunta"
+                                       class="md-raised md-primary botonAccion" ng-click="lanzarPregunta(pregunta)">
+                                <i class="fa fa-play"></i>
+                            </md-button>
+                            <md-button ng-if="pregunta.estado_pregunta=='realizada'" aria-label="Lanzar pregunta"
+                                       class="md-raised md-primary botonAccion"
+                                       ng-click="editarGanadorPregunta(pregunta)">
+                                <i class="fa fa-lock"></i>
+                            </md-button>
+                            <md-button aria-label="Editar pregunta" ng-if="_.isNull(pregunta.id_b_pregunta)"
+                                       class="md-raised md-primary botonAccion" ng-click="editarPregunta(pregunta)">
+                                <i class="fa fa-pencil"></i>
+                            </md-button>
+                            <md-button aria-label="Quitar pregunta" class="md-raised md-primary botonAccion"
+                                       ng-click="eliminarPregunta(pregunta, $index)">
+                                <i class="fa fa-times"></i>
+                            </md-button>
+                        </td>
+                        <td class="column-acciones-min" md-cell ng-show="pregunta.edicion">
+                            <md-button aria-label="Guardar" class="md-raised md-primary botonAccion"
+                                       ng-click="guardarPregunta(pregunta)">
+                                <i class="fa fa-floppy-o"></i>
+                            </md-button>
+                            <md-button aria-label="Cancelar" class="md-raised md-primary botonAccion"
+                                       ng-click="cancelarPregunta(pregunta, $index)">
+                                <i class="fa fa-times"></i>
+                            </md-button>
+                        </td>
+                    </tbody>
+                </table>
+            </md-table-container>
+        </div>
+    </md-content>
+
+    <md-toolbar class="md-table-toolbar md-default" show-gt-sm hide-sm hide-xs>
+        <div class="md-toolbar-tools">
+            <md-button class="md-raised" aria-label="Agregar Clase" ng-click="agregarPregunta()">
+                <i class="fa fa-search"></i> Agregar Pregunta
+            </md-button>
+            <md-button class="md-raised" aria-label="Agregar Clase" ng-click="crearPregunta()">
+                <i class="fa fa-plus-circle"></i> Crear Pregunta
+            </md-button>
+            <md-button class="md-raised" aria-label="Agregar Clase" ng-click="proyectarSesion()">
+                <i class="fa fa-desktop"></i> Proyectar
+            </md-button>
+            <md-button class="md-raised" aria-label="Agregar Clase" ng-click="finalizarSesion()">
+                <i class="fa fa-power-off"></i> Finalizar Sesion
+            </md-button>
+        </div>
+    </md-toolbar>
+    <br><br>
+    <md-table-container show-gt-sm hide-sm hide-xs>
+        <table md-table class="tablaPreguntas alternarColor" md-progress="promesas">
+            <thead md-head>
+            <tr md-row>
+                <th md-column>Pregunta</th>
+                <th md-column>Acciones</th>
+            </tr>
+            </thead>
+            <tbody md-body>
+            <tr md-row data-ng-repeat="pregunta in listaPreguntasClase">
+                <td md-cell ng-show="pregunta.edicion!=true">
+                    {{pregunta.pregunta}}
+                </td>
+                <td md-cell ng-show="pregunta.edicion==true">
+                    <md-input-container class="md-block">
+                        <label>Pregunta</label>
+                        <input md-no-asterisk name="pregunta" ng-model="pregunta.pregunta">
+                    </md-input-container>
+                </td>
+
+                <td md-cell ng-hide="pregunta.edicion">
+                    <md-button ng-if="pregunta.estado_pregunta=='sin_realizar'" aria-label="Lanzar pregunta"
+                               class="md-raised md-primary botonAccion" ng-click="lanzarPregunta(pregunta)">
+                        <i class="fa fa-play"></i>
+                    </md-button>
+                    <md-button ng-if="pregunta.estado_pregunta=='realizada'" aria-label="Lanzar pregunta"
+                               class="md-raised md-primary botonAccion" ng-click="editarGanadorPregunta(pregunta)">
+                        <i class="fa fa-lock"></i>
+                    </md-button>
+                    <md-button aria-label="Editar pregunta" ng-if="_.isNull(pregunta.id_b_pregunta)"
+                               class="md-raised md-primary botonAccion" ng-click="editarPregunta(pregunta)">
+                        <i class="fa fa-pencil"></i>
+                    </md-button>
+                    <md-button aria-label="Quitar pregunta" class="md-raised md-primary botonAccion"
+                               ng-click="eliminarPregunta(pregunta, $index)">
+                        <i class="fa fa-times"></i>
+                    </md-button>
+                </td>
+                <td md-cell ng-show="pregunta.edicion">
+                    <md-button aria-label="Guardar" class="md-raised md-primary botonAccion"
+                               ng-click="guardarPregunta(pregunta)">
+                        <i class="fa fa-floppy-o"></i>
+                    </md-button>
+                    <md-button aria-label="Cancelar" class="md-raised md-primary botonAccion"
+                               ng-click="cancelarPregunta(pregunta, $index)">
+                        <i class="fa fa-times"></i>
+                    </md-button>
+                </td>
+            </tbody>
+        </table>
+    </md-table-container>
+
+</div>

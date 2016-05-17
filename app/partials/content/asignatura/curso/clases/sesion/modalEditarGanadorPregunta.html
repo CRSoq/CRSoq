@@ -1,0 +1,122 @@
+<md-dialog aria-label="Asignar ganador" flex="50" ng-cloak>
+    <md-toolbar>
+        <div class="md-toolbar-tools">
+            <h2>Modificar participación de la pregunta</h2>
+            <span flex></span>
+            <md-button aria-label="Cancelar" class="md-icon-button" ng-click="cancelar()">
+                <i class="fa fa-times"></i>
+            </md-button>
+        </div>
+    </md-toolbar>
+    <md-subheader class="md-primary">Pregunta: {{pregunta.pregunta}}</md-subheader>
+    <md-dialog-content hide-gt-sm show-sm show-xs>
+        <md-content class="md-padding">
+            <div flex="100" layout="column">
+                <div layout="row">
+                    <div flex="20">
+                        <md-icon md-font-icon="fa fa-stack fa-lg" style="font-size: 10px;"  aria-label="No seleccionado">
+                            <i class="fa fa-square-o fa-stack-2x"></i>
+                        </md-icon>
+                    </div>
+                    <div>
+                        No seleccionado
+                    </div>
+                </div>
+                <div layout="row">
+                    <div flex="20">
+                        <md-icon md-font-icon="fa fa-stack fa-lg" style="font-size: 10px" aria-label="Perdedor">
+                            <i class="fa fa-square-o fa-stack-2x"></i>
+                            <i class="fa fa-times fa-stack-1x"></i>
+                        </md-icon>
+                    </div>
+                    <div>
+                        Perdedor
+                    </div>
+                </div>
+                <div layout="row">
+                    <div flex="20">
+                        <md-icon md-font-icon="fa fa-trophy" style="height: inherit; font-size: 14px;"  aria-label="Ganador">
+                        </md-icon>
+                    </div>
+                    <div>
+                        Ganador
+                    </div>
+                </div>
+            </div>
+            <md-list-item ng-repeat="estudiante in listaParticipantes" ng-click="cambiarParticipacion(estudiante)">
+                <div layout="row" flex="100">
+                    <div flex="80">{{estudiante.rut}} | {{estudiante.nombre}} {{estudiante.apellido}}</div>
+                    <div flex="5">
+                        <md-icon md-font-icon="fa fa-stack fa-lg" style="font-size: 12px;" ng-show="estudiante.estado_part_preg=='noSeleccionado'"  aria-label="No seleccionado">
+                            <i class="fa fa-square-o fa-stack-2x"></i>
+                        </md-icon>
+                    </div>
+                    <div flex="5">
+                        <md-icon md-font-icon="fa fa-stack fa-lg" style="font-size: 12px" ng-show="estudiante.estado_part_preg=='perdedor'"  aria-label="Perdedor">
+                            <i class="fa fa-square-o fa-stack-2x"></i>
+                            <i class="fa fa-times fa-stack-1x"></i>
+                        </md-icon>
+                    </div>
+                    <div flex="5">
+                        <md-icon md-font-icon="fa fa-trophy" style="height: inherit;" ng-show="estudiante.estado_part_preg=='ganador'" aria-label="Ganador"></md-icon>
+                    </div>
+                </div>
+            </md-list-item>
+        </md-content>
+    </md-dialog-content>
+    <md-dialog-content show-gt-sm hide-sm hide-xs>
+        <md-content class="md-padding">
+            <div flex="100" layout="row">
+                <div flex="5">
+                    <md-icon md-font-icon="fa fa-stack fa-lg" style="font-size: 10px;"  aria-label="No seleccionado">
+                        <i class="fa fa-square-o fa-stack-2x"></i>
+                    </md-icon>
+                </div>
+                <div flex="25">
+                    No seleccionado
+                </div>
+                <div flex="5">
+                    <md-icon md-font-icon="fa fa-stack fa-lg" style="font-size: 10px" aria-label="Perdedor">
+                        <i class="fa fa-square-o fa-stack-2x"></i>
+                        <i class="fa fa-times fa-stack-1x"></i>
+                    </md-icon>
+                </div>
+                <div flex="25">
+                    Perdedor
+                </div>
+                <div flex="5">
+                    <md-icon md-font-icon="fa fa-trophy" style="height: inherit; font-size: 14px;"  aria-label="Ganador">
+                    </md-icon>
+                </div>
+                <div flex="25">
+                    Ganador
+                </div>
+            </div>
+            <md-list-item ng-repeat="estudiante in listaParticipantes" ng-click="cambiarParticipacion(estudiante)">
+                <div layout="row" flex="100">
+                    <div flex="20">{{estudiante.rut}} </div>
+                    <div flex="2">|</div>
+                    <div flex="60">{{estudiante.nombre}} {{estudiante.apellido}}</div>
+                    <div flex="5">
+                        <md-icon md-font-icon="fa fa-stack fa-lg" style="font-size: 12px;" ng-show="estudiante.estado_part_preg=='noSeleccionado'"  aria-label="No seleccionado">
+                            <i class="fa fa-square-o fa-stack-2x"></i>
+                        </md-icon>
+                    </div>
+                    <div flex="5">
+                        <md-icon md-font-icon="fa fa-stack fa-lg" style="font-size: 12px" ng-show="estudiante.estado_part_preg=='perdedor'"  aria-label="Perdedor">
+                            <i class="fa fa-square-o fa-stack-2x"></i>
+                            <i class="fa fa-times fa-stack-1x"></i>
+                        </md-icon>
+                    </div>
+                    <div flex="5">
+                        <md-icon md-font-icon="fa fa-trophy" style="height: inherit;" ng-show="estudiante.estado_part_preg=='ganador'" aria-label="Ganador"></md-icon>
+                    </div>
+                </div>
+            </md-list-item>
+        </md-content>
+    </md-dialog-content>
+    <md-dialog-actions layout-align="center center">
+        <md-button aria-label="Aceptar" ng-click="aceptar()" class="md-raised md-primary">Aceptar</md-button>
+        <md-button aria-label="Cancelar" ng-click="cancelar()" class="md-raised md-primary">Cancelar</md-button>
+    </md-dialog-actions>
+</md-dialog>

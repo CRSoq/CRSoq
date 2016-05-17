@@ -1,0 +1,47 @@
+<div ng-controller="CursosController" ng-if="user.tipo=='profesor'">
+    <h1><i class="fa fa-book"></i> CRSoq</h1>
+
+    <md-toolbar class="md-table-toolbar md-default">
+        <div class="md-toolbar-tools">
+            <md-button class="md-raised" aria-label="Crear curso" ng-click="crearCurso()">
+                <i class="fa fa-plus"></i> Crear curso
+            </md-button>
+        </div>
+    </md-toolbar>
+    <md-content ng-controller="ResumenController">
+        <div layout="column" ng-if="mostrar">
+
+            <div layout="row" layout-align="space-between none"   layout-margin>
+                <div class="md-whiteframe-4dp" flex="24" ng-repeat="meta in ultimosCursos">
+                    <h2 class="md-title centrado tituloBox" style="height: 40px">Meta {{meta.nombre_curso}} {{meta.ano}} Sem {{meta.semestre}}</h2>
+                    <md-divider></md-divider>
+                    <nvd3 options="meta.opcionesMeta" data="meta.dataMeta"></nvd3>
+                </div>
+            </div>
+        </div>
+    </md-content>
+</div>
+
+<div ng-if="user.tipo=='administrador'">
+    <h1 class="centrado"><i class="fa fa-cogs"></i> Administración de CRSoq</h1>
+
+    <md-toolbar class="md-table-toolbar md-default">
+        <div flex="100" layout="row">
+            <div flex="30" class="centrado">
+                <md-button class="md-raised" aria-label="Administrar Profesores" ui-sref="crsApp.adminProfesores">
+                    <i class="fa fa-users"></i> Profesores
+                </md-button>
+            </div>
+            <div flex="30" class="centrado">
+                <md-button class="md-raised" aria-label="Administrar Asignaturas" ui-sref="crsApp.adminAsignaturas">
+                    <i class="fa fa-book"></i> Asignaturas
+                </md-button>
+            </div>
+            <div flex="30" class="centrado">
+                <md-button class="md-raised" aria-label="Administrar Calendario" ui-sref="crsApp.adminCalendario">
+                    <i class="fa fa-calendar-o"></i> Calendario
+                </md-button>
+            </div>
+        </div>
+    </md-toolbar>
+</div>

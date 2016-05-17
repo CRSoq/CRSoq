@@ -1,0 +1,44 @@
+<md-dialog aria-label="Eliminar clase" ng-cloak>
+    <form>
+        <md-toolbar>
+            <div class="md-toolbar-tools">
+                <h2>Eliminar clase</h2>
+                <span flex></span>
+                <md-button aria-label="Cancelar" class="md-icon-button" ng-click="cancelar()">
+                    <i class="fa fa-times"></i>
+                </md-button>
+            </div>
+        </md-toolbar>
+        <md-dialog-content>
+            <md-content class="md-padding">
+                <div layout="column" flex="100" show-gt-sm hide-sm hide-xs>
+                <p style="text-align: justify">Al eliminar esta clase, las preguntas asociadas a ésta clase serán dejadas en el curso.</p>
+
+                <div layout="row" flex="100">
+                    <div layout="row" flex="30"><strong>Fecha: </strong> {{fecha | date:"dd-MM-yyyy"}}</div>
+                    <div layout="row" flex="35"><strong>módulo: </strong> {{modulo}}</div>
+                    <div layout="row" flex="35"><strong>Estado: </strong> {{estado_sesion}}</div>
+                </div>
+                <div layout="row" flex="100">
+                    <strong>Título: </strong> {{descripcion}}
+                </div><br><br>
+                <div align="center">¿Desea continuar?</div>
+                </div>
+                <div layout="column" flex="100" hide-gt-sm show-sm show-xs>
+                    <p style="text-align: justify">Al eliminar esta clase, las preguntas asociadas a ésta clase serán dejadas en el curso.</p>
+
+                    <div layout="row"><strong>Fecha: </strong> {{fecha | date:"dd-MM-yyyy"}}</div>
+                    <div layout="row"><strong>módulo: </strong> {{modulo}}</div>
+                    <div layout="row"><strong>Estado: </strong> {{estado_sesion}}</div>
+                    <div layout="row" style="word-break: normal"><strong>Título: </strong> {{descripcion}}</div>
+                    <br><br>
+                    <div align="center">¿Desea continuar?</div>
+                </div>
+            </md-content>
+        </md-dialog-content>
+        <md-dialog-actions layout-align="center center">
+            <md-button aria-label="Aceptar" ng-click="aceptar()" class="md-raised md-primary">Si</md-button>
+            <md-button aria-label="Cancelar" ng-click="cancelar()" class="md-raised md-primary">No</md-button>
+        </md-dialog-actions>
+    </form>
+</md-dialog>

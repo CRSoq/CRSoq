@@ -1,0 +1,28 @@
+<md-dialog aria-label="Proyectar sesión" flex="80" ng-cloak>
+    <md-toolbar>
+        <div class="md-toolbar-tools">
+            <h2>Proyectar sesión</h2>
+            <span flex></span>
+            <md-button aria-label="Cancelar" class="md-icon-button" ng-click="cancelar()">
+                <i class="fa fa-times"></i>
+            </md-button>
+        </div>
+    </md-toolbar>
+    <md-dialog-content>
+        <md-content class="md-padding">
+            <p>
+                <md-input-container class="md-block">
+                    <label>Link</label>
+                    <input id="link" name="link" ng-model="link" readonly>
+                </md-input-container>
+                <md-button ngclipboard data-clipboard-target="#link" class="md-raised" aria-label="Copiar link">
+                    Copiar
+                </md-button>
+            </p>
+        </md-content>
+    </md-dialog-content>
+    <md-dialog-actions layout-align="center center">
+        <md-button aria-label="Aceptar" ng-click="aceptar()" class="md-raised md-primary">Proyectar</md-button>
+        <md-button aria-label="Cancelar" ng-click="cancelar()" class="md-raised md-primary">Cancelar</md-button>
+    </md-dialog-actions>
+</md-dialog>

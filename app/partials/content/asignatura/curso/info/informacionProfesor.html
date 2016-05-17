@@ -1,0 +1,317 @@
+<div ng-controller="InformacionController" flex="100">
+    <h1><i class="fa fa-bar-chart"></i> Información</h1>
+    <md-sidenav ng-if="user.tipo=='profesor'"
+                class="md-sidenav-right"
+                md-component-id="right"
+                md-whiteframe="4">
+        <md-content role="navigation">
+            <md-toolbar class="md-theme-light">
+                <div layout="row">
+                    <h1 class="md-toolbar-tools">Configurar gráfico</h1>
+                    <md-button ng-click="configurarGrafico()" aria-label="Cerrar" class="md-primary">
+                        <i class="fa fa-times"></i>
+                    </md-button>
+                </div>
+            </md-toolbar>
+            <md-content layout-padding>
+                <div layout="row">
+                    <md-switch class="md-primary" ng-model="optGrafoGrl1.chart.stacked" aria-label="Gráfico apilado">
+                        Tipo de gráfico: {{ optGrafoGrl1.chart.stacked ? 'Apilado' : 'Agrupado' }}
+                    </md-switch>
+                </div>
+                <div layout="column" layout-wrap>
+                    <md-list-item>
+                        <p>Seleccionar Todo</p>
+                        <md-checkbox ng-checked="todasSeleccionadas()"
+                                     ng-click="seleccionarTodo()">
+                        </md-checkbox>
+                    </md-list-item>
+                    <div ng-repeat="clase in preguntasPorClase" layout="column">
+                        <p style="font-size: 14px">{{clase.fecha | date:'dd/MM/yyyy'}} {{clase.descripcion}}</p>
+                        <md-list-item ng-repeat="pregunta in clase.preguntas"
+                                      ng-click="seleccionarPregunta(pregunta)">
+                            <p> {{ pregunta.pregunta }} </p>
+                            <md-checkbox class="md-secondary" ng-checked="existePreguntaEnSeleccion(pregunta)"
+                                         aria-label="item"></md-checkbox>
+                        </md-list-item>
+                    </div>
+                </div>
+            </md-content>
+        </md-content>
+    </md-sidenav>
+
+    <md-sidenav ng-if="user.tipo=='profesor'"
+                class="md-sidenav-right"
+                md-component-id="configGraf2"
+                md-whiteframe="4">
+        <md-content role="navigation">
+            <md-toolbar class="md-theme-light">
+                <div layout="row">
+                    <h1 class="md-toolbar-tools">Configurar gráfico</h1>
+                    <md-button ng-click="configurarGrafico2()" aria-label="Cerrar" class="md-primary">
+                        <i class="fa fa-times"></i>
+                    </md-button>
+                </div>
+            </md-toolbar>
+            <md-content layout-padding>
+                <div layout="row">
+                    <p>Tipo de gráfico: <span class="radioValue">{{ option }}</span></p>
+                    <md-radio-group ng-model="optGrafoGrl2.chart.style" class="md-primary">
+                        <md-radio-button ng-repeat="option in optGrafoGrl2.chart.controlOptions"
+                                         ng-value="option"
+                                         aria-label="Apilado">
+                            <span ng-if="option=='stack'" aria-label="Apilado">Apilado</span>
+                            <span ng-if="option=='stream'" aria-label="Flujo">Flujo</span>
+                            <span ng-if="option=='expand'" aria-label="Expandido">Expandido</span>
+                            <br/>
+                        </md-radio-button>
+                    </md-radio-group>
+                </div>
+                Fecha Inicio: <md-datepicker ng-model="fechaInicio" md-placeholder="Fecha inicio"
+                           md-min-date="fechaMin" md-max-date="fechaMax">
+                </md-datepicker>
+                <br>
+                Fecha Fin: <md-datepicker ng-model="fechaFin" md-placeholder="Fecha fin"
+                               md-min-date="fechaMin" md-max-date="fechaMax"></md-datepicker>
+                <br>
+                <div flex="100"><md-button class="md-raised" aria-label="Aplicar" ng-click="nuevaSeleccionFechas(fechaInicio, fechaFin)">Aplicar</md-button></div>
+            </md-content>
+        </md-content>
+    </md-sidenav>
+
+    <md-sidenav ng-if="user.tipo=='profesor'"
+                class="md-sidenav-right"
+                md-component-id="configGraf4"
+                md-whiteframe="4">
+        <md-content role="navigation">
+            <md-toolbar class="md-theme-light">
+                <div layout="row">
+                    <h1 class="md-toolbar-tools">Configurar gráfico</h1>
+                    <md-button ng-click="configurarGrafico4()" aria-label="Cerrar" class="md-primary">
+                        <i class="fa fa-times"></i>
+                    </md-button>
+                </div>
+            </md-toolbar>
+            <md-content layout-padding>
+                <div layout="row">
+                    <md-switch class="md-primary" ng-model="optGrafoEst1.chart.stacked" aria-label="Gráfico apilado">
+                        Tipo de gráfico: {{ optGrafoEst1.chart.stacked ? 'Apilado' : 'Agrupado' }}
+                    </md-switch>
+                </div>
+            </md-content>
+        </md-content>
+    </md-sidenav>
+
+    <md-sidenav ng-if="user.tipo=='profesor'"
+                class="md-sidenav-right"
+                md-component-id="configGraf6"
+                md-whiteframe="4">
+        <md-content role="navigation">
+            <md-toolbar class="md-theme-light">
+                <div layout="row">
+                    <h1 class="md-toolbar-tools">Configurar gráfico</h1>
+                    <md-button ng-click="configurarGrafico6()" aria-label="Cerrar" class="md-primary">
+                        <i class="fa fa-times"></i>
+                    </md-button>
+                </div>
+            </md-toolbar>
+            <md-content layout-padding>
+                <div layout="column" layout-wrap>
+                    <div ng-repeat="clase in preguntasPorClase" layout="column">
+                        <p style="font-size: 14px">{{clase.fecha | date:'dd/MM/yyyy'}} {{clase.descripcion}}</p>
+                        <md-list-item ng-repeat="pregunta in clase.preguntas"
+                                      ng-click="cambiarPregunta(pregunta.id_pregunta)">
+                            <p> {{ pregunta.pregunta }} </p>
+                        </md-list-item>
+                    </div>
+                </div>
+            </md-content>
+        </md-content>
+    </md-sidenav>
+
+    <md-toolbar md-scroll-shrink>
+        <div class="md-toolbar-tools">Indicadores</div>
+    </md-toolbar>
+    <md-content ng-if="!mostrar">
+        <div layout="row" layout-sm="column" layout-align="space-around">
+            <md-progress-circular md-mode="indeterminate"></md-progress-circular>
+        </div>
+    </md-content>
+    <div layout="column" ng-if="mostrar">
+        <div layout="row" layout-align="space-between none" layout-margin>
+            <div class="md-whiteframe-4dp" flex="24">
+                <h2 class="md-title centrado tituloBox" style="height: 40px">Meta del curso</h2>
+                <md-divider></md-divider>
+                <nvd3 options="opcionesMeta" data="dataMeta"></nvd3>
+            </div>
+            <div class="md-whiteframe-4dp" flex="24">
+                <h2 class="md-body centrado tituloBox" style="height: 40px">Participación total del curso en
+                    preguntas</h2>
+                <md-divider></md-divider>
+                <nvd3 options="opcPartTotal" data="dataPartTotal"></nvd3>
+            </div>
+            <div class="md-whiteframe-4dp" flex="24">
+                <h2 class="md-title centrado tituloBox" style="height: 40px">Participación promedio por pregunta</h2>
+                <md-divider></md-divider>
+                <nvd3 options="opcParPromxPreg" data="dataParPromxPreg"></nvd3>
+            </div>
+            <div class="md-whiteframe-4dp" flex="24">
+                <h2 class="md-body centrado tituloBox" style="height: 40px">Participación promedio por estudiante</h2>
+                <md-divider></md-divider>
+                <nvd3 options="opcPartPromxEst" data="dataPartPromxEst"></nvd3>
+            </div>
+        </div>
+    </div>
+    <md-toolbar md-scroll-shrink>
+        <div class="md-toolbar-tools">Estadística general</div>
+    </md-toolbar>
+    <md-content ng-if="!mostrar">
+        <div layout="row" layout-sm="column" layout-align="space-around">
+            <md-progress-circular md-mode="indeterminate"></md-progress-circular>
+        </div>
+    </md-content>
+    <div layout="column" ng-if="mostrar">
+        <div layout="column" layout-margin>
+            <div class="md-whiteframe-4dp">
+                <div layout="row">
+                    <span flex></span>
+                    <span flex>
+                        <h2 class="md-title centrado tituloBox">
+                            Participantes por pregunta
+                        </h2>
+                    </span>
+                    <span flex style="text-align: right">
+                        <md-button class="rotacionInfinitaContenido" aria-label="Config gráfico"
+                                   ng-click="configurarGrafico()" ng-disabled="deshabilitarConfig">
+                            <i class="fa fa-cog rotar"></i>
+                        </md-button>
+                    </span>
+                </div>
+                <md-divider></md-divider>
+                <nvd3 options="optGrafoGrl1" data="dataGrafoGrl1" config="{refreshDataOnly: true, deepWatchData: true}"></nvd3>
+            </div>
+            <div></div>
+            <div class="md-whiteframe-4dp">
+                <div layout="row">
+                    <span flex></span>
+                    <span flex>
+                        <h2 class="md-title centrado tituloBox">
+                            Resultado de preguntas realizadas por clase
+                        </h2>
+                    </span>
+                    <span flex style="text-align: right">
+                        <md-button class="rotacionInfinitaContenido" aria-label="Config gráfico"
+                                   ng-click="configurarGrafico2()" ng-disabled="deshabilitarConfig">
+                            <i class="fa fa-cog rotar"></i>
+                        </md-button>
+                    </span>
+                </div>
+                <md-divider></md-divider>
+                <nvd3
+                        options="optGrafoGrl2"
+                        data="dataGrafoGrl2" config="{refreshDataOnly: true, deepWatchData: true}"></nvd3>
+            </div>
+            <div></div>
+            <div class="md-whiteframe-4dp">
+                <div layout="row">
+                    <span flex></span>
+                    <span flex>
+                        <h2 class="md-title centrado tituloBox">
+                            Preguntas realizadas vs Participación por clase
+                        </h2>
+                    </span>
+                    <span flex style="text-align: right">
+
+                    </span>
+                </div>
+                <md-divider></md-divider>
+                <nvd3
+                        options="optGrafoGrl3"
+                        data="dataGrafoGrl3" config="{refreshDataOnly: true, deepWatchData: true}"></nvd3>
+            </div>
+        </div>
+    </div>
+    <md-toolbar md-scroll-shrink>
+    <div class="md-toolbar-tools">Estadística estudiantes</div>
+    </md-toolbar>
+    <md-content ng-if="!mostrar">
+        <div layout="row" layout-sm="column" layout-align="space-around">
+            <md-progress-circular md-mode="indeterminate"></md-progress-circular>
+        </div>
+    </md-content>
+    <div layout="column" ng-if="mostrar">
+        <div layout="column" layout-margin>
+            <div class="md-whiteframe-4dp">
+                <div layout="row">
+                    <span flex></span>
+                    <span flex>
+                        <h2 class="md-title centrado tituloBox">
+                            Participación por estudiante
+                        </h2>
+                    </span>
+                    <span flex style="text-align: right">
+                        <md-button class="rotacionInfinitaContenido" aria-label="Config gráfico"
+                                   ng-click="configurarGrafico4()" ng-disabled="deshabilitarConfig">
+                            <i class="fa fa-cog rotar"></i>
+                        </md-button>
+                    </span>
+                </div>
+                <md-divider></md-divider>
+                <nvd3 options="optGrafoEst1" data="dataGrafoEst1" config="{refreshDataOnly: true, deepWatchData: true}"></nvd3>
+            </div>
+            <div></div>
+            <div class="md-whiteframe-4dp">
+                <div layout="row">
+                    <span flex></span>
+                    <span flex>
+                        <h2 class="md-title centrado tituloBox">
+                            Participación de estudiante por clase
+                        </h2>
+                    </span>
+                    <span flex style="text-align: right">
+
+                    </span>
+                </div>
+                <md-divider></md-divider>
+                <nvd3
+                        options="optGrafoEst2"
+                        data="dataGrafoEst2" config="{refreshDataOnly: true, deepWatchData: true}"></nvd3>
+            </div>
+            <div></div>
+
+        </div>
+    </div>
+    <md-toolbar md-scroll-shrink>
+        <div class="md-toolbar-tools">Estadística preguntas</div>
+    </md-toolbar>
+    <md-content ng-if="!mostrar">
+        <div layout="row" layout-sm="column" layout-align="space-around">
+            <md-progress-circular md-mode="indeterminate"></md-progress-circular>
+        </div>
+    </md-content>
+    <div layout="column" ng-if="mostrar">
+        <div layout="column" layout-margin>
+            <div class="md-whiteframe-4dp">
+                <div layout="row">
+                    <span flex></span>
+                    <span flex>
+                        <h2 class="md-title centrado tituloBox">
+                            Participación por pregunta
+                        </h2>
+                    </span>
+                    <span flex style="text-align: right">
+                        <md-button class="rotacionInfinitaContenido" aria-label="Config gráfico"
+                                   ng-click="configurarGrafico6()" ng-disabled="deshabilitarConfig">
+                            <i class="fa fa-cog rotar"></i>
+                        </md-button>
+                    </span>
+                </div>
+                <md-divider></md-divider>
+                <p class="centrado">{{preguntaTitulo}}</p>
+                <nvd3
+                        options="optGrafoPreg1"
+                        data="dataGrafoPreg1" config="{refreshDataOnly: false, deepWatchData: true}"></nvd3>
+            </div>
+        </div>
+    </div>
+</div>

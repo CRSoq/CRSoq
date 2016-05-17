@@ -1,0 +1,51 @@
+<md-dialog aria-label="Crear profesor" ng-cloak>
+    <form >
+        <md-toolbar>
+            <div class="md-toolbar-tools">
+                <h2><i class="fa fa-user-plus"></i> {{titulo}}</h2>
+                <span flex></span>
+                <md-button aria-label="Cancelar" class="md-icon-button" ng-click="cancelar()">
+                    <i class="fa fa-times"></i>
+                </md-button>
+            </div>
+        </md-toolbar>
+
+        <md-dialog-content>
+            <div class="md-dialog-content">
+                <md-input-container class="md-block">
+                    <label>Nombre del profesor</label>
+                    <input name="nombre" ng-model="profesor.nombre" required>
+                    <div ng-messages="nombre.$error">
+                        <div ng-message="required">Debe ingresar un nombre.</div>
+                    </div>
+                </md-input-container>
+                <md-input-container class="md-block">
+                    <label>Apellido del profesor</label>
+                    <input name="apellido" ng-model="profesor.apellido" required>
+                    <div ng-messages="apellido.$error">
+                        <div ng-message="required">Debe ingresar un apellido.</div>
+                    </div>
+                </md-input-container>
+                <md-input-container class="md-block">
+                    <label>Usuario</label>
+                    <input name="usuario" ng-model="profesor.usuario" required>
+                    <div ng-messages="usuario.$error">
+                        <div ng-message="required">Debe ingresar un usuario.</div>
+                    </div>
+                </md-input-container>
+                <md-input-container class="md-block">
+                    <label>Clave</label>
+                    <input name="clave" ng-model="profesor.clave" required>
+                    <div ng-messages="clave.$error">
+                        <div ng-message="required">Debe ingresar una clave.</div>
+                    </div>
+                </md-input-container>
+            </div>
+        </md-dialog-content>
+        <md-dialog-actions layout-align="center center">
+            <md-button aria-label="Aceptar" ng-click="aceptar()" class="md-raised md-primary">Guardar</md-button>
+            <md-button aria-label="Cancelar" ng-click="cancelar()" class="md-raised md-primary">Cancelar</md-button>
+        </md-dialog-actions>
+
+    </form>
+</md-dialog>

@@ -1,0 +1,14 @@
+<div ng-controller="ConfigCursoController">
+    <h1><i class="fa fa-archive"></i> Configuración</h1>
+    <md-tabs md-selected="selectedIndex" md-dynamic-height="true">
+        <md-tab label="Módulos" aria-label="Módulos">
+            <div ng-include="'partials/content/asignatura/curso/config/modulosCurso.html'"></div>
+        </md-tab>
+        <md-tab label="Estudiantes" aria-label="Estudiantes">
+            <div ng-include="'partials/content/asignatura/curso/config/estudiantesCurso.html'"></div>
+        </md-tab>
+        <md-tab label="Meta" aria-label="Meta">
+            <div ng-include="'partials/content/asignatura/curso/config/metaCurso.html'"></div>
+        </md-tab>
+    </md-tabs>
+</div>

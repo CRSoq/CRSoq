@@ -1,0 +1,59 @@
+<md-sidenav ng-if="user.tipo=='administrador'" class="md-sidenav-left md-whiteframe-z2"
+            md-component-id="left"
+            md-is-locked-open="$mdMedia('min-width: 600px')">
+
+    <md-content role="navigation" ng-controller="ContentAdmin">
+
+        <md-toolbar layout="column" layout-align="center center" style="height: 160px">
+            <div class="md-toolbar-tools" layout-align="center center">
+                <div layout="column">
+                    <h1 style="text-align: center;">
+                        <span>
+                            <a ui-sref="crsApp" class="logo" ng-click="cerrarMenu()">
+                                CRSoq
+                            </a>
+                        </span>
+                    </h1>
+                    <h2 style="text-align: center; font-size: 16px; font-weight: lighter">
+                    <span>{{user.tipo}} |
+                        <md-button ng-click="logOut()">
+                            Salir
+                        </md-button>
+                    </span>
+                    </h2>
+                </div>
+            </div>
+        </md-toolbar>
+
+        <md-divider class="divisor"></md-divider>
+        <md-list class="listaMenu">
+            <md-list-item class="itemListaMenu">
+                <md-button class="md-raised md-primary botonMenu" ng-click="cerrarMenu()" ui-sref="crsApp.adminProfesores">
+                    <div layout="row" layout-align="space-between none">
+                        <div></div>
+                        <div>Profesores</div>
+                        <div><i class="fa fa-fw fa-angle-right"></i></div>
+                    </div>
+                </md-button>
+            </md-list-item>
+            <md-list-item class="itemListaMenu">
+                <md-button class="md-raised md-primary botonMenu" ng-click="cerrarMenu()" ui-sref="crsApp.adminAsignaturas">
+                    <div layout="row" layout-align="space-between none">
+                        <div></div>
+                        <div>Asignaturas</div>
+                        <div><i class="fa fa-fw fa-angle-right"></i></div>
+                    </div>
+                </md-button>
+            </md-list-item>
+            <md-list-item class="itemListaMenu">
+                <md-button class="md-raised md-primary botonMenu" ng-click="cerrarMenu()" ui-sref="crsApp.adminCalendario">
+                    <div layout="row" layout-align="space-between none">
+                        <div></div>
+                        <div>Calendario</div>
+                        <div><i class="fa fa-fw fa-angle-right"></i></div>
+                    </div>
+                </md-button>
+            </md-list-item>
+        </md-list>
+    </md-content>
+</md-sidenav>

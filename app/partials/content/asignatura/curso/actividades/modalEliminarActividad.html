@@ -1,0 +1,26 @@
+<md-dialog aria-label="Actividad eliminada" flex="50" ng-cloak>
+    <md-toolbar>
+        <div class="md-toolbar-tools">
+            <h2>Eliminar actividad</h2>
+            <span flex></span>
+            <md-button aria-label="Cancelar" class="md-icon-button" ng-click="cancelar()">
+                <i class="fa fa-times"></i>
+            </md-button>
+        </div>
+    </md-toolbar>
+
+    <md-dialog-content>
+        <md-content class="md-padding">
+            <div style="padding: 25px; text-align: center; text-justify: auto">
+                <p>Advertencia: Si la actividad se realizó, se quitaran los puntos otorgados.
+                <br>¿Esta seguro que desea continuar?</p>
+            </div>
+        </md-content>
+    </md-dialog-content>
+    <md-dialog-actions layout-align="center center">
+        <md-button aria-label="Aceptar" ng-click="aceptar()" class="md-raised md-primary">Aceptar</md-button>
+        <md-button aria-label="Aceptar" ng-click="cancelar()" class="md-raised md-primary">Cancelar</md-button>
+    </md-dialog-actions>
+
+</md-dialog>
+

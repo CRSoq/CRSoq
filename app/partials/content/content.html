@@ -1,0 +1,72 @@
+<div ui-view="menu" layout="row" ng-controller="MenuController"></div>
+<div layout="column" flex>
+
+        <div layout="column" ng-if="user.tipo=='profesor' || user.tipo=='estudiante'">
+            <md-toolbar>
+                <div class="md-toolbar-tools" ng-controller="ToolbarController" layout="row">
+
+                    <div ng-hide="cerrar" hide-xs hide-sm>
+                        <md-button class="md-icon-button" aria-label="Menu" ng-click="mostrarMenu()">
+                            <i class="fa fa-bars" aria-hidden="true"></i>
+                        </md-button>
+                    </div>
+                    <div show-xs show-sm hide-gt-sm>
+                        <md-button class="md-icon-button" aria-label="Menu" ng-click="mostrarMenu()">
+                            <i class="fa fa-bars" aria-hidden="true"></i>
+                        </md-button>
+                    </div>
+                    <div show-gt-sm hide-xs>
+                        <h2 ng-if="show()">
+                            <span ng-show="!_.isUndefined(nombre_asignatura)">{{nombre_asignatura}}</span>
+                            <span ng-show="!_.isUndefined(ano)"> / {{ano}}</span>
+                            <span ng-show="!_.isUndefined(semestre)"> Sem {{semestre}}</span>
+                            <span ng-show="!_.isNull(seccion)"> / {{seccion}}</span>
+                            <span ng-show="!_.isNull(sesion)"> / {{sesion}}</span>
+                        </h2>
+                    </div>
+                    <div show-xs hide-gt-sm hide-sm>
+                        <h2 style="font-size: 16px" ng-if="show()">
+                            <span ng-show="!_.isUndefined(nombre_asignatura)">{{nombre_asignatura}}</span>
+                            <span ng-show="!_.isUndefined(ano)"> / {{ano}}</span>
+                            <span ng-show="!_.isUndefined(semestre)"> Sem {{semestre}}</span>
+                            <span ng-show="!_.isNull(seccion)"> / {{seccion}}</span>
+                            <span ng-show="!_.isNull(sesion)"> / {{sesion}}</span>
+                        </h2>
+                    </div>
+                </div>
+            </md-toolbar>
+        </div>
+    <div layout="column" ng-if="user.tipo=='administrador'" ng-controller="ContentAdmin">
+        <md-toolbar>
+            <div class="md-toolbar-tools" layout="row">
+
+                <div hide-gt-sm>
+                    <md-button class="md-icon-button" aria-label="Menu" ng-click="mostrarMenu()">
+                        <i class="fa fa-bars" aria-hidden="true"></i>
+                    </md-button>
+                </div>
+                <div show-gt-sm hide-xs>
+                    <h2>
+                        <span>Administración / {{titulo_seccion}}</span>
+                    </h2>
+                </div>
+                <div show-xs hide-gt-sm hide-sm>
+                    <h2 style="font-size: 16px">
+                        <span>Administración / {{titulo_seccion}}</span>
+                    </h2>
+                </div>
+            </div>
+        </md-toolbar>
+    </div>
+        <div layout="row" flex="100" style="background-color: #E1F5FE">
+            <div  layout="row" flex-gt-sm="90" flex-gt-xs="100" flex-xs="100" flex-offset-gt-sm="5" style="background-color: #ffffff" class="md-whiteframe-6dp">
+                <div ui-view="main" layout="column"
+
+                     flex-gt-sm="90"
+                     flex-gt-xs="100"
+                     flex-xs="100"
+                     flex-offset-gt-sm="5"
+                        ></div>
+            </div>
+        </div>
+</div>
