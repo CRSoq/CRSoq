@@ -1,0 +1,37 @@
+<div ng-controller="EspectadorController" layout="column" flex="100">
+    <div flex="20"></div>
+    <div ng-hide="preguntaRealizada" layout="column" layout-align="center center">
+        <h1>{{estado}}</h1>
+        <div layout="row" layout-sm="column" layout-align="space-around">
+            <md-progress-circular md-mode="indeterminate"></md-progress-circular>
+        </div>
+    </div>
+    <div ng-show="preguntaRealizada" class="md-title centrado">
+        <h1>{{pregunta}}</h1>
+    </div>
+    <div ng-show="participanteSeleccionado" class="md-title centrado">
+        <h1>{{participacion}}</h1>
+    </div>
+    <div ng-show="listaParticipantes.length>0">
+        <md-table-container>
+            <table md-table class="tablaPreguntas alternarColor">
+                <thead md-head>
+                <tr md-row>
+                    <th md-column>#</th>
+                    <th md-column>Nombre</th>
+                    <th md-column>Apellido</th>
+                    <th md-column>RUT</th>
+                </tr>
+                </thead>
+                <tbody md-body>
+                <tr ng-repeat="participante in listaParticipantes" ng-class="{'seleccionado': participante.estado_part_preg !='noSeleccionado'}">
+                    <td md-cell>{{$index+1}}</td>
+                    <td md-cell>{{participante.nombre}}</td>
+                    <td md-cell>{{participante.apellido}}</td>
+                    <td md-cell>{{participante.rut}}</td>
+                </tr>
+                </tbody>
+            </table>
+        </md-table-container>
+    </div>
+</div>
