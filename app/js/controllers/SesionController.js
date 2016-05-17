@@ -1,10 +1,15 @@
-crsApp.controller('SesionController', function($scope, $rootScope, $state, $stateParams, $q, $timeout, $mdDialog, toastr, SessionServices, CursosServices, ClasesServices, PreguntasServices, SocketServices){
+crsApp.controller('SesionController', function($scope, $rootScope, $state, $stateParams, $q, $timeout, $mdDialog, $localStorage, toastr, SessionServices, CursosServices, ClasesServices, PreguntasServices, SocketServices){
     $scope.listaPreguntasClase=[];
     $scope.listaPreguntasClaseEdit=[];
     $scope.id_curso = null;
     $scope.promesas = [];
     $scope._ = _;
 
+    if(_.isUndefined($localStorage.sesion_id)){
+        $scope.sesion_id = null;
+    }else{
+        $scope.sesion_id = $localStorage.sesion_id;
+    }
     var asignaturas = CursosServices.obtenerCursosLocal();
     var asignatura = _.findWhere(asignaturas,{'asignatura':$stateParams.nombre_asignatura});
     var curso = _.findWhere(asignatura.cursos, {'id_curso':Number($stateParams.id_curso)});
@@ -216,6 +221,7 @@ crsApp.controller('SesionController', function($scope, $rootScope, $state, $stat
                     nombre_asignatura:$stateParams.nombre_asignatura,
                     id_curso:$scope.curso.id_curso});
                 SocketServices.emit('actualizarListaClase', curso);
+                delete $localStorage.sesion_id;
             }else{
                 toastr.error('No se pudo finalizar la sesión: '+response.err.code,'Error');
             }
@@ -223,7 +229,28 @@ crsApp.controller('SesionController', function($scope, $rootScope, $state, $stat
     };
     //boton proyectar sesion
     $scope.proyectarSesion = function () {
-    //
+    //obtener id sesion y pasarlo
+        if(_.isNull($scope.sesion_id)){
+            $scope.sesion_id = _.random(1000,9999);
+            $localStorage.sesion_id = $scope.sesion_id;
+        }
+
+        $mdDialog
+            .show({
+                templateUrl: '/partials/content/asignatura/curso/clases/sesion/modalProyectarSesion.html',
+                locals:{
+                    curso: $scope.curso,
+                    sesion_id: $scope.sesion_id
+                },
+                controller: 'ModalProyectarSesionController'
+            })
+            .then(
+            function () {
+                SocketServices.emit('registrarIdEspectador',{
+                    sala: $stateParams.ano+$stateParams.semestre+$stateParams.nombre_asignatura+$stateParams.id_clase,
+                    sesion_id: $scope.sesion_id
+                })
+            });
     };
 
 });
@@ -270,6 +297,18 @@ crsApp.controller('ModalEditarGanadorPreguntaController', function ($scope, $mdD
 });
 crsApp.controller('modalEliminarPreguntaClaseController', function ($scope, $mdDialog, pregunta) {
     $scope.pregunta = _.cloneDeep(pregunta);
+    $scope.cancelar = function() {
+        $mdDialog.cancel();
+    };
+
+    $scope.aceptar = function() {
+        $mdDialog.hide();
+    };
+});
+crsApp.controller('ModalProyectarSesionController', function ($scope, $mdDialog, curso, sesion_id, $location) {
+    $scope.curso=curso;
+    $scope.sesion_id=sesion_id;
+    $scope.link = 'http://'+$location.host()+':'+$location.port()+'/#/espectador/'+curso.nombre_curso+'/'+sesion_id;
     $scope.cancelar = function() {
         $mdDialog.cancel();
     };

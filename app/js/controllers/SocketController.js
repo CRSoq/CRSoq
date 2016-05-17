@@ -1,5 +1,4 @@
-crsApp.controller('SocketController', function ($scope,$rootScope,toastr,SocketServices, SessionServices) {
-    // .-
+crsApp.controller('SocketController', function ($scope,$rootScope,$location,toastr,SocketServices, SessionServices) {
     var dataSesion = SessionServices.getSessionData();
     if(_.isNull(SocketServices.getSocket())){
         SocketServices.connect();
@@ -8,9 +7,6 @@ crsApp.controller('SocketController', function ($scope,$rootScope,toastr,SocketS
             SocketServices.emit('EnviarDatos', dataSesion);
         }
     }
-    $scope.entrar = function (data) {
-        console.log(data);
-    };
     //-----
     SocketServices.on('sesionAbierta', function (data) {
         toastr.warning('En '+data.curso+' se ha iniciado una sesión de preguntas.', 'Sesión abierta', {
@@ -48,20 +44,40 @@ crsApp.controller('SocketController', function ($scope,$rootScope,toastr,SocketS
     });
     SocketServices.on('finParticipacion', function () {
         $rootScope.$emit('finParticipacionEstudiantes');
+        toastr.success('Participación cerrada');
     });
 
     SocketServices.on('turnoRespuesta', function () {
         $rootScope.$emit('turnoParaResponder');
     });
+    SocketServices.on('participanteRespondiendo', function (data) {
+        var dataUsuario = SessionServices.getSessionData();
 
-    SocketServices.on('respuestaEstudianteIncorrecta', function () {
-        //respondi mal, mostrar mensaje.
-        toastr.error('Tu respuesta es incorrecta.', 'Lo siento', {
-            iconClass: 'perdedor'
-        });
-        $rootScope.$emit('mostrarResultadoIncorrecto');
+        if(dataUsuario.id_user != data.id_user){
+            toastr.success('Es el turno de '+data.nombre+' '+data.apellido);
+            $rootScope.$emit('participanteSeleccionado', data);
+        }else{
+            $rootScope.$emit('turnoParaResponder');
+        }
     });
+    SocketServices.on('respuestaIncorrecta', function (data) {
+        var dataUsuario = SessionServices.getSessionData();
 
+        if(dataUsuario.id_user != data.id_user){
+            $rootScope.$emit('respuestaIncorrectaContinuar', data);
+        }else{
+            $rootScope.$emit('respuestaIncorrectaUserContinuar', data);
+        }
+    });
+    SocketServices.on('respuestaCorrecta', function (data) {
+        var dataUsuario = SessionServices.getSessionData();
+
+        if(dataUsuario.id_user != data.id_user){
+            $rootScope.$emit('respuestaCorrectaContinuar', data);
+        }else{
+            $rootScope.$emit('respuestaCorrectaUserContinuar', data);
+        }
+    });
     SocketServices.on('continuarPregunta', function (participante) {
         //cambiar estado de la lista eliminando el participante
         $rootScope.$emit('finParticipacionEstudiantes');
@@ -91,4 +107,9 @@ crsApp.controller('SocketController', function ($scope,$rootScope,toastr,SocketS
     SocketServices.on('actualizarListaClase', function (data) {
         $rootScope.$emit('actualizarListaDeClases');
     });
+
+    SocketServices.on('actualizarSesion', function (data) {
+        $rootScope.$emit('sesionEspectador', data);
+    });
+
 });

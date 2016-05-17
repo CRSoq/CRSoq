@@ -172,7 +172,7 @@ crsApp.controller('PreguntaSesionProfesorController', function ($scope, $rootSco
     }
 });
 
-crsApp.controller('PreguntaSesionController', function ($scope, $rootScope, $state, $stateParams, $timeout, PreguntasServices, SocketServices, SessionServices, ClasesServices) {
+crsApp.controller('PreguntaSesionController', function ($scope, $rootScope, $state, $stateParams, $timeout, PreguntasServices, SocketServices, SessionServices, ClasesServices, toastr) {
     $scope.listaParticipantes=[];
     //view control
     $scope.esperar = true; //mostar esperar por la pregunta
@@ -219,6 +219,11 @@ crsApp.controller('PreguntaSesionController', function ($scope, $rootScope, $sta
             $scope.preguntaRealizada = true;
             if(data.pregunta.listaParticipantes.length>0){
                 $scope.listaParticipantes = _.cloneDeep(data.pregunta.listaParticipantes);
+                _.forEach($scope.listaParticipantes, function (estudiante) {
+                    if(estudiante.turno){
+                        estudiante.estado_part_preg = 'seleccionado';
+                    }
+                });
             }
             var dataUsuario = SessionServices.getSessionData();
             var indexUser = _.findIndex(data.pregunta.listaParticipantes,{id_user:dataUsuario.id_user});
@@ -272,14 +277,6 @@ crsApp.controller('PreguntaSesionController', function ($scope, $rootScope, $sta
         $scope.listaParticipantes=[];
         $scope.listaParticipantes = _.cloneDeep(data);
     });
-    //$rootScope.$on('nuevalistaParticipantes', function (event, listaParticipantes) {
-    //    $scope.listaParticipantes = _.cloneDeep(listaParticipantes);
-    //});
-
-    //$rootScope.$on('actualizarEstadoLista', function (event, data) {
-    //    var participante = _.findWhere($scope.listaParticipantes, {'usuario':data.usuario});
-    //    participante.seleccionado = true;
-    //});
 
     $rootScope.$on('turnoParaResponder', function () {
         $scope.esperar = false;
@@ -289,6 +286,44 @@ crsApp.controller('PreguntaSesionController', function ($scope, $rootScope, $sta
         $scope.responder = true;
     });
 
+    $rootScope.$on('participanteSeleccionado', function (event, data) {
+        var dataUsuario = SessionServices.getSessionData();
+
+        if(dataUsuario.id_user != data.id_user){
+            //toastr.success('Es el turno de '+data.nombre+' '+data.apellido);
+            var estudiante = _.findWhere($scope.listaParticipantes, {id_user:data.id_user});
+            if(!_.isUndefined(estudiante)){
+                estudiante.estado_part_preg = 'seleccionado';
+            }
+        }
+    });
+    $rootScope.$on('respuestaIncorrectaContinuar', function (event, data) {
+        $scope.esperar = false;
+        $scope.participar = false;
+        $scope.preguntaRealizada = true;
+        $scope.participantes = true;
+        var estudiante = _.findWhere($scope.listaParticipantes, {id_user:data.id_user});
+        if(!_.isUndefined(estudiante)){
+            estudiante.estado_part_preg = 'perdedor';
+        }
+    });
+    $rootScope.$on('respuestaIncorrectaUserContinuar', function (event, data) {
+        $scope.esperar = false;
+        $scope.participar = false;
+        $scope.preguntaRealizada = true;
+        $scope.participantes = true;
+        $scope.responder = false;
+        var estudiante = _.findWhere($scope.listaParticipantes, {id_user:data.id_user});
+        if(!_.isUndefined(estudiante)){
+            estudiante.estado_part_preg = 'perdedor';
+        }
+        toastr.error('Tu respuesta es incorrecta', 'Lo siento',{
+            iconClass: 'perdedor'
+        });
+    });
+    $rootScope.$on('respuestaCorrectaContinuar', function (event, data) {
+
+    });
     $rootScope.$on('mostrarResultadoIncorrecto', function (event, data) {
         $scope.esperar = false;
         $scope.participar = false;
@@ -296,7 +331,11 @@ crsApp.controller('PreguntaSesionController', function ($scope, $rootScope, $sta
         $scope.participantes = false;
         $scope.responder = false;
         $scope.resultado = true;
-        $scope.msjResultado = "Lo siento, tu respuesta no es correcta.";
+        //$scope.msjResultado = "Lo siento, tu respuesta no es correcta.";
+        var estudiante = _.findWhere($scope.listaParticipantes, {id_user:data.id_user});
+        if(!_.isUndefined(estudiante)){
+            estudiante.estado_part_preg = 'perdedor';
+        }
     });
     $rootScope.$on('mostrarResultadoCorrecto', function (event, data) {
         $scope.esperar = false;
@@ -305,7 +344,7 @@ crsApp.controller('PreguntaSesionController', function ($scope, $rootScope, $sta
         $scope.participantes = false;
         $scope.responder = false;
         $scope.resultado = true;
-        $scope.msjResultado = "Tu respuesta no es correcta !!";
+        $scope.msjResultado = "Felicitaciones, respondiste de manera correcta, haz ganado un punto.";
     });
 
     $rootScope.$on('continuarSesionPreguntas', function (event, data) {
