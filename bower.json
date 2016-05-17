@@ -12,6 +12,8 @@
     "angular-mocks": "~1.4.0",
     "html5-boilerplate": "~5.2.0",
     "angular-material-data-table": "~0.10.3",
-    "angular-nvd3": "~1.0.6"
+    "angular-nvd3": "~1.0.6",
+    "angular-toastr": "~1.7.0",
+    "ngclipboard": "~1.1.1"
   }
 }
