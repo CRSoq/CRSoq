@@ -108,32 +108,37 @@
     // en caso de pasar los parametros por la url
     // se hace una consulta local
     var curso = null;
-    if(_.size($stateParams)>0 && $rootScope.user.tipo=='profesor'){
-        if(!_.isUndefined($stateParams.nombre_asignatura)){
-            var asignaturas = CursosServices.obtenerCursosLocal();
-            if(asignaturas.length>0){
-                var asignatura = _.findWhere(asignaturas,{'asignatura':$stateParams.nombre_asignatura});
-                $scope.desplegarMenuAsignatura(asignatura);
-                if(!_.isUndefined($stateParams.ano) && !_.isUndefined($stateParams.semestre) && !_.isUndefined($stateParams.id_curso)){
-                    curso = _.findWhere(asignatura.cursos, {'id_curso': Number($stateParams.id_curso)});
-                    $scope.desplegarMenuCurso(curso);
+    if (!_.isUndefined($rootScope.user)) {
+        if (_.size($stateParams) > 0 && $rootScope.user.tipo == 'profesor') {
+            if (!_.isUndefined($stateParams.nombre_asignatura)) {
+                var asignaturas = CursosServices.obtenerCursosLocal();
+                if (asignaturas.length > 0) {
+                    var asignatura = _.findWhere(asignaturas, {'asignatura': $stateParams.nombre_asignatura});
+                    $scope.desplegarMenuAsignatura(asignatura);
+                    if (!_.isUndefined($stateParams.ano) && !_.isUndefined($stateParams.semestre) && !_.isUndefined($stateParams.id_curso)) {
+                        curso = _.findWhere(asignatura.cursos, {'id_curso': Number($stateParams.id_curso)});
+                        $scope.desplegarMenuCurso(curso);
+                    }
                 }
             }
-        }
-    }else if (_.size($stateParams)>0 && $rootScope.user.tipo=='estudiante'){
-        if(!_.isUndefined($stateParams.nombre_asignatura)){
-            var semestres = CursosServices.obtenerCursosLocal();
-            if(!_.isUndefined($stateParams.ano) && !_.isUndefined($stateParams.semestre) && semestres.length>0){
-                var semestre = _.findWhere(semestres,{'ano':Number($stateParams.ano),'semestre':Number($stateParams.semestre)});
-                $scope.desplegarMenuSemestre(semestre);
-                if(!_.isUndefined($stateParams.id_curso)){
-                    curso = _.findWhere(semestre.cursos, {'id_curso': Number($stateParams.id_curso)});
-                    $scope.desplegarMenuCurso(curso);
+        } else if (_.size($stateParams) > 0 && $rootScope.user.tipo == 'estudiante') {
+            if (!_.isUndefined($stateParams.nombre_asignatura)) {
+                var semestres = CursosServices.obtenerCursosLocal();
+                if (!_.isUndefined($stateParams.ano) && !_.isUndefined($stateParams.semestre) && semestres.length > 0) {
+                    var semestre = _.findWhere(semestres, {
+                        'ano': Number($stateParams.ano),
+                        'semestre': Number($stateParams.semestre)
+                    });
+                    $scope.desplegarMenuSemestre(semestre);
+                    if (!_.isUndefined($stateParams.id_curso)) {
+                        curso = _.findWhere(semestre.cursos, {'id_curso': Number($stateParams.id_curso)});
+                        $scope.desplegarMenuCurso(curso);
+                    }
                 }
-            }
 
+            }
+        } else if (_.size($stateParams) > 0 && $rootScope.user.tipo == 'admin') {
+            //desplegar menu
         }
-    }else if(_.size($stateParams)>0 && $rootScope.user.tipo=='admin'){
-        //desplegar menu
     }
 });
