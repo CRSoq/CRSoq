@@ -1,4 +1,3 @@
-var querystring = require('querystring');
 var http        = require('http');
 var _           = require('lodash');
 var db          = require('./config');
@@ -100,6 +99,9 @@ module.exports = function (io) {
                 var pregunta = _.findWhere(io.sesiones[indexSesion], {id_pregunta: data.id_pregunta});
                 if (!_.isUndefined(pregunta)) {
                         io.to(socket.id).emit('EstadoPregunta', pregunta);
+                    if(_.isUndefined(socket.rooms[1])){
+                        socket.join(data.sala);
+                    }
                 }
             }
         });
@@ -139,7 +141,7 @@ module.exports = function (io) {
         });
 
         socket.on('cerrarParticipacion', function () {
-            socket.broadcast.to(socket.rooms[1]).emit('finParticipacion');
+            io.to(socket.rooms[1]).emit('finParticipacion');
             var indexSesion = _.findIndex(io.sesiones, {sala:socket.rooms[1]});
             if(indexSesion>=0){
                 io.sesiones[indexSesion].pregunta.participacion = false;
@@ -147,21 +149,27 @@ module.exports = function (io) {
         });
 
         socket.on('responderParticipante', function (participante) {
-            var estudianteSeleccionado = _.findWhere(usuarios, {'usuario':participante.usuario});
-            socket.broadcast.to(estudianteSeleccionado.socketId).emit('turnoRespuesta');
+            io.to(socket.rooms[1]).emit('participanteRespondiendo', {
+                nombre:participante.nombre,
+                apellido:participante.apellido,
+                rut: participante.rut,
+                id_user:participante.id_user});
             var indexSesion = _.findIndex(io.sesiones, {sala:socket.rooms[1]});
             if(indexSesion>=0){
-                _.findWhere(io.sesiones[indexSesion].pregunta.listaParticipantes,{id_user:estudianteSeleccionado.id_user}).turno = true;
+                _.findWhere(io.sesiones[indexSesion].pregunta.listaParticipantes,{id_user:participante.id_user}).turno = true;
             }
         });
 
         socket.on('respuestaIncorrecta', function (participante) {
-            var estudianteSeleccionado = _.findWhere(usuarios, {'usuario':participante.usuario});
-            socket.broadcast.to(estudianteSeleccionado.socketId).emit('respuestaEstudianteIncorrecta');
-            socket.broadcast.to(socket.rooms[1]).emit('continuarPregunta', participante);
+            io.to(socket.rooms[1]).emit('respuestaIncorrecta', {
+                nombre:participante.nombre,
+                apellido:participante.apellido,
+                rut: participante.rut,
+                id_user:participante.id_user
+            });
             var indexSesion = _.findIndex(io.sesiones, {sala:socket.rooms[1]});
             if(indexSesion>=0){
-                var estudianteSeleccionadoSesion = _.findWhere(io.sesiones[indexSesion].pregunta.listaParticipantes,{id_user:estudianteSeleccionado.id_user});
+                var estudianteSeleccionadoSesion = _.findWhere(io.sesiones[indexSesion].pregunta.listaParticipantes,{id_user:participante.id_user});
                 if(!_.isUndefined(estudianteSeleccionadoSesion)){
                     estudianteSeleccionadoSesion.turno = false;
                     estudianteSeleccionadoSesion.estado_part_preg = "perdedor";
@@ -169,12 +177,17 @@ module.exports = function (io) {
             }
         });
         socket.on('respuestaCorrecta', function (participante) {
-            var estudianteSeleccionado = _.findWhere(usuarios, {'usuario':participante.usuario});
-            socket.broadcast.to(estudianteSeleccionado.socketId).emit('respuestaEstudianteCorrecta');
-            socket.broadcast.to(socket.rooms[1]).emit('continuarSesion');
+            //var estudianteSeleccionado = _.findWhere(usuarios, {'usuario':participante.usuario});
+            //socket.broadcast.to(estudianteSeleccionado.socketId).emit('respuestaEstudianteCorrecta');
+            io.to(socket.rooms[1]).emit('respuestaCorrecta',{
+                nombre:participante.nombre,
+                apellido:participante.apellido,
+                rut: participante.rut,
+                id_user:participante.id_user
+            });
             var indexSesion = _.findIndex(io.sesiones, {sala:socket.rooms[1]});
             if(indexSesion>=0){
-                var estudianteSeleccionadoSesion = _.findWhere(io.sesiones[indexSesion].pregunta.listaParticipantes,{id_user:estudianteSeleccionado.id_user});
+                var estudianteSeleccionadoSesion = _.findWhere(io.sesiones[indexSesion].pregunta.listaParticipantes,{id_user:participante.id_user});
                 if(!_.isUndefined(estudianteSeleccionadoSesion)){
                     estudianteSeleccionadoSesion.turno = false;
                     estudianteSeleccionadoSesion.estado_part_preg = "ganador";
@@ -202,6 +215,22 @@ module.exports = function (io) {
                 }
             });
 
+        });
+
+        //espectador
+        socket.on('registrarIdEspectador', function (data) {
+            var sesion = _.findWhere(io.sesiones, {sala:data.sala});
+            if(!_.isUndefined(sesion)){
+                sesion.sesion_id=data.sesion_id;
+            }
+        });
+
+        socket.on('ingresoEspectador', function (data) {
+            var sesion = _.findWhere(io.sesiones, {sesion_id:Number(data.sesion_id)});
+            if(!_.isUndefined(sesion)){
+                socket.join(sesion.sala);
+                io.to(socket.rooms[0]).emit('actualizarSesion', sesion);
+            }
         });
     });
 };
