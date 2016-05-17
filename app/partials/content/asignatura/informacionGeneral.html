@@ -1,5 +1,5 @@
 <div ng-controller="InformacionAsignaturaController" flex="100">
-    <h1><i class="fa fa-bar-chart"></i> Información asginatura</h1>
+    <h1><i class="fa fa-bar-chart"></i> Información asignatura</h1>
 
     <md-sidenav ng-if="user.tipo=='profesor'"
                 class="md-sidenav-right"
@@ -71,7 +71,8 @@
                     </span>
                 </div>
                 <md-divider></md-divider>
-                <nvd3 options="optGrafoAsig2" data="dataGrafoAsig2" config="{refreshDataOnly: true, deepWatchData: true}"></nvd3>
+                <nvd3 options="options" data="data"></nvd3>
+                <!--<nvd3 options="optGrafoAsig2" data="dataGrafoAsig2" config="{refreshDataOnly: true, deepWatchData: true}"></nvd3>-->
             </div>
         </div>
     </div>
