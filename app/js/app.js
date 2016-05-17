@@ -7,7 +7,8 @@ var crsApp = angular.module('crsApp', [
     'ngMaterial',
     'md.data.table',
     'toastr',
-    'nvd3'
+    'nvd3',
+    'ngclipboard'
 ]);
 
 crsApp.config(function($stateProvider, $urlRouterProvider, toastrConfig) {
@@ -264,16 +265,28 @@ crsApp.config(function($stateProvider, $urlRouterProvider, toastrConfig) {
                 }
             },
             authenticate:true
+        })
+        .state('crsApp.espectador', {
+            url:'espectador/:nombre_asignatura/:id_sesion',
+            views:
+                {
+                    "menu@crsApp": {
+                    templateUrl: ''
+                },
+                'main@crsApp':{
+                    templateUrl: 'partials/content/asignatura/curso/espectador.html'
+                }
+            },
+            spectator: true
         });
 });
-crsApp.run(function($rootScope, $state, SessionServices){
+crsApp.run(function($rootScope, $state, $location, SessionServices, SocketServices){
 
     $rootScope.$on('$stateChangeStart', function(event, toState){
         if(toState.authenticate && !toState.admin){
             SessionServices.checkToken().then(function (data) {
                 if(data.credencial){
                     $rootScope.user = SessionServices.getSessionData();
-                    //$state.reload(crsApp);
                 }else{
                     event.preventDefault();
                     $state.transitionTo("crsApp.login");
@@ -288,6 +301,11 @@ crsApp.run(function($rootScope, $state, SessionServices){
                             $state.transitionTo("crsApp");
                     }
                 }
+            });
+        }else if(toState.spectator){
+            var sesion_id = $location.path().split("/")[3]||0;
+            SocketServices.emit('ingresoEspectador',{
+                sesion_id:sesion_id
             });
         }
     });
