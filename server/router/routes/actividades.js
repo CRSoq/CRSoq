@@ -1,9 +1,7 @@
 var express     = require('express');
 var router      = express.Router();
-var mysql       = require('mysql');
-var db          = require('./config');
 var _           = require('lodash');
-var connection  = mysql.createConnection(db.database);
+var connection  = require('./connection').database;
 
 router.post('/obtenerActividadesCurso', function (req, res) {
     if(!req.body){
