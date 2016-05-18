@@ -1,8 +1,6 @@
 var http        = require('http');
 var _           = require('lodash');
-var db          = require('./config');
-var mysql       = require('mysql');
-var connection  = mysql.createConnection(db.database);
+var connection  = require('../router/routes/connection').database;
 
 module.exports = function (io) {
     var usuarios = [];
