@@ -322,6 +322,42 @@ crsApp.controller('PreguntaSesionController', function ($scope, $rootScope, $sta
         });
     });
     $rootScope.$on('respuestaCorrectaContinuar', function (event, data) {
+        $scope.pregunta = null;
+        $scope.listaParticipantes=null;
+
+        //view control
+        $scope.esperar = true; //mostar esperar por la pregunta
+        $scope.preguntaRealizada = false; //mostrar pregunta hecha por el profesor
+        $scope.participar = false; //mostrar boton participar
+        $scope.participantes = false; //mostrar lista de participantes
+        $scope.responder = false; //mostrar cuando le toca responder
+        $scope.resultado = false; //mostrar si esta correcta o no la respuesta
+        $scope.preguntaFinalizada = false;
+        var estudiante = _.findWhere($scope.listaParticipantes, {id_user:data.id_user});
+        if(!_.isUndefined(estudiante)){
+            toastr.success(estudiante.nombre+' '+estudiante.apellido+' Ha ganado un punto.', {
+                closeButton: true,
+                iconClass: 'ganador'
+            });
+        }
+
+    });
+    $rootScope.$on('respuestaCorrectaUserContinuar', function (event, data) {
+        $scope.pregunta = null;
+        $scope.listaParticipantes=null;
+
+        //view control
+        $scope.esperar = true; //mostar esperar por la pregunta
+        $scope.preguntaRealizada = false; //mostrar pregunta hecha por el profesor
+        $scope.participar = false; //mostrar boton participar
+        $scope.participantes = false; //mostrar lista de participantes
+        $scope.responder = false; //mostrar cuando le toca responder
+        $scope.resultado = false; //mostrar si esta correcta o no la respuesta
+        $scope.preguntaFinalizada = false;
+        toastr.success('Haz ganado un punto.', '¡Felicitaciones!', {
+            closeButton: true,
+            iconClass: 'ganador'
+        });
 
     });
     $rootScope.$on('mostrarResultadoIncorrecto', function (event, data) {

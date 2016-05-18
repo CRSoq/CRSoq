@@ -52,13 +52,18 @@ crsApp.controller('SocketController', function ($scope,$rootScope,$location,toas
     });
     SocketServices.on('participanteRespondiendo', function (data) {
         var dataUsuario = SessionServices.getSessionData();
-
-        if(dataUsuario.id_user != data.id_user){
+        var espectador = $location.path().split("/")[1];
+        if(dataUsuario.tipo =='profesor'){
             toastr.success('Es el turno de '+data.nombre+' '+data.apellido);
-            $rootScope.$emit('participanteSeleccionado', data);
         }else{
-            $rootScope.$emit('turnoParaResponder');
+            if(dataUsuario.id_user != data.id_user || espectador=='espectador'){
+                toastr.success('Es el turno de '+data.nombre+' '+data.apellido);
+                $rootScope.$emit('participanteSeleccionado', data);
+            }else{
+                $rootScope.$emit('turnoParaResponder');
+            }
         }
+
     });
     SocketServices.on('respuestaIncorrecta', function (data) {
         var dataUsuario = SessionServices.getSessionData();
@@ -87,10 +92,6 @@ crsApp.controller('SocketController', function ($scope,$rootScope,$location,toas
         $rootScope.$emit('actualizarListaParticipantes', listaParticipantes);
     });
     SocketServices.on('respuestaEstudianteCorrecta', function () {
-        toastr.success('Haz ganado un punto.', '¡Felicitaciones!', {
-            closeButton: true,
-            iconClass: 'ganador'
-        });
         $rootScope.$emit('mostrarResultadoCorrecto');
     });
 
@@ -109,7 +110,12 @@ crsApp.controller('SocketController', function ($scope,$rootScope,$location,toas
     });
 
     SocketServices.on('actualizarSesion', function (data) {
-        $rootScope.$emit('sesionEspectador', data);
+        if(!_.isNull(data)){
+            $rootScope.$emit('sesionEspectador', data);
+        }else{
+            $rootScope.$emit('sesionEspectadorFallida');
+        }
+
     });
 
 });

@@ -24,9 +24,6 @@ module.exports = function (io) {
                     user.socketId   = socket.client.id;
                     user.cursos     = data;
                 }
-                //console.log(usuarios.length);
-                //console.log("");
-                //console.log(usuarios);
             };
 
             if(req.tipo == 'profesor'){
@@ -175,8 +172,6 @@ module.exports = function (io) {
             }
         });
         socket.on('respuestaCorrecta', function (participante) {
-            //var estudianteSeleccionado = _.findWhere(usuarios, {'usuario':participante.usuario});
-            //socket.broadcast.to(estudianteSeleccionado.socketId).emit('respuestaEstudianteCorrecta');
             io.to(socket.rooms[1]).emit('respuestaCorrecta',{
                 nombre:participante.nombre,
                 apellido:participante.apellido,
@@ -228,6 +223,8 @@ module.exports = function (io) {
             if(!_.isUndefined(sesion)){
                 socket.join(sesion.sala);
                 io.to(socket.rooms[0]).emit('actualizarSesion', sesion);
+            }else{
+                io.to(socket.rooms[0]).emit('actualizarSesion', null);
             }
         });
     });
