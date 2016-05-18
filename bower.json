@@ -14,6 +14,10 @@
     "angular-material-data-table": "~0.10.3",
     "angular-nvd3": "~1.0.6",
     "angular-toastr": "~1.7.0",
-    "ngclipboard": "~1.1.1"
+    "ngclipboard": "~1.1.1",
+    "angular-ui-router": "^0.3.0",
+    "angularLocalStorage": "ngStorage#^0.3.2",
+    "lodash": "^4.12.0",
+    "ngstorage": "^0.3.10"
   }
 }
