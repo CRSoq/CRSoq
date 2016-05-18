@@ -1,9 +1,7 @@
 var express     = require('express');
 var router      = express.Router();
-var mysql       = require('mysql');
-var db          = require('./config');
 var crypto      = require('crypto');
-var connection  = mysql.createConnection(db.database);
+var connection  = require('./connection').database;
 
 router.post('/', function(req, res){
     if (!req.body){
