@@ -85,5 +85,26 @@
                 </tbody>
             </table>
         </md-table-container>
+        <br><br>
+        <md-toolbar md-scroll-shrink>
+            <div class="md-toolbar-tools">Gráfico de participación</div>
+        </md-toolbar>
+        <div class="md-whiteframe-4dp">
+            <div layout="row">
+                <span flex></span>
+                    <span flex>
+                        <h2 class="md-title centrado tituloBox">
+                            Nº de participaciones por clase
+                        </h2>
+                    </span>
+                    <span flex style="text-align: right">
+
+                    </span>
+            </div>
+            <md-divider></md-divider>
+            <nvd3
+                    options="optGrafoEst2"
+                    data="dataGrafoEst2" config="{refreshDataOnly: true, deepWatchData: true}"></nvd3>
+        </div>
     </md-content>
 </div>

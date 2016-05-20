@@ -774,9 +774,17 @@ crsApp.controller('InformacionController', function ($scope, $stateParams, $mdSi
         var valuesPartPregReal = [];
 
         _.forEach(resPartPregRealiazadasAgrupadasxClases, function(clase){
+            var idx = _.findIndex(resPregRealiazadasAgrupadasxClases,{id_clase:clase.id_clase});
+            var participacion = 0;
+            if(idx>-1){
+                var totalPreguntasRealizadas = resPregRealiazadasAgrupadasxClases[idx].preguntasRealizadas;
+                var totalEstudiantes = estudiantesCurso.length;
+                participacion = (clase.participantes / ( totalEstudiantes * totalPreguntasRealizadas))*100;
+            }
             valuesPartPregReal.push([
                 new Date(clase.fecha),
-                clase.participantes
+                //clase.participantes
+                participacion
             ]);
         });
         $scope.optGrafoGrl3 = {
@@ -806,8 +814,16 @@ crsApp.controller('InformacionController', function ($scope, $stateParams, $mdSi
                 tooltip: {
                     contentGenerator: function (e) {
                         var series = e.series[0];
+                        var titulo = null;
+                        var porcentaje = null;
                         if (series.value === null) return;
-                        var titulo = (_.isUndefined(series.key)) ? 'Preguntas realizadas':series.key;
+                        if(_.isUndefined(series.key)){
+                             titulo= 'Preguntas realizadas';
+                            porcentaje = '';
+                        }else{
+                            titulo = '% de Participación';
+                            porcentaje = '%'
+                        }
                         var rows =
                             "<tr>" +
                             "<td class='key'>" + 'Fecha: ' + "</td>" +
@@ -815,7 +831,7 @@ crsApp.controller('InformacionController', function ($scope, $stateParams, $mdSi
                             "</tr>" +
                             "<tr>" +
                             "<td class='key'>" + 'Total: ' + "</td>" +
-                            "<td class='x-value'><strong>" + series.value + "</strong></td>" +
+                            "<td class='x-value'><strong>" + series.value + porcentaje +"</strong></td>" +
                             "</tr>";
                         var header =
                             "<thead>" +
@@ -845,8 +861,7 @@ crsApp.controller('InformacionController', function ($scope, $stateParams, $mdSi
                 x2Axis: {
                     tickFormat: function(d) {
                         var dx = $scope.dataGrafoGrl3[0].values[d] && $scope.dataGrafoGrl3[0].values[d].x || 0;
-                        return d3.time.format('%d/%m/%Y')(new Date(dx))
-                        //return d3.time.format('%b-%Y')(new Date(dx))
+                        return d3.time.format('%d/%m/%Y')(new Date(dx));
                     },
                     showMaxMin: false
                 },
@@ -858,9 +873,9 @@ crsApp.controller('InformacionController', function ($scope, $stateParams, $mdSi
                     axisLabelDistance: 12
                 },
                 y2Axis: {
-                    axisLabel: 'Nº Participaciones',
+                    axisLabel: '% Participación',
                     tickFormat: function(d) {
-                        return (d)
+                        return d+'%';
                     }
                 },
                 y3Axis: {
@@ -1178,6 +1193,113 @@ crsApp.controller('InformacionEstudianteController', function ($scope, $statePar
         }
     });
     $scope.promesas.push(prom3);
+    var promesasEstGrafo2 = [];
+    var resPartEstudiantePregRelEnCurso = [];
+    var estudiantesCurso = [];
+    var resultadosPreguntas = [];
+    var fechas = [];
+    var promesa7 = InformacionServices.resultadoPreguntasPorCurso($scope.curso).then(function (response) {
+        if(response.success){
+            resultadosPreguntas = _.cloneDeep(response.result);
+
+            _.forEach(response.result, function (item) {
+                fechas.push(new Date(item.fecha));
+            });
+            if(fechas.length>0){
+                $scope.fechaInicio = _.min(fechas);
+                $scope.fechaMin = _.min(fechas);
+                $scope.fechaFin = _.max(fechas);
+                $scope.fechaMax = _.max(fechas);
+            }
+        }
+    });
+    promesasEstGrafo2.push(promesa7);
+
+    var prom1EstGrafo1 = InformacionServices.partEstudiantePregRelEnCurso($scope.curso).then(function (response) {
+        if(response.success){
+            resPartEstudiantePregRelEnCurso = _.cloneDeep(response.result);
+        }
+    });
+
+    promesasEstGrafo2.push(prom1EstGrafo1);
+    var prom2EstGrafo1 = InformacionServices.obtenerEstudiantesPorCurso($scope.curso).then(function (response) {
+        if(response.success){
+            estudiantesCurso = _.cloneDeep(response.result);
+        }
+    });
+
+    promesasEstGrafo2.push(prom2EstGrafo1);
+
+    $q.all(promesasEstGrafo2).then(function () {
+        var data = [];
+        var sesion = SessionServices.getSessionData();
+        var values = [];
+
+        _.forEach(fechas, function(fecha){
+            var participacion = 0;
+            _.forEach(resPartEstudiantePregRelEnCurso, function (partPreg) {
+                var  fechaP = new Date(partPreg.fecha);
+                var  fechaC = new Date(fecha);
+                if(fechaP.getTime()===fechaC.getTime()){
+                    if(partPreg.id_user==sesion.id_user){
+                        if(partPreg.participacion!='no participa'){
+                            participacion++;
+                        }
+                    }
+                }
+            });
+            values.push({
+                x: new Date(fecha),
+                y: participacion
+            });
+        });
+
+        data.push({
+                key     : sesion.nombre+' '+sesion.apellido,
+                values  : values
+            }
+        );
+
+        $scope.optGrafoEst2 = {
+            chart: {
+                type: 'lineWithFocusChart',
+                height: 450,
+                margin : {
+                    top: 20,
+                    right: 20,
+                    bottom: 60,
+                    left: 40
+                },
+                duration: 50,
+                xAxis: {
+                    axisLabel: 'Clases (Fecha)',
+                    tickFormat: function(d){
+                        return d3.time.format('%d/%m/%y')(new Date(d));
+                    }
+                },
+                x2Axis: {
+                    tickFormat: function(d){
+                        return d3.time.format('%d/%m/%y')(new Date(d));
+                    }
+                },
+                yAxis: {
+                    axisLabel: 'Participación',
+                    tickFormat: function(d){
+                        return d;
+                    },
+                    rotateYLabel: false
+                },
+                y2Axis: {
+                    tickFormat: function(d){
+                        return d;
+                    }
+                }
+
+            }
+        };
+        $scope.dataGrafoEst2 = data;
+
+    });
 });
 crsApp.controller('InformacionAsignaturaController', function ($scope, $stateParams, $mdSidenav, $timeout, $q, toastr, InformacionServices, CursosServices, ClasesServices, SessionServices, AsignaturasServices, PreguntasBibliotecaServices) {
     var asignaturas = CursosServices.obtenerCursosLocal();
