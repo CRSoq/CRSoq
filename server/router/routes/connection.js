@@ -14,14 +14,14 @@ var options = {
 var manager = new MySQLConnectionManager(options);
 
 manager.on('connect', function(connection) {
+    console.log('DB Connected');
 });
 
 manager.on('reconnect', function(connection) {
-
 });
 
 manager.on('disconnect', function() {
-    console.log('db disconnected');
+    console.log('DB Disconnected');
 });
 
 module.exports.database = manager.connection;
