@@ -94,6 +94,9 @@ crsApp.factory('InformacionServices', function ($http, $q) {
         },
         actividadesCurso: function (curso) {
             return postHelper('/info/actividadesCurso',curso);
+        },
+        partPregBibliotecaRealiazadasPorCurso: function (curso) {
+            return postHelper('/info/partPregBibliotecaRealiazadasPorCurso', curso);
         }
     }
 });

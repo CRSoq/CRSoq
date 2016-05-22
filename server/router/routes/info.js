@@ -516,4 +516,26 @@ router.post('/partPregRealiazadasAgrupadasxClases', function (req, res) {
         });
     }
 });
+router.post('/partPregBibliotecaRealiazadasPorCurso', function (req, res) {
+    if(!req.body){
+        return res.sendStatus(400);
+    }else{
+        connection.query('SELECT p.id_curso, p.id_b_pregunta, p.pregunta, c.id_clase, c.fecha, COUNT(ppr.estado_part_preg) participantes'+
+            ' FROM pregunta p'+
+            ' INNER JOIN clase c'+
+            ' ON c.id_clase=p.id_clase'+
+            ' LEFT OUTER JOIN participan_por_responder ppr'+
+            ' ON p.id_pregunta=ppr.id_pregunta'+
+            ' WHERE p.id_curso=?'+
+            ' AND p.estado_pregunta="realizada"'+
+            ' AND p.id_b_pregunta IS NOT NULL'+
+            ' GROUP BY p.id_b_pregunta',[req.body.id_curso], function (error, rows) {
+            if(!error){
+                return res.json({'success':true, 'result':rows});
+            }else{
+                return res.json({'success':false, 'err':error});
+            }
+        });
+    }
+});
 module.exports = router;
