@@ -12,12 +12,10 @@
     <link rel="stylesheet" href="bower_components/html5-boilerplate/dist/css/main.css">
     <link rel="stylesheet" href="bower_components/nvd3/build/nv.d3.css">
     <link rel="stylesheet" href="font-awesome/css/font-awesome.min.css">
-    <link href='https://fonts.googleapis.com/css?family=Roboto:400,400italic,500,500italic,700,700italic,300italic,300' rel='stylesheet' type='text/css'>
     <link rel="stylesheet" href="css/app.css">
 </head>
 <body ng-app="crsApp" layout-fill ng-controller="SocketController">
 
-    <!--<div ui-view="header" layout="row" hide-gt-xs  flex></div>-->
     <div ui-view="content" layout="row" style="min-height: 100%" flex></div>
 
     <script src="bower_components/angular/angular.js"></script>
@@ -32,13 +30,12 @@
     <script src="bower_components/ngclipboard/dist/ngclipboard.js"></script>
     <script src="/socket.io/socket.io.js"></script>
     <script src="bower_components/d3/d3.js"></script>
-    <script src="bower_components/nvd3/build/nv.d3.js"></script> <!-- or use another assembly -->
+    <script src="bower_components/nvd3/build/nv.d3.js"></script>
     <script src="bower_components/angular-nvd3/dist/angular-nvd3.js"></script>
     <script src="js/app.js"></script>
     <script src="js/controllers/AdministracionController.js"></script>
     <script src="js/controllers/EspectadorController.js"></script>
     <script src="js/controllers/MenuController.js"></script>
-    <script src="js/controllers/HeaderController.js"></script>
     <script src="js/controllers/ToolbarController.js"></script>
     <script src="js/controllers/CursosController.js"></script>
     <script src="js/controllers/ClasesController.js"></script>
@@ -61,9 +58,7 @@
     <script src="js/services/PreguntasServices.js"></script>
     <script src="js/services/PreguntasBibliotecaServices.js"></script>
     <script src="js/services/InformacionServices.js"></script>
-    <script src="js/services/ConfiguracionServices.js"></script>
     <script src="js/services/ModulosServices.js"></script>
-    <script src="js/services/PreguntaSesionServices.js"></script>
     <script src="js/services/EstudiantesServices.js"></script>
     <script src="js/services/SocketServices.js"></script>
     <script src="bower_components/lodash/lodash.js"></script>
