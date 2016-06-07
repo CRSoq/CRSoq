@@ -3,9 +3,9 @@ var MySQLConnectionManager = require('mysql-connection-manager');
 var options = {
     host: 'localhost',
     port: 3306,
-    user: 'root',
-    password: 'root',
-    database: 'crs',
+    user: '',
+    password: '',
+    database: '',
     autoReconnect: true,
     keepAlive: true,
     multipleStatements: true
