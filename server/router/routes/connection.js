@@ -3,9 +3,9 @@ var MySQLConnectionManager = require('mysql-connection-manager');
 var options = {
     host: 'localhost',
     port: 3306,
-    user: '',
-    password: '',
-    database: '',
+    user: 'db_user',
+    password: 'db_pass',
+    database: 'db_name',
     autoReconnect: true,
     keepAlive: true,
     multipleStatements: true
@@ -14,7 +14,7 @@ var options = {
 var manager = new MySQLConnectionManager(options);
 
 manager.on('connect', function(connection) {
-    console.log('DB Connected');
+    console.log('DB Connected\nServer CRSoq Ready!');
 });
 
 manager.on('reconnect', function(connection) {
