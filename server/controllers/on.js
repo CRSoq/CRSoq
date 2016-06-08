@@ -113,16 +113,16 @@ module.exports = function (io) {
             _.extend(io.sesiones[indexSesion],{pregunta:data.pregunta});
         });
 
-        socket.on('FinalizarPregunta', function (data) {
-            io.to(socket.rooms[1]).emit('continuarSesion');
-            var indexSesion = _.findIndex(io.sesiones, {sala:socket.rooms[1]});
+        socket.on('FinalizarPregunta', function (sala) {
+            io.to(sala).emit('continuarSesion');
+            var indexSesion = _.findIndex(io.sesiones, {sala:sala});
             if(indexSesion>=0){
                 delete io.sesiones[indexSesion].pregunta;
             }
         });
         //responder pregunta
         socket.on('responderPregunta', function (dataUsuario) {
-            var indexSesion = _.findIndex(io.sesiones, {sala:socket.rooms[1]});
+            var indexSesion = _.findIndex(io.sesiones, {sala:dataUsuario.sala});
             if(indexSesion>=0){
 
                 if (!_.isUndefined(io.sesiones[indexSesion].pregunta.listaParticipantes)) {
@@ -130,57 +130,57 @@ module.exports = function (io) {
                     if (io.sesiones[indexSesion].pregunta.participacion == true && miIndex < 0) {
                         io.sesiones[indexSesion].pregunta.listaParticipantes.push(dataUsuario);
                     }
-                    io.to(socket.rooms[1]).emit('listaParticipantes', io.sesiones[indexSesion].pregunta.listaParticipantes);
+                    io.to(dataUsuario.sala).emit('listaParticipantes', io.sesiones[indexSesion].pregunta.listaParticipantes);
                 }
             }
         });
 
-        socket.on('cerrarParticipacion', function () {
-            io.to(socket.rooms[1]).emit('finParticipacion');
-            var indexSesion = _.findIndex(io.sesiones, {sala:socket.rooms[1]});
+        socket.on('cerrarParticipacion', function (sala) {
+            io.to(sala).emit('finParticipacion');
+            var indexSesion = _.findIndex(io.sesiones, {sala:sala});
             if(indexSesion>=0){
                 io.sesiones[indexSesion].pregunta.participacion = false;
             }
         });
 
-        socket.on('responderParticipante', function (participante) {
-            io.to(socket.rooms[1]).emit('participanteRespondiendo', {
-                nombre:participante.nombre,
-                apellido:participante.apellido,
-                rut: participante.rut,
-                id_user:participante.id_user});
-            var indexSesion = _.findIndex(io.sesiones, {sala:socket.rooms[1]});
+        socket.on('responderParticipante', function (data) {
+            io.to(data.sala).emit('participanteRespondiendo', {
+                nombre  : data.participante.nombre,
+                apellido: data.participante.apellido,
+                rut     : data.participante.rut,
+                id_user : data.participante.id_user});
+            var indexSesion = _.findIndex(io.sesiones, {sala:data.sala});
             if(indexSesion>=0){
-                _.findWhere(io.sesiones[indexSesion].pregunta.listaParticipantes,{id_user:participante.id_user}).turno = true;
+                _.findWhere(io.sesiones[indexSesion].pregunta.listaParticipantes,{id_user:data.participante.id_user}).turno = true;
             }
         });
 
-        socket.on('respuestaIncorrecta', function (participante) {
-            io.to(socket.rooms[1]).emit('respuestaIncorrecta', {
-                nombre:participante.nombre,
-                apellido:participante.apellido,
-                rut: participante.rut,
-                id_user:participante.id_user
+        socket.on('respuestaIncorrecta', function (data) {
+            io.to(data.sala).emit('respuestaIncorrecta', {
+                nombre  : data.participante.nombre,
+                apellido: data.participante.apellido,
+                rut     : data.participante.rut,
+                id_user : data.participante.id_user
             });
-            var indexSesion = _.findIndex(io.sesiones, {sala:socket.rooms[1]});
+            var indexSesion = _.findIndex(io.sesiones, {sala:data.sala});
             if(indexSesion>=0){
-                var estudianteSeleccionadoSesion = _.findWhere(io.sesiones[indexSesion].pregunta.listaParticipantes,{id_user:participante.id_user});
+                var estudianteSeleccionadoSesion = _.findWhere(io.sesiones[indexSesion].pregunta.listaParticipantes,{id_user:data.participante.id_user});
                 if(!_.isUndefined(estudianteSeleccionadoSesion)){
                     estudianteSeleccionadoSesion.turno = false;
                     estudianteSeleccionadoSesion.estado_part_preg = "perdedor";
                 }
             }
         });
-        socket.on('respuestaCorrecta', function (participante) {
-            io.to(socket.rooms[1]).emit('respuestaCorrecta',{
-                nombre:participante.nombre,
-                apellido:participante.apellido,
-                rut: participante.rut,
-                id_user:participante.id_user
+        socket.on('respuestaCorrecta', function (data) {
+            io.to(data.sala).emit('respuestaCorrecta',{
+                nombre  : data.participante.nombre,
+                apellido: data.participante.apellido,
+                rut     : data.participante.rut,
+                id_user : data.participante.id_user
             });
-            var indexSesion = _.findIndex(io.sesiones, {sala:socket.rooms[1]});
+            var indexSesion = _.findIndex(io.sesiones, {sala:data.sala});
             if(indexSesion>=0){
-                var estudianteSeleccionadoSesion = _.findWhere(io.sesiones[indexSesion].pregunta.listaParticipantes,{id_user:participante.id_user});
+                var estudianteSeleccionadoSesion = _.findWhere(io.sesiones[indexSesion].pregunta.listaParticipantes,{id_user:data.participante.id_user});
                 if(!_.isUndefined(estudianteSeleccionadoSesion)){
                     estudianteSeleccionadoSesion.turno = false;
                     estudianteSeleccionadoSesion.estado_part_preg = "ganador";

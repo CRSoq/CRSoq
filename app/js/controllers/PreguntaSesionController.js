@@ -48,7 +48,8 @@ crsApp.controller('PreguntaSesionProfesorController', function ($scope, $rootSco
         }
     });
     $scope.cerrarParticipacion = function () {
-        SocketServices.emit('cerrarParticipacion');
+        var sala = $stateParams.ano+$stateParams.semestre+$stateParams.nombre_asignatura+$stateParams.id_clase;
+        SocketServices.emit('cerrarParticipacion', sala);
         $scope.preguntaFinalizada = true;
         deferred.resolve();
     };
@@ -59,8 +60,12 @@ crsApp.controller('PreguntaSesionProfesorController', function ($scope, $rootSco
     };
 
     $scope.seleccionarEstudiante = function (participante) {
+        var data = {
+            participante : participante,
+            sala: $stateParams.ano+$stateParams.semestre+$stateParams.nombre_asignatura+$stateParams.id_clase
+        };
         $scope.estudianteSeleccionado = participante;
-        SocketServices.emit('responderParticipante', participante);
+        SocketServices.emit('responderParticipante', data);
         $scope.responder = true;
     };
     var cargarInformacionEstudiante = function (estudiante, curso, clase) {
@@ -133,7 +138,11 @@ crsApp.controller('PreguntaSesionProfesorController', function ($scope, $rootSco
         var estudiante = _.findWhere($scope.listaParticipantes, {id_user:$scope.estudianteSeleccionado.id_user});
         estudiante.estado_part_preg = 'ganador';
         //para estudiantes cambiar estado a esperar por pregunta
-        SocketServices.emit('respuestaCorrecta', $scope.estudianteSeleccionado);
+        var data = {
+            participante: $scope.estudianteSeleccionado,
+            sala:$stateParams.ano+$stateParams.semestre+$stateParams.nombre_asignatura+$stateParams.id_clase
+        };
+        SocketServices.emit('respuestaCorrecta', data);
         finDePregunta(pregunta);
     };
     $scope.respuestaIncorrecta = function (pregunta) {
@@ -141,7 +150,11 @@ crsApp.controller('PreguntaSesionProfesorController', function ($scope, $rootSco
         estudiante.estado_part_preg = 'perdedor';
         $scope.responder = false;
         //notificar al estudiante del resultado
-        SocketServices.emit('respuestaIncorrecta', $scope.estudianteSeleccionado);
+        var data = {
+            participante: $scope.estudianteSeleccionado,
+            sala:$stateParams.ano+$stateParams.semestre+$stateParams.nombre_asignatura+$stateParams.id_clase
+        };
+        SocketServices.emit('respuestaIncorrecta', data);
         $scope.estudianteSeleccionado = null;
 
     };
@@ -159,7 +172,8 @@ crsApp.controller('PreguntaSesionProfesorController', function ($scope, $rootSco
             if(continuar){
                 $rootScope.$emit('continuarSesionPreguntas');
             }else{
-                SocketServices.emit('FinalizarPregunta');
+                var sala = $stateParams.ano+$stateParams.semestre+$stateParams.nombre_asignatura+$stateParams.id_clase;
+                SocketServices.emit('FinalizarPregunta', sala);
             }
 
             $state.transitionTo('crsApp.asignatura.curso.clases.sesion', {
@@ -266,6 +280,7 @@ crsApp.controller('PreguntaSesionController', function ($scope, $rootScope, $sta
         var dataUsuario = SessionServices.getSessionData();
         dataUsuario.id_pregunta = pregunta.id_pregunta;
         dataUsuario.estado_part_preg = 'noSeleccionado';
+        dataUsuario.sala=$stateParams.ano+$stateParams.semestre+$stateParams.nombre_asignatura+$stateParams.id_clase;
         SocketServices.emit('responderPregunta', dataUsuario);
         //PreguntasServices.participarEnPregunta(data);
         $scope.participar = false;
