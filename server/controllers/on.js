@@ -82,7 +82,12 @@ module.exports = function (io) {
             if(indexSesion>=0){
                 if(!_.isUndefined(io.sesiones[indexSesion].pregunta)){
                     io.to(socket.id).emit('SesionActiva', io.sesiones[indexSesion]);
-                    if(_.isUndefined(socket.rooms[1])){
+                    var indexRoom = _.findIndex(socket.rooms, function (sala, index) {
+                        if(sala===data.sala){
+                            return index;
+                        }
+                    });
+                    if(indexRoom<0){
                         socket.join(data.sala);
                     }
                 }
@@ -94,7 +99,12 @@ module.exports = function (io) {
                 var pregunta = _.findWhere(io.sesiones[indexSesion], {id_pregunta: data.id_pregunta});
                 if (!_.isUndefined(pregunta)) {
                         io.to(socket.id).emit('EstadoPregunta', pregunta);
-                    if(_.isUndefined(socket.rooms[1])){
+                    var indexRoom = _.findIndex(socket.rooms, function (sala, index) {
+                        if(sala===data.sala){
+                            return index;
+                        }
+                    });
+                    if(indexRoom<0){
                         socket.join(data.sala);
                     }
                 }
@@ -110,7 +120,9 @@ module.exports = function (io) {
             var indexSesion = _.findIndex(io.sesiones, {sala:data.sala});
             data.pregunta.participacion = true;
             data.pregunta.listaParticipantes = [];
-            _.extend(io.sesiones[indexSesion],{pregunta:data.pregunta});
+            if(indexSesion>=0){
+                _.extend(io.sesiones[indexSesion],{pregunta:data.pregunta});
+            }
         });
 
         socket.on('FinalizarPregunta', function (sala) {
