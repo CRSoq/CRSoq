@@ -19,7 +19,7 @@ crsApp.controller('ClasesController', function($scope, $rootScope, $mdDialog, $q
                  $scope.listaModulos= _.map(_.sortByOrder($scope.listaModulos,['posicion'],['asc']));
 
                  if($scope.listaModulos.length>0){
-                     var promesaClases = ClasesServices.obtenerClases($scope.listaModulos)
+                     ClasesServices.obtenerClases($scope.listaModulos)
                          .then(function (response) {
                              if(response.success){
                                  var lista = _.cloneDeep(response.result);
@@ -44,7 +44,6 @@ crsApp.controller('ClasesController', function($scope, $rootScope, $mdDialog, $q
                                  toastr.error('No se pudo obtener lista de clase: '+response.err.code,'Error');
                              }
                          });
-                     $scope.promesas.push(promesaClases);
                  }
              }else{
                  toastr.error('No se pudo obtener lista de módulos: '+response.err.code,'Error');
