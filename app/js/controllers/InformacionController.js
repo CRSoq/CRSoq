@@ -1,5 +1,5 @@
 'use strict';
-crsApp.controller('InformacionController', function ($scope, $stateParams, $mdSidenav, $timeout, $q, toastr, InformacionServices, CursosServices, ClasesServices) {
+crsApp.controller('InformacionController', function ($scope, $stateParams, $mdSidenav, $mdDialog, $timeout, $q, toastr, InformacionServices, CursosServices) {
     var asignaturas = CursosServices.obtenerCursosLocal();
     var asignatura = _.findWhere(asignaturas,{'asignatura':$stateParams.nombre_asignatura});
     $scope.curso = _.findWhere(asignatura.cursos, {'id_curso':Number($stateParams.id_curso)});
@@ -11,12 +11,32 @@ crsApp.controller('InformacionController', function ($scope, $stateParams, $mdSi
     $scope.configurarGrafico2 = function () {
         $mdSidenav('configGraf2').toggle();
     };
+    $scope.configurarGraficoPuntosGanados = function () {
+        $mdSidenav('configGrafPuntosGanados').toggle();
+    };
     $scope.configurarGrafico4 = function () {
         $mdSidenav('configGraf4').toggle();
     };
     $scope.configurarGrafico6 = function () {
         $mdSidenav('configGraf6').toggle();
     };
+    $scope.datosPuntosGanados = null;
+    var mostrarDatos = true;
+    var deferedPuntos = $q.defer();
+    var promesaPuntos = deferedPuntos.promise;
+    promesaPuntos.then(function (data) {
+        mostrarDatos = false;
+        $scope.datosPuntosGanados = function () {
+            $mdDialog.show({
+                templateUrl: '/partials/content/asignatura/curso/info/modalPuntosGanados.html',
+                locals:{
+                    datos: data,
+                    curso: $scope.curso
+                },
+                controller: 'ModalPuntosGanadosController'
+            });
+        };
+    });
     $scope.general=true;
     $scope.seleccionPartIntentos = [];
     var cantidadPreguntasRealizadas = 0;
@@ -26,6 +46,7 @@ crsApp.controller('InformacionController', function ($scope, $stateParams, $mdSi
     var participacionTotalPosibleCurso = 0;
     var resultadosPreguntas = [];
     var preguntasPartIntentos = [];
+    var ganadoresxActividad = [];
     $scope.fechaInicio = new Date();
     $scope.fechaFin = new Date();
     $scope.fechaMin = new Date();
@@ -37,7 +58,7 @@ crsApp.controller('InformacionController', function ($scope, $stateParams, $mdSi
     var promesasTotalCurso = [];
     var promesasIntetosVsPart = [];
     var promesasResultadoPreguntaPorClase = [];
-
+    var promesasEstGrafoPuntos = [];
 
     var promesa1 = InformacionServices.obtenerCantidadPreguntasCursoPorEstado($scope.curso,'realizada').then(
         function (response) {
@@ -578,6 +599,7 @@ crsApp.controller('InformacionController', function ($scope, $stateParams, $mdSi
     });
     promesasEstGrafo1.push(prom1EstGrafo1);
     promesasEstGrafo2.push(prom1EstGrafo1);
+    promesasEstGrafoPuntos.push(prom1EstGrafo1);
     var prom2EstGrafo1 = InformacionServices.obtenerEstudiantesPorCurso($scope.curso).then(function (response) {
         if(response.success){
             estudiantesCurso = _.cloneDeep(response.result);
@@ -585,6 +607,96 @@ crsApp.controller('InformacionController', function ($scope, $stateParams, $mdSi
     });
     promesasEstGrafo1.push(prom2EstGrafo1);
     promesasEstGrafo2.push(prom2EstGrafo1);
+    promesasEstGrafoPuntos.push(prom2EstGrafo1);
+    var promGrafoPuntos = InformacionServices.partActvidadesxCurso($scope.curso).then(function (response) {
+        if(response.success){
+            ganadoresxActividad = _.cloneDeep(response.result);
+        }
+    });
+    promesasEstGrafoPuntos.push(promGrafoPuntos);
+    $q.all(promesasEstGrafoPuntos).then(function () {
+        var puntosPreguntas = []
+            , puntosActividades = []
+            , datosTotalPuntos = [];
+        _.forEach(estudiantesCurso, function (estudiante) {
+            var buenas = 0;
+            var actividades_ganador = 0;
+            _.forEach(resPartEstudiantePregRelEnCurso, function (partPreg) {
+                if(partPreg.id_user==estudiante.id_user){
+                    if(partPreg.participacion=='ganador'){
+                        buenas++;
+                    }
+                }
+            });
+            _.forEach(ganadoresxActividad, function (actividad) {
+                if(actividad.id_user==estudiante.id_user){
+                    if(actividad.participacion=='ganador'){
+                        actividades_ganador++;
+                    }
+                }
+            });
+            datosTotalPuntos.push({
+                rut: estudiante.rut,
+                nombre: estudiante.nombre,
+                apellido: estudiante.apellido,
+                preguntas: buenas,
+                actividades: actividades_ganador,
+                totalPuntos: actividades_ganador+buenas
+            });
+            puntosPreguntas.push({
+                x:estudiante.nombre+' '+estudiante.apellido,
+                y:buenas
+            });
+            puntosActividades.push({
+                x:estudiante.nombre+' '+estudiante.apellido,
+                y:actividades_ganador
+            });
+        });
+
+        deferedPuntos.resolve(datosTotalPuntos);
+
+
+        $scope.optGrafoEstPuntos = {
+            chart: {
+                type: 'multiBarChart',
+                height: 450,
+                margin : {
+                    top: 20,
+                    right: 20,
+                    bottom: 45,
+                    left: 45
+                },
+                clipEdge: true,
+                duration: 500,
+                showControls:false,
+                stacked: true,
+                xAxis: {
+                    axisLabel: 'Estudiantes',
+                    showMaxMin: false,
+                    tickFormat: function(d){
+                        return d;
+                    }
+                },
+                yAxis: {
+                    axisLabelDistance: -20,
+                    tickFormat: function(d){
+                        return d;
+                    }
+                }
+            }
+        };
+        $scope.dataGrafoEstPuntos = [
+            {
+                key: 'Puntos por preguntas',
+                values:puntosPreguntas
+            },
+            {
+                key: 'Puntos por actividades',
+                values:puntosActividades
+            }
+        ];
+    });
+
     $q.all(promesasEstGrafo1).then(function () {
         var valBuenas = [];
         var valMalas = [];
@@ -641,7 +753,7 @@ crsApp.controller('InformacionController', function ($scope, $stateParams, $mdSi
                 showControls:false,
                 stacked: true,
                 xAxis: {
-                    axisLabel: 'Estudiante',
+                    axisLabel: 'Estudiantes',
                     showMaxMin: false,
                     tickFormat: function(d){
                         return d;
@@ -1633,4 +1745,18 @@ crsApp.controller('InformacionAsignaturaController', function ($scope, $statePar
     $timeout(function() {
         $scope.mostrar = !$scope.mostrar;
     }, 1000);
+});
+
+crsApp.controller('ModalPuntosGanadosController',function($scope, $mdDialog, datos, curso){
+    $scope.listaEstudiantes = _.cloneDeep(datos);
+    $scope.exportar = function () {
+        var header = '<meta http-equiv="content-type" content="application/vnd.ms-excel; charset=UTF-8">';
+        var blob = new Blob([header + document.getElementById('exportable').innerHTML], {
+            type: "data:application/vnd.ms-excel;charset=UTF-8"});
+        saveAs(blob, "PuntosGanados_"+curso.asignatura+"_"+curso.ano+"_Sem_"+curso.semestre+".xls");
+    };
+
+    $scope.cancelar = function() {
+        $mdDialog.cancel();
+    };
 });

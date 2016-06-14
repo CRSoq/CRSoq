@@ -1,0 +1,53 @@
+<md-dialog aria-label="Puntos ganados por los estudiantes" ng-cloak>
+    <md-toolbar>
+        <div class="md-toolbar-tools">
+            <h2>Puntos de los estudiantes</h2>
+            <span flex></span>
+            <md-button aria-label="Cancelar" class="md-icon-button" ng-click="cancelar()">
+                <i class="fa fa-times"></i>
+            </md-button>
+        </div>
+    </md-toolbar>
+    <md-button aria-label="Exportar" class="md-button" ng-click="exportar()">
+        <i class="fa fa-file-excel-o" aria-hidden="true"></i>
+        Exportar
+    </md-button>
+    <md-dialog-content>
+        <md-content class="md-padding">
+            <md-table-container >
+                <div id="exportable">
+                <table md-table class="tablaEstudiantes alternarColor">
+                    <thead md-head>
+                    <tr md-row >
+                        <th md-column class="column-rut">RUT</th>
+                        <th md-column class="column-nombre">Nombre</th>
+                        <th md-column class="column-clave">Preguntas</th>
+                        <th md-column class="column-clave">Actividades</th>
+                        <th md-column class="column-clave">Total Puntos Ganados</th>
+                    </tr>
+                    </thead>
+                    <tbody md-body>
+                    <tr md-row ng-repeat="estudiante in listaEstudiantes">
+                        <td md-cell class="column-rut">
+                            {{estudiante.rut}}
+                        </td>
+                        <td md-cell class="column-apellido">
+                            {{estudiante.nombre}} {{estudiante.apellido}}
+                        </td>
+                        <td md-cell class="column-apellido">
+                            {{estudiante.preguntas}}
+                        </td>
+                        <td md-cell class="column-apellido">
+                            {{estudiante.actividades}}
+                        </td>
+                        <td md-cell class="column-apellido">
+                            {{estudiante.totalPuntos}}
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+                </div>
+            </md-table-container>
+        </md-content>
+    </md-dialog-content>
+</md-dialog>

@@ -3,22 +3,6 @@ var router      = express.Router();
 var _           = require('lodash');
 var connection  = require('./connection').database;
 
-//router.post('/obtenerPreguntasClase', function (req, res) {
-//    if(!req.body){
-//        return res.sendStatus(400);
-//    }else{
-//        connection.query('SELECT id_pregunta, id_b_pregunta, id_clase, estado_pregunta, pregunta FROM pregunta WHERE id_clase = ?',[req.body.id_clase], function (error, rows) {
-//            if(!error){
-//                res.status(200);
-//                return res.json({'success':true, 'result':rows});
-//            }else{
-//                res.status(500);
-//                return res.json({'success':false, 'err':error});
-//            }
-//        });
-//    }
-//});
-
 router.post('/obtenerCantidadPreguntasCursoPorEstado', function (req, res) {
     if(!req.body){
         return res.sendStatus(400);
@@ -259,14 +243,15 @@ router.post('/partActvidadesxCurso', function (req, res) {
         return res.sendStatus(400);
     }else{
         connection.query(
-            'SELECT  e.id_user, e.nombre, e.apellido, e.rut, a.id_actividad, a.titulo_act, part.estado_part_act'+
+            'SELECT  e.id_user, e.nombre, e.apellido, e.rut, a.id_actividad,    a.titulo_act, IF(part.estado_part_act IS NULL, "sin ganar","ganador") AS participacion'+
             ' FROM pertenece p'+
             ' INNER JOIN estudiante e'+
             ' ON e.id_user=p.id_user'+
-            ' INNER JOIN participa part'+
+            ' RIGHT OUTER JOIN actividad a'+
+            ' ON a.id_curso = p.id_curso'+
+            ' LEFT JOIN participa part'+
             ' ON part.id_user=e.id_user'+
-            ' INNER JOIN actividad a'+
-            ' ON a.id_actividad=part.id_actividad'+
+            ' AND a.id_actividad=part.id_actividad'+
             ' WHERE p.id_curso=?',[req.body.id_curso], function (error, rows) {
                 if(!error){
                     return res.json({'success':true, 'result':rows});

@@ -101,6 +101,28 @@
             </md-content>
         </md-content>
     </md-sidenav>
+    <md-sidenav ng-if="user.tipo=='profesor'"
+                class="md-sidenav-right"
+                md-component-id="configGrafPuntosGanados"
+                md-whiteframe="4">
+        <md-content role="navigation">
+            <md-toolbar class="md-theme-light">
+                <div layout="row">
+                    <h1 class="md-toolbar-tools">Configurar gráfico</h1>
+                    <md-button ng-click="configurarGraficoPuntosGanados()" aria-label="Cerrar" class="md-primary">
+                        <i class="fa fa-times"></i>
+                    </md-button>
+                </div>
+            </md-toolbar>
+            <md-content layout-padding>
+                <div layout="row">
+                    <md-switch class="md-primary" ng-model="optGrafoEstPuntos.chart.stacked" aria-label="Gráfico apilado">
+                        Tipo de gráfico: {{ optGrafoEstPuntos.chart.stacked ? 'Apilado' : 'Agrupado' }}
+                    </md-switch>
+                </div>
+            </md-content>
+        </md-content>
+    </md-sidenav>
 
     <md-sidenav ng-if="user.tipo=='profesor'"
                 class="md-sidenav-right"
@@ -246,7 +268,7 @@
                     <span flex></span>
                     <span flex>
                         <h2 class="md-title centrado tituloBox">
-                            Participación por estudiante
+                            Participación por estudiante en preguntas
                         </h2>
                     </span>
                     <span flex style="text-align: right">
@@ -258,6 +280,28 @@
                 </div>
                 <md-divider></md-divider>
                 <nvd3 options="optGrafoEst1" data="dataGrafoEst1" config="{refreshDataOnly: true, deepWatchData: true}"></nvd3>
+            </div>
+            <div></div>
+            <div class="md-whiteframe-4dp">
+                <div layout="row">
+                    <span flex></span>
+                    <span flex>
+                        <h2 class="md-title centrado tituloBox">
+                            Puntos ganados por estudiantes
+                        </h2>
+                    </span>
+                    <span flex style="text-align: right">
+                        <md-button class="rotacionInfinitaContenido" aria-label="Config gráfico"
+                                   ng-click="configurarGraficoPuntosGanados()" ng-disabled="deshabilitarConfig">
+                            <i class="fa fa-cog rotar"></i>
+                        </md-button>
+                    </span>
+                </div>
+                <md-divider></md-divider>
+                <nvd3 options="optGrafoEstPuntos" data="dataGrafoEstPuntos" config="{refreshDataOnly: true, deepWatchData: true}"></nvd3>
+                <md-button aria-label="Datos" ng-click="datosPuntosGanados()" ng-disabled="mostrarDatos">
+                    Ver datos
+                </md-button>
             </div>
             <div></div>
             <div class="md-whiteframe-4dp">

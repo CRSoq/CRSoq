@@ -92,6 +92,9 @@ crsApp.factory('InformacionServices', function ($http, $q) {
         partActvidadesCursoxEstudiante: function (curso, estudiante) {
             return postHelper('/info/partActvidadesCursoxEstudiante',{id_curso:curso.id_curso, id_user:estudiante.id_user});
         },
+        partActvidadesxCurso: function (curso) {
+            return postHelper('/info/partActvidadesxCurso', curso);
+        },
         actividadesCurso: function (curso) {
             return postHelper('/info/actividadesCurso',curso);
         },
