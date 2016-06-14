@@ -11,11 +11,18 @@ crsApp.controller('LoginController', function($scope, $state, $stateParams, toas
                     SessionServices.asignarToken(response.usuario).then(
                         function (response) {
                             if (response.success) {
-                                SocketServices.connect();
                                 var dataSesion = SessionServices.getSessionData();
-                                if (!_.isUndefined(dataSesion.usuario)) {
-                                    SocketServices.emit('EnviarDatos', dataSesion);
+                                if(_.isNull(SocketServices.getSocket())){
+                                    SocketServices.connect();
+                                    if(!_.isUndefined(dataSesion.usuario)){
+                                        SocketServices.emit('EnviarDatos', dataSesion);
+                                    }
+                                }else{
+                                    if(!_.isUndefined(dataSesion.usuario)){
+                                        SocketServices.emit('EnviarDatos', dataSesion);
+                                    }
                                 }
+
                                 $state.transitionTo("crsApp", $stateParams, {
                                     reload: true, inherit: false, notify: true
                                 });
