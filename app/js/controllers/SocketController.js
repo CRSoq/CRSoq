@@ -1,12 +1,18 @@
 crsApp.controller('SocketController', function ($scope,$rootScope,$location,toastr,SocketServices, SessionServices) {
-    var dataSesion = SessionServices.getSessionData();
+    var dataSesion=SessionServices.getSessionData();
     if(_.isNull(SocketServices.getSocket())){
         SocketServices.connect();
-
         if(!_.isUndefined(dataSesion.usuario)){
             SocketServices.emit('EnviarDatos', dataSesion);
         }
     }
+    SocketServices.on('sesion', function (data) {
+        //console.log('sesion: '+data);
+    });
+    SocketServices.on('sesionNueva', function (data) {
+        //console.log('sesionNueva: '+data);
+    });
+
     //-----
     SocketServices.on('sesionAbierta', function (data) {
         toastr.warning('En '+data.curso+' se ha iniciado una sesión de preguntas.', 'Sesión abierta', {

@@ -281,12 +281,12 @@ crsApp.config(function($stateProvider, $urlRouterProvider, toastrConfig) {
         });
 });
 crsApp.run(function($rootScope, $state, $location, SessionServices, SocketServices){
-
     $rootScope.$on('$stateChangeStart', function(event, toState){
+        var dataSesion=SessionServices.getSessionData();
         if(toState.authenticate && !toState.admin){
             SessionServices.checkToken().then(function (data) {
                 if(data.credencial){
-                    $rootScope.user = SessionServices.getSessionData();
+                    $rootScope.user = dataSesion;
                 }else{
                     event.preventDefault();
                     $state.transitionTo("crsApp.login");

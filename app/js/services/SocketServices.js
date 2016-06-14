@@ -19,7 +19,7 @@ crsApp.factory('SocketServices', function ($rootScope) {
             }
         },
         connect: function () {
-            socket = io.connect();
+            socket = io.connect('http://192.168.1.100:3000');
             return socket;
         },
         getSocket: function () {

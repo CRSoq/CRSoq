@@ -16,14 +16,16 @@ module.exports = function (io) {
                         'tipo'      :req.tipo,
                         'token'     :req.token,
                         'id_user'   :req.id_user,
-                        'socketId'  :socket.client.id,
+                        'socketId'  :socket.id,
                         'cursos'    :data
                     });
-
+                    //io.to(socket.id).emit('sesionNueva', socket.id);
                 }else{
-                    user.socketId   = socket.client.id;
+                    user.socketId   = socket.id;
                     user.cursos     = data;
+                    //io.to(socket.id).emit('sesion', socket.id);
                 }
+
             };
 
             if(req.tipo == 'profesor'){
