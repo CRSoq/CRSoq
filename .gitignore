@@ -7,4 +7,4 @@ tmp
 .idea
 .log
 *.iml
-server/router/routes/connection.js
+/server/router/routes/connection.js
