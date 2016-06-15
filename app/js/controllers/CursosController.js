@@ -1,4 +1,4 @@
-crsApp.controller('CursosController', function($scope, $rootScope, $mdDialog, $stateParams, toastr, CursosServices, CalendarioServices, AsignaturasServices, SessionServices) {
+crsApp.controller('CursosController', function($scope, $rootScope, $mdDialog, $stateParams, toastr, CursosServices) {
     $scope.crearCurso = function () {
         $mdDialog.show({
             templateUrl: '/partials/content/main/modalCrearCurso.html',
@@ -130,7 +130,7 @@ crsApp.controller('CursoGralInfoController', function ($scope, $rootScope, $stat
     }
 });
 
-crsApp.controller('ConfigCursoController', function ($scope, $rootScope, $state, $stateParams, $mdDialog, toastr, CursosServices, ModulosServices, ClasesServices, SessionServices, EstudiantesServices) {
+crsApp.controller('ConfigCursoController', function ($scope, $rootScope, $state, $stateParams, $q, $mdDialog, toastr, CursosServices, ModulosServices, ClasesServices, SessionServices, EstudiantesServices) {
     var asignaturas = CursosServices.obtenerCursosLocal();
     var asignatura = _.findWhere(asignaturas,{'asignatura':$stateParams.nombre_asignatura});
     var curso = _.findWhere(asignatura.cursos, {'id_curso':Number($stateParams.id_curso)});
@@ -272,9 +272,11 @@ crsApp.controller('ConfigCursoController', function ($scope, $rootScope, $state,
 
     EstudiantesServices.obtenerEstudiantesPorCurso(curso)
         .then(function (response) {
-            $scope.listaEstudiantes= _.cloneDeep(response.result);
-        }, function (error) {
-            toastr.error('No se pudo conseguir lista de estudiantes: '+error.err.code,'Error.');
+            if (response.success) {
+                $scope.listaEstudiantes = _.cloneDeep(response.result);
+            } else {
+                toastr.error('No se pudo conseguir lista de estudiantes: '+response.err.code,'Error.');
+            }
         });
     $scope.agregarEstudiante = function () {
         var estudiante = {
@@ -344,42 +346,44 @@ crsApp.controller('ConfigCursoController', function ($scope, $rootScope, $state,
                 //no se encuentra en la lista, se obtiene estudiante y se pregunta si quiere agregar al curso.
                 EstudiantesServices.ObtenerEstudiante(estudiante)
                     .then(function (response) {
-                        if(!_.isUndefined(response.result)){
-                            $mdDialog.show({
-                                templateUrl: '/partials/content/asignatura/curso/config/modalEstudianteCoincide.html',
-                                locals : {
-                                    rut: response.result.rut,
-                                    nombre: response.result.nombre,
-                                    apellido: response.result.apellido,
-                                    usuario: response.result.usuario,
-                                    clave: response.result.clave,
-                                    curso: curso.nombre_curso,
-                                    ano: curso.ano,
-                                    semestre: curso.semestre
-                                },
-                                controller: 'ModalEstudianteEncontrado'
-                            })
-                                .then(
-                                function () {
-                                    //reemplazar en el indice y poner response.result objeto
-                                    $scope.listaEstudiantes.splice(index,1, response.result);
-                                    //asociar en la bd
-                                    var EstudianteCurso = {
-                                        'id_user': response.result.id_user,
-                                        'id_curso': estudiante.id_curso
-                                    };
-                                    EstudiantesServices.AsignarCursoAEstudiante(EstudianteCurso).then(
-                                        function (response) {
-                                            delete estudiante['nuevo'];
-                                            estudiante.edicion = false;
-                                        }, function (error) {
-                                            toastr.error('No se pudo asignar el estudiante al curso: '+error.err.code,'Error.');
-                                        }
-                                    );
-                                });
+                        if (response.success) {
+                            if (!_.isUndefined(response.result)) {
+                                $mdDialog.show({
+                                        templateUrl: '/partials/content/asignatura/curso/config/modalEstudianteCoincide.html',
+                                        locals: {
+                                            rut: response.result.rut,
+                                            nombre: response.result.nombre,
+                                            apellido: response.result.apellido,
+                                            usuario: response.result.usuario,
+                                            clave: response.result.clave,
+                                            curso: curso.nombre_curso,
+                                            ano: curso.ano,
+                                            semestre: curso.semestre
+                                        },
+                                        controller: 'ModalEstudianteEncontrado'
+                                    })
+                                    .then(
+                                        function () {
+                                            //reemplazar en el indice y poner response.result objeto
+                                            $scope.listaEstudiantes.splice(index, 1, response.result);
+                                            //asociar en la bd
+                                            var EstudianteCurso = {
+                                                'id_user': response.result.id_user,
+                                                'id_curso': estudiante.id_curso
+                                            };
+                                            EstudiantesServices.AsignarCursoAEstudiante(EstudianteCurso).then(
+                                                function (response) {
+                                                    delete estudiante['nuevo'];
+                                                    estudiante.edicion = false;
+                                                }, function (error) {
+                                                    toastr.error('No se pudo asignar el estudiante al curso: ' + error.err.code, 'Error.');
+                                                }
+                                            );
+                                        });
+                            }
+                        } else {
+                            toastr.error('No se pudo obtener estudiante: '+resposne.err.code,'Error.');
                         }
-                    }, function (error) {
-                        toastr.error('No se pudo obtener estudiante: '+error.err.code,'Error.');
                     });
             }
         }
@@ -387,37 +391,58 @@ crsApp.controller('ConfigCursoController', function ($scope, $rootScope, $state,
 
     $scope.guardarEstudiante = function (estudiante) {
         if(!_.isUndefined(estudiante.nuevo)) {
-            EstudiantesServices.CrearEstudiante(estudiante).then(
-                function (response) {
-                    var EstudianteCurso = {
-                        'id_user': response.id_user,
-                        'id_curso': estudiante.id_curso
-                    };
-                    toastr.success('Nuevo estudiante creado.');
-                    EstudiantesServices.AsignarCursoAEstudiante(EstudianteCurso).then(
-                        function (response) {
-                            delete estudiante['nuevo'];
-                            estudiante.edicion = false;
-                            toastr.success('Estudiante asociado al curso.');
-                        }, function (error) {
-                            toastr.error('No se pudo asignar el estudiante al curso: '+error.err.code,'Error.');
-                        }
-                    );
-                }, function (error) {
-                    if (error.err.code == 'ER_DUP_ENTRY') {
-                        toastr.error('Ya existe estudiante con el mismo usuario. Por favor modifique el usuario.','Error.');
+            //comprar que no exista el mismo usuario en admin o profesor
+            var promesa1 = EstudiantesServices.comprobarUsuarioAdministrador(estudiante.usuario)
+                .then(function (response) {
+                    if(response.success){
+                        return response.result;
                     }
+            });
+            var promesa2 = EstudiantesServices.comprobarUsuarioProfesor(estudiante.usuario)
+                .then(function (response) {
+                    if(response.success){
+                        return response.result;
+                    }
+                });
+            $q.all([promesa1, promesa2]).then(function (response) {
+                if(response[0]+response[1] === 0){
+                    EstudiantesServices.CrearEstudiante(estudiante).then(function (response) {
+                        if (response.success) {
+                            var EstudianteCurso = {
+                                'id_user': response.id_user,
+                                'id_curso': estudiante.id_curso
+                            };
+                            toastr.success('Nuevo estudiante creado.');
+                            EstudiantesServices.AsignarCursoAEstudiante(EstudianteCurso).then(function (response) {
+                                if (response.success) {
+                                    delete estudiante['nuevo'];
+                                    estudiante.edicion = false;
+                                    toastr.success('Estudiante asociado al curso.');
+                                } else {
+                                    toastr.error('No se pudo asignar el estudiante al curso: ' + response.err.code, 'Error.');
+                                }
+                            });
+                        } else {
+                            if (response.err.code == 'ER_DUP_ENTRY') {
+                                toastr.error('Ya existe estudiante con el mismo usuario. Por favor modifique el usuario.', 'Error.');
+                            }
+                        }
+                    });
+                }else{
+                    toastr.error('Ya existe una cuenta con el mismo usuario. Por favor modifique el usuario.', 'Error.');
                 }
-            );
+            });
+
         }else{
             EstudiantesServices.ActualizarEstudiante(estudiante).then(
                 function (response) {
-                    estudiante.edicion = false;
-                    toastr.success('Información del estudiante actualizada.');
-                }, function (error) {
-                    toastr.error('No se pudo actualizar información del estudiante: '+error.err.code,'Error.');
-                }
-            );
+                    if(response.success){
+                        estudiante.edicion = false;
+                        toastr.success('Información del estudiante actualizada.');
+                    }else{
+                        toastr.error('No se pudo actualizar información del estudiante: '+response.err.code,'Error.');
+                    }
+                });
         }
     };
     $scope.editarEstudiante = function (estudiante) {
@@ -426,10 +451,12 @@ crsApp.controller('ConfigCursoController', function ($scope, $rootScope, $state,
     $scope.eliminarEstudianteDelCurso = function (estudiante, index) {
         EstudiantesServices.EliminarEstudianteDelCurso(estudiante)
             .then(function (response) {
-                $scope.listaEstudiantes.splice(index,1);
-                toastr.success('Estudiante eliminado del curso.');
-            }, function (error) {
-                toastr.error('No se pudo eliminar al estudiante del curso: '+error.err.code,'Error');
+                if (response.success) {
+                    $scope.listaEstudiantes.splice(index, 1);
+                    toastr.success('Estudiante eliminado del curso.');
+                } else {
+                    toastr.error('No se pudo eliminar al estudiante del curso: '+response.err.code,'Error');
+                }
             });
     };
     $scope.cancelarEstudiante = function (estudiante, index) {

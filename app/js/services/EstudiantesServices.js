@@ -30,6 +30,12 @@ crsApp.factory('EstudiantesServices', function ($http, $q) {
         },
         ActualizarEstudiante: function (data) {
             return postHelper('/estudiante/actualizarEstudiante', data);
+        },
+        comprobarUsuarioProfesor: function (usuario) {
+            return postHelper('/estudiante/comprobarUsuarioProfesor', {usuario:usuario})
+        },
+        comprobarUsuarioAdministrador: function (usuario) {
+            return postHelper('/estudiante/comprobarUsuarioAdministrador', {usuario:usuario})
         }
     }
 });
