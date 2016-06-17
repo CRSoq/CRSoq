@@ -17,11 +17,15 @@
                         </span>
                     </h1>
                     <h2 style="text-align: center; font-size: 16px; font-weight: lighter">
-                    <span>{{user.nombre}} {{user.apellido}} |
-                        <md-button ng-click="logOut()">
-                            Salir
-                        </md-button>
-                    </span>
+                    <span style="text-transform: capitalize">
+                            {{user.tipo}}: {{user.nombre}} {{user.apellido}}
+                        </span>
+                        <br>
+                        <span>
+                            <md-button ng-click="logOut()">
+                                Salir
+                            </md-button>
+                        </span>
                     </h2>
                 </div>
             </div>
