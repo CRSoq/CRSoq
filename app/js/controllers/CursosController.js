@@ -466,17 +466,17 @@ crsApp.controller('ConfigCursoController', function ($scope, $rootScope, $state,
             estudiante.edicion = false;
         }
     };
-    //meta
-    //obtener meta del curso
 
     $scope.guardarMeta = function () {
         CursosServices.establecerMeta($scope.curso.meta, $scope.curso).then(
             function (response) {
-                toastr.success('Se estableció la meta del curso.');
-            }, function (error) {
-                toastr.error('No se pudo establecer la meta del curso: '+error.err.code,'Error');
-            }
-        );
+                if (response.success) {
+                    CursosServices.actualizarCursoLocal($scope.curso);
+                    toastr.success('Se estableció la meta del curso.');
+                } else {
+                    toastr.error('No se pudo establecer la meta del curso: '+response.err.code,'Error');
+                }
+            });
     };
 });
 

@@ -26,6 +26,20 @@ crsApp.factory('CursosServices', function ($http, $q, $localStorage) {
         obtenerCursosLocal: function () {
             return  JSON.parse($localStorage.cursos);
         },
+        actualizarCursoLocal: function (curso) {
+            var asignaturas = JSON.parse($localStorage.cursos);
+            _.findIndex(asignaturas, function (asignatura) {
+                if(asignatura.asignatura===curso.nombre_curso ){
+                    _.findIndex(asignatura.cursos, function (cursoLocal) {
+                        if(cursoLocal.id_curso===curso.id_curso){
+                            cursoLocal.meta=curso.meta;
+                        }
+                    });
+                }
+            });
+            delete  $localStorage.cursos;
+            $localStorage.cursos = JSON.stringify(asignaturas);
+        },
         establecerMeta: function (meta, curso) {
             return postHelper('/cursos/establecerMeta',{'curso': curso, 'meta': meta});
         }

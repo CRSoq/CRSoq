@@ -158,10 +158,8 @@ router.post('/establecerMeta', function (req, res) {
     }else{
         connection.query('UPDATE curso SET meta = ? WHERE id_curso = ?',[req.body.meta, req.body.curso.id_curso], function (error) {
             if(!error){
-                res.status(200);
                 return res.json({'success':true});
             }else{
-                res.status(500);
                 return res.json({'success':false, 'err':error});
             }
         });
