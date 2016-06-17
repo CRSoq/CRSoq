@@ -1,4 +1,4 @@
-# Sistema CRSoq#1.0.1
+# Sistema CRSoq (1.0.1)
 
 Este para el servidor ocupa [NodeJS](https://nodejs.org/en/) junto al framework [ExpressJS](http://expressjs.com/es/) y para la comunicación entre  nodos se ocupa [Socket.IO](http://socket.io/), en la parte del cliente se ocupa [AngularJS](http://angularjs.org/) junto a [Angular Material](https://material.angularjs.org/latest/).
 
