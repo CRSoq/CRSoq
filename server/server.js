@@ -8,12 +8,14 @@ var io          = require('socket.io')(http);
 var root        = path.resolve(".");
 
 var on          = require('./controllers/on')(io);
-http.listen(3000,'192.168.1.100');
+var config      = require('./config').config;
+
+http.listen(config.server_port,config.server_ip);
 app.use(bodyParser.json());
 app.use(express.static(root+"/app"));
 
 var router = require('./router')(app);
 
-console.log('Server running on port: 3000\nCTRL+C to stop the server');
+console.log('Server running on http://'+config.server_ip+':'+config.server_port+'\nCTRL+C to stop the server');
 
 module.exports = app;

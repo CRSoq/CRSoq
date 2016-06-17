@@ -1,5 +1,4 @@
 'use strict';
-
 var crsApp = angular.module('crsApp', [
     'ui.router',
     'ngAnimate',
@@ -8,10 +7,12 @@ var crsApp = angular.module('crsApp', [
     'md.data.table',
     'toastr',
     'nvd3',
-    'ngclipboard'
+    'ngclipboard',
+    'configuration'
 ]);
 
 crsApp.config(function($stateProvider, $urlRouterProvider, toastrConfig) {
+
     angular.extend(toastrConfig, {
         allowHtml: true,
         closeButton: true,

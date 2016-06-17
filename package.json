@@ -1,7 +1,7 @@
 {
   "name": "crsoq",
   "private": true,
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "CRSoq Sistema de respuestas en clases con preguntas abiertas",
   "repository": "https://uta.cl",
   "license": "MIT",

@@ -1,6 +1,6 @@
 'use strict';
 
-crsApp.factory('SocketServices', function ($rootScope) {
+crsApp.factory('SocketServices', function ($rootScope, SERVER_IP, SERVER_PORT) {
     var socket = null;
     return {
         on: function (eventName, callback) {
@@ -19,7 +19,7 @@ crsApp.factory('SocketServices', function ($rootScope) {
             }
         },
         connect: function () {
-            socket = io.connect('http://192.168.1.100:3000');
+            socket = io.connect('http://'+SERVER_IP+':'+SERVER_PORT);
             return socket;
         },
         getSocket: function () {

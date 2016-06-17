@@ -1,11 +1,11 @@
 var MySQLConnectionManager = require('mysql-connection-manager');
-
+var config      = require('../../../server/config').config;
 var options = {
-    host: 'localhost',
-    port: 3306,
-    user: 'db_user',
-    password: 'db_pass',
-    database: 'db_name',
+    host: config.db_host,
+    port: config.db_port,
+    user: config.db_user,
+    password: config.db_pass,
+    database: config.db_name,
     autoReconnect: true,
     keepAlive: true,
     multipleStatements: true
