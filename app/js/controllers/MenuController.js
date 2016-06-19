@@ -1,4 +1,5 @@
-﻿crsApp.controller('MenuController', function($scope, $rootScope, $stateParams, $state, $q, $mdSidenav, toastr, $localStorage, CursosServices, SessionServices){
+﻿'use strict';
+crsApp.controller('MenuController', function($scope, $rootScope, $stateParams, $state, $q, $mdSidenav, toastr, $localStorage, CursosServices, SessionServices){
     cargarMenu();
     $scope.menuCerrado = true;
     $rootScope.cerrar = $scope.menuCerrado;
