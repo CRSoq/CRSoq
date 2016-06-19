@@ -1,3 +1,4 @@
+'use strict';
 var express     = require('express');
 var router      = express.Router();
 var _           = require('lodash');
@@ -58,7 +59,7 @@ router.post('/actualizarActividad', function (req, res) {
         });
     }
 });
-//actualizar estado participación de un estudiante en una actividad.
+//actualizar estado participaciÃ³n de un estudiante en una actividad.
 router.post('/actualizarEstadoParticipacionActividad', function (req, res) {
     if(!req.body){
         return res.sendStatus(400);
@@ -100,7 +101,7 @@ router.post('/obtenerParticipantesActividad', function (req, res) {
         });
     }
 });
-//eliminar participación de una actividad
+//eliminar participaciÃ³n de una actividad
 router.post('/eliminarParticipacionActividad', function (req, res) {
     if(!req.body){
         return res.sendStatus(400);
