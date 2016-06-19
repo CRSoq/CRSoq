@@ -1,9 +1,8 @@
+/* jshint node: true */
 'use strict';
 var express     = require('express');
 var router      = express.Router();
-var _           = require('lodash');
 var connection  = require('./connection').database;
-
 router.post('/obtenerActividadesCurso', function (req, res) {
     if(!req.body){
         return res.sendStatus(400);
@@ -17,7 +16,6 @@ router.post('/obtenerActividadesCurso', function (req, res) {
         });
     }
 });
-//crear actividad del curso
 router.post('/crearActividad', function (req, res) {
     if(!req.body){
         return res.sendStatus(400);
@@ -31,7 +29,6 @@ router.post('/crearActividad', function (req, res) {
         });
     }
 });
-//eliminar actividad del curso
 router.post('/eliminarActividad', function (req, res) {
     if(!req.body){
         return res.sendStatus(400);
@@ -45,7 +42,6 @@ router.post('/eliminarActividad', function (req, res) {
         });
     }
 });
-//modificar actividad del curso
 router.post('/actualizarActividad', function (req, res) {
     if(!req.body){
         return res.sendStatus(400);
@@ -59,7 +55,6 @@ router.post('/actualizarActividad', function (req, res) {
         });
     }
 });
-//actualizar estado participación de un estudiante en una actividad.
 router.post('/actualizarEstadoParticipacionActividad', function (req, res) {
     if(!req.body){
         return res.sendStatus(400);
@@ -73,7 +68,6 @@ router.post('/actualizarEstadoParticipacionActividad', function (req, res) {
         });
     }
 });
-//asginar participantes de la actividad del curso
 router.post('/asignarParticipanteActividad', function (req, res) {
     if(!req.body){
         return res.sendStatus(400);
@@ -87,7 +81,6 @@ router.post('/asignarParticipanteActividad', function (req, res) {
         });
     }
 });
-//obtener participantes de una actividad
 router.post('/obtenerParticipantesActividad', function (req, res) {
     if(!req.body){
         return res.sendStatus(400);
@@ -101,7 +94,6 @@ router.post('/obtenerParticipantesActividad', function (req, res) {
         });
     }
 });
-//eliminar participación de una actividad
 router.post('/eliminarParticipacionActividad', function (req, res) {
     if(!req.body){
         return res.sendStatus(400);
