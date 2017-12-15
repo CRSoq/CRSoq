@@ -3,6 +3,9 @@
 /* Created on:     05-05-2016 8:07:28                           */
 /*==============================================================*/
 
+drop table if exists tema;
+
+drop table if exists topico;
 
 drop table if exists actividad;
 
@@ -33,12 +36,34 @@ drop table if exists pregunta;
 drop table if exists profesor;
 
 /*==============================================================*/
+/* Table: tema                                                  */
+/*==============================================================*/
+create table tema (
+  id_tema 				int not null auto_increment,
+  nombre 				varchar(250) not null,
+  id_topico 			int not null,
+  primary key (id_tema),
+  UNIQUE KEY unique_nombre (nombre, id_topico)
+);
+
+/*==============================================================*/
+/* Table: topico                                                */
+/*==============================================================*/
+create table topico (
+  id_topico 			int not null auto_increment,
+  nombre 				varchar(250) not null,
+  id_asignatura 		int not null,
+  primary key (id_topico),
+  UNIQUE KEY unique_nombre (nombre, id_asignatura)
+);
+
+/*==============================================================*/
 /* Table: actividad                                             */
 /*==============================================================*/
 create table actividad
 (
    id_actividad         int not null auto_increment,
-   id_clase             int,
+   id_clase             int default null,
    id_curso             int not null,
    titulo_act           varchar(1024),
    estado_actividad     varchar(50),
@@ -75,6 +100,7 @@ create table biblioteca_preguntas
    id_b_pregunta        int not null auto_increment,
    id_asignatura        int not null,
    b_pregunta           varchar(1024),
+   id_tema 				int,
    primary key (id_b_pregunta)
 );
 
@@ -116,6 +142,7 @@ create table curso
    estado_curso         varchar(250),
    nombre_curso         varchar(250),
    meta                 int,
+   meta_alumno			int default 12,
    primary key (id_curso)
 );
 
@@ -208,6 +235,12 @@ create table profesor
    UNIQUE KEY unique_usuario (usuario)
 );
 
+alter table tema add constraint fk_pertenece_a2 foreign key (id_topico) 
+references topico (id_topico) on delete cascade on update restrict;
+
+alter table topico add constraint fk_pertenece_a3 foreign key (id_asignatura) 
+references asignatura (id_asignatura) on delete cascade on update restrict;
+
 alter table actividad add constraint fk_se_realizan foreign key (id_clase)
 references clase (id_clase) on delete restrict on update restrict;
 
@@ -216,6 +249,9 @@ references curso (id_curso) on delete restrict on update restrict;
 
 alter table biblioteca_preguntas add constraint fk_disponible foreign key (id_asignatura)
 references asignatura (id_asignatura) on delete restrict on update restrict;
+
+alter table biblioteca_preguntas add constraint fk_pertenece_a foreign key (id_tema)
+references tema (id_tema) on delete restrict on update restrict;
 
 alter table clase add constraint fk_contiene foreign key (id_modulo)
 references modulo (id_modulo) on delete restrict on update restrict;
@@ -258,4 +294,7 @@ references curso (id_curso) on delete restrict on update restrict;
 
 alter table pregunta add constraint fk_se_hacen foreign key (id_clase)
 references clase (id_clase) on delete restrict on update restrict;
+
+insert into administrador values(1,"admin","adminCRSoq",null);
+
 
