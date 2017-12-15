@@ -17,6 +17,9 @@ crsApp.factory('PreguntasServices', function($http, $q){
         obtenerPreguntasClase: function (clase) {
             return postHelper('/preguntas/obtenerPreguntasClase',clase);
         },
+	obtenerPreguntasRealizadas: function (curso) {
+            return postHelper('/preguntas/obtenerPreguntasRealizadas', curso);
+        },
         obtenerPreguntaPorId: function (id_pregunta) {
             return postHelper('/preguntas/obtenerPreguntaPorId',id_pregunta);
         },
@@ -65,6 +68,9 @@ crsApp.factory('PreguntasServices', function($http, $q){
         },
         obtenerParticipacionesXEstudiante: function(estudiante){
             return postHelper('/preguntas/obtenerParticipacionesXEstudiante',estudiante);
-        }
+        },
+	obtenerTopicosAsignatura: function(asignatura){
+	    return postHelper('/preguntas/obtenerTopicosAsignatura', asignatura);
+	}
     }
 });

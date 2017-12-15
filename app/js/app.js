@@ -117,6 +117,26 @@ crsApp.config(function($stateProvider, $urlRouterProvider, toastrConfig) {
             authenticate: true,
             admin: true
         })
+	.state('crsApp.adminAlumnos', {
+	    url: 'admin/alumno',
+            views: {
+               "main@crsApp": {
+		    templateUrl: 'partials/content/administracion/adminAlumnos.html'
+	       }
+	    },
+	    authenticate: true,
+            admin: true
+	})
+	// agregar configuracion en el menu del profesor
+	.state('crsApp.asignatura.configuracion', {
+	    url: ': /Configuracion',
+	    views: {
+	        'main@crsApp': {
+		    templateUrl: 'partials/content/asignatura/configuracionAsignatura.html'
+	        }
+	    },
+	    authenticate:true
+	})
         .state('crsApp.asignatura', {
             url: ':nombre_asignatura',
             views: {

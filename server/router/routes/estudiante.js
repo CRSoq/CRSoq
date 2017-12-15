@@ -58,6 +58,21 @@ router.post('/asignarCursoAEstudiante', function (req, res) {
         });
     }
 });
+//  Se agregaga obtenerAlumnoSistema
+
+router.post('/obtenerAlumnosSistema', function (req, res) {
+    if(!req.body){
+        return res.sendStatus(400);
+    }else{
+        connection.query('SELECT id_user, rut, nombre, apellido, usuario, clave FROM estudiante', function (error, rows) {
+            if(error){
+                return res.json({'success':false, 'err':error});
+            }else{
+                return res.json({'success':true, 'result':rows});
+            }
+        });
+    }
+});
 
 router.post('/obtenerEstudiante', function (req, res) {
     if(!req.body) {
@@ -125,4 +140,44 @@ router.post('/eliminarEstudianteDelCurso', function (req, res) {
         });
     }
 });
+router.post('/editarEstudiante', function (req, res) {
+    if(!req.body){
+        return res.sendStatus(400);
+    }else{
+        connection.query('UPDATE estudiante SET nombre = ?, apellido = ?, usuario = ?, clave = ?, rut = ? WHERE id_user = ?',[req.body.nombre, req.body.apellido, req.body.usuario, req.body.clave , req.body.rut, req.body.id_user], function(error, rows) {
+            if(error){
+                return res.json({'success':false, 'err':error});
+            }else{
+                return res.json({'success':true});
+            }
+        });
+    }
+});
+router.post('/eliminarCursosEstudiante', function (req, res) {
+    if(!req.body){
+        return res.sendStatus(400);
+    }else{
+        connection.query('DELETE FROM pertenece WHERE id_user = ?',[req.body.id_user], function (error) {
+            if(error){
+                return res.json({'success':false, 'err':error});
+            }else{
+                return res.json({'success':true});
+            }
+	});
+    }
+});
+router.post('/eliminarEstudiante', function (req, res) {
+    if(!req.body){
+        return res.sendStatus(400);
+    }else{
+        connection.query('DELETE FROM estudiante WHERE id_user = ?',[req.body.id_user], function (error) {
+            if(error){
+                return res.json({'success':false, 'err':error});
+            }else{
+                return res.json({'success':true});
+            }
+        });
+    }
+});
+
 module.exports = router;

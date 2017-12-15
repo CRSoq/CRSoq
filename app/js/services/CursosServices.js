@@ -33,6 +33,7 @@ crsApp.factory('CursosServices', function ($http, $q, $localStorage) {
                     _.findIndex(asignatura.cursos, function (cursoLocal) {
                         if(cursoLocal.id_curso===curso.id_curso){
                             cursoLocal.meta=curso.meta;
+			    cursoLocal.meta_alumno=curso.meta_alumno;
                         }
                     });
                 }
@@ -42,6 +43,9 @@ crsApp.factory('CursosServices', function ($http, $q, $localStorage) {
         },
         establecerMeta: function (meta, curso) {
             return postHelper('/cursos/establecerMeta',{'curso': curso, 'meta': meta});
-        }
+        },
+	establecerMetaEstudiante: function (meta_alumno, curso) {
+	    return postHelper('/cursos/establecerMetaEstudiante',{'curso': curso, 'meta_alumno': meta_alumno});
+	}
     }
 });

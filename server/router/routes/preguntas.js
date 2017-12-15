@@ -22,11 +22,26 @@ router.post('/archivarPregunta', function (req, res) {
     if(!req.body){
         return res.sendStatus(400);
     }else{
-        connection.query('INSERT INTO biblioteca_preguntas (id_asignatura,b_pregunta) VALUES (?,?)',[req.body.id_asignatura,req.body.pregunta], function (error, result) {
+        connection.query('INSERT INTO biblioteca_preguntas (id_asignatura,b_pregunta,id_tema) VALUES (?,?,?)',[req.body.id_asignatura,req.body.pregunta,req.body.id_tema], function (error, result) {
             if(error){
                 return res.json({'success':false, 'err':error});
             }else{
                 return res.json({'success':true, 'id_b_pregunta':result.insertId});
+            }
+        });
+    }
+});
+router.post('/obtenerPreguntasRealizadas', function (req, res) {
+    if(!req.body){
+        return res.sendStatus(400);
+    }else{
+        connection.query('SELECT id_pregunta, id_clase, id_b_pregunta, id_curso, estado_pregunta, pregunta FROM pregunta WHERE id_curso = ? AND estado_pregunta = "realizada"',[req.body.id_curso], function (error, rows){
+            if(error){
+                res.status(500);
+                return res.json({'success':false, 'err':error});
+            }else{
+                res.status(200);
+                return res.json({'success':true, 'result': rows});
             }
         });
     }
@@ -65,7 +80,7 @@ router.post('/obtenerPreguntasAsignatura', function (req, res) {
     if(!req.body){
         return res.sendStatus(400);
     }else{
-        connection.query('SELECT id_b_pregunta, id_asignatura, b_pregunta FROM biblioteca_preguntas WHERE id_asignatura = ?',[req.body.id_asignatura], function (error, rows) {
+        connection.query('SELECT id_b_pregunta, id_asignatura, b_pregunta, id_tema FROM biblioteca_preguntas WHERE id_asignatura = ?',[req.body.id_asignatura], function (error, rows) {
             if(error){
                 res.status(500);
                 return res.json({'success':false, 'err':error});
@@ -80,7 +95,7 @@ router.post('/obtenerPreguntasCurso', function (req, res) {
     if(!req.body){
         return res.sendStatus(400);
     }else{
-        connection.query('SELECT id_pregunta, id_clase, id_b_pregunta, id_curso, estado_pregunta, pregunta FROM pregunta WHERE id_curso = ?',[req.body.id_curso], function (error, rows) {
+        connection.query('SELECT * FROM pregunta WHERE id_curso = ?',[req.body.id_curso], function (error, rows) {
             if(error){
                 res.status(500);
                 return res.json({'success':false, 'err':error});
@@ -284,4 +299,33 @@ router.post('/obtenerParticipacionesXEstudiante', function (req, res) {
         });
     }
 });
+/*router.post('/obtenerPreguntasAsignatura', function (req, res) {
+    if(!req.body){
+	return res.sendStatus(400);
+    }else{
+	connection.query('select p.id_pregunta, p.pregunta from pregunta p, curso c, asignatura a where (p.id_curso = c.id_curso AND c.id_asignatura = a.id_asignatura && a.id_asignatura = ?)', [req.body.asignatura.id_asignatura], function (error, rows) {
+	    if(error){
+		return res.json({'success':false, 'err':error});
+	    }else{
+		return res.json({'success':false, 'result':rows});
+	    }
+	});
+    }
+});*/
+router.post('/obtenerTopicosAsignatura', function (req, res) {
+    if(!req.body){
+	return res.sendStatus(400);
+    }else{
+	connection.query('SELECT * FROM topico WHERE id_asignatura = ?', [req.body.id_asignatura], function (error, rows) {
+	    if(error){
+		res.status(500);
+		return res.json({'success':false, 'err':error});
+	    }else{
+		res.status(200);
+		return res.json({'success':true, 'result':rows});
+	    }
+	});
+    }
+});
+
 module.exports = router;

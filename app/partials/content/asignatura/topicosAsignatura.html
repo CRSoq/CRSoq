@@ -1,0 +1,43 @@
+<md-toolbar>
+    <div class="md-toolbar-tools">
+        <h2>Tópicos de la asignatura {{asignatura.nombre_asignatura}}</h2>
+    </div>
+</md-toolbar>
+<br>
+<div ng-controller="TopicosController" ng-if="user.tipo=='profesor'">
+    <h1><i class="fa fa-users"></i> Tópicos</h1>
+
+<md-toolbar class="md-table-toolbar md-default">
+        <div class="md-toolbar-tools">
+            <md-button class="md-raised" aria-label="Agregar Tópico" ng-click="nuevoTopico()">
+                <i class="fa fa-user-plus"></i> Agregar tópico
+            </md-button>
+        </div>
+</md-toolbar>
+        <md-table-container ng-if="listaTopicos.length>0">
+            <table md-table md-progress="promesas">
+            <thead md-head>
+            <tr md-row>
+                <th md-column>#</th>
+                <th md-column>Nombre</th>
+            </tr>
+            </thead>
+            <tbody md-body>
+            <tr md-row ng-repeat="topico in listaTopicos">
+                <td md-cell >{{$index+1}}</td>
+                <td md-cell >{{topico.nombre}}</td>
+		    <td class="column-acciones" md-cell>
+			<md-button aria-label="Editar" class="md-raised md-primary botonAccion" ng-click="editarTopico(topico)">
+                            <i class="fa fa-pencil"></i>
+                        </md-button>
+                        <md-button aria-label="Eliminar" class="md-raised md-primary botonAccion" ng-click="eliminarTopico(topico, $index)">
+                            <i class="fa fa-close"></i>
+                        </md-button>
+		    </td>
+            </tr>
+            </tbody>
+            <tbody md-body>
+            </tbody>
+        </table>
+    </md-table-container>
+</div>

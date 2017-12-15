@@ -238,24 +238,11 @@ crsApp.controller('AdministracionController', function($scope, toastr, $mdDialog
                 });
             });
     };
-    var eliminarEstudianteSistema = function (estudiante, index) {
-    	EstudiantesServices.eliminarEstudiante(estudiante)
-            .then(function (response) {
-		console.log(response);
-                if (response.success) {
-                    $scope.listaEstudiantes.splice(index, 1);
-                    toastr.success('Estudiante eliminado del sistema.');
-                } else {
-                    toastr.error('No se pudo eliminar al estudiante del sistema: '+response.err.code,'Error');
-                }
-            });
-    };
-    $scope.eliminarEstudiante = function (estudiante, index) {
-        EstudiantesServices.eliminarEstudiante(estudiante)
+    $scope.eliminarEstudiante = function (estudiante) {
+        EstudiantesServices.eliminarCruEstudiante(estudiante)
             .then(function (response) {
                 if (response.success) {
-		    console.log(index);
-		    $scope.listaEstudiantes.splice(index, 1);
+		    //$scope.listaEstudiantes.splice(index, 1);
                     toastr.success('Estudiante eliminado del sistema.');
                 } else {
                     toastr.error('No se pudo eliminar al estudiante del sistema: '+response.err.code,'Error');
@@ -363,7 +350,7 @@ crsApp.controller('modalAgregarProfesorController', function($scope, toastr, $md
 });
 crsApp.controller('modalAgregarAlumnoController', function($scope, toastr, $mdDialog, estudiante, titulo, listaEstudiantes){
     $scope.titulo=titulo;
-    var listaAlu = _.cloneDeep(listaEstudiantes);
+    var listaPro = _.cloneDeep(listaEstudiantes);
     if(_.isNull(estudiante)){
         $scope.estudiante = {};
     }else{
@@ -371,7 +358,7 @@ crsApp.controller('modalAgregarAlumnoController', function($scope, toastr, $mdDi
     }
     $scope.aceptar = function () {
         if(!_.isUndefined($scope.estudiante.rut) && !_.isUndefined($scope.estudiante.nombre) && !_.isUndefined($scope.estudiante.apellido) && !_.isUndefined($scope.estudiante.usuario) && !_.isUndefined($scope.estudiante.clave)){
-            var index = _.findIndex(listaAlu, function (estudiante) {
+            var index = _.findIndex(listaEstudiantes, function (estudiante) {
                 if(estudiante.usuario == $scope.estudiante.usuario && estudiante.id_user != $scope.estudiante.id_user){
                    return true;
                 }

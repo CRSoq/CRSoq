@@ -19,3 +19,20 @@
         <i class="fa fa-floppy-o"></i> Guardar
     </md-button>
 </form>
+<p>Establece la cantidad de puntos que tiene como objetivo un estudiante.</p>
+
+<form layout="row" layout-align="center none" layout-padding>
+        <md-input-container flex="50">
+            <label>Meta para el estudiante</label>
+            <input ng-model="curso.meta_alumno" type="number" step="1" ng-required="true" required>
+        </md-input-container>
+    <div>
+    </div>
+    <md-button aria-label="Guardar meta" class="md-raised md-primary botonAccion" ng-click="guardarMetaEstudiante()">
+        <md-tooltip md-direction="top" class="md-body-1">
+            Guardar meta estudiante
+        </md-tooltip>
+        <i class="fa fa-floppy-o"></i> Guardar
+    </md-button>
+</form>
+

@@ -1,0 +1,81 @@
+<md-dialog aria-label="List dialog" ng-cloak>
+
+    <form>
+
+        <md-toolbar>
+
+            <div class="md-toolbar-tools">
+
+                <h2>Lista de Estudiantes</h2>
+
+                <span flex></span>
+
+                <md-button aria-label="Cancelar" class="md-icon-button" ng-click="cancelar()">
+
+                    <i class="fa fa-times"></i>
+
+                </md-button>
+
+            </div>
+
+        </md-toolbar>
+
+
+
+        <md-dialog-content>
+
+            <div class="md-dialog-content">
+
+                <md-table-container >
+
+                    <table md-table md-progress="promesas" md-row-select="true" ng-model="listaSeleccionEstudiante" >
+
+                        <thead md-head>
+
+                        <tr md-row >
+
+                            <th md-column class="column-rut">RUT</th>
+
+                            <th md-column class="column-nombre">Nombre</th>
+
+                        </tr>
+
+                        </thead>
+
+                        <tbody md-body>
+
+                        <tr md-row md-select="estudiante" ng-repeat="estudiante in listaEstudiantes">
+
+                            <td md-cell class="column-rut">
+
+                                {{estudiante.rut}}
+
+                            </td>
+
+                            <td md-cell class="column-apellido">
+
+                                {{estudiante.nombre}} {{estudiante.apellido}}
+
+                            </td>
+
+                            </tr>
+
+                        </tbody>
+
+                    </table>
+
+                </md-table-container>
+
+            </div>
+
+        </md-dialog-content>
+
+        <md-dialog-actions layout-align="center center">
+
+            <md-button aria-label="Aceptar" ng-click="aceptar()" class="md-raised md-primary">Si</md-button>
+
+        </md-dialog-actions>
+
+    </form>
+
+</md-dialog>

@@ -3,7 +3,7 @@
 
     <md-toolbar class="md-table-toolbar md-default">
         <div class="md-toolbar-tools">
-            <md-button class="md-raised" aria-label="Agregar Pregunta" ng-click="crearPregunta()">
+            <md-button class="md-raised" aria-label="Agregar Pregunta" ng-click="nuevaPregunta()">
                 <i class="fa fa-plus"></i> Crear pregunta
             </md-button>
         </div>
@@ -13,7 +13,7 @@
             <thead md-head>
             <tr md-row>
                 <th md-column>Pregunta</th>
-                <th md-column>Acciones</th>
+                <th md-column>Temas</th>
             </tr>
             </thead>
             <tbody md-body>
@@ -28,12 +28,13 @@
             <thead md-head>
                 <tr md-row>
                     <th md-column>Pregunta</th>
-                    <th md-column>Acciones</th>
+                    <th md-column>Temas</th>
                 </tr>
             </thead>
             <tbody md-body>
                 <tr md-row ng-repeat="pregunta in bibliotecaDePreguntas">
                     <td md-cell ng-if="!pregunta.edicion">{{pregunta.b_pregunta}}</td>
+		    <td md-cell ng-if="!pregunta.edicion">{{pregunta.nombre}}</th>
                     <td md-cell ng-if="pregunta.edicion">
                         <md-input-container class="md-block">
                             <label>Pregunta</label>

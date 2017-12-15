@@ -7,6 +7,45 @@ crsApp.controller('PreguntaSesionProfesorController', function ($scope, $rootSco
     $scope.cargando = deferred.promise;
     $scope._=_;
 
+	// Necesario para Ordenar la tabla de participación
+    $scope.sortType = 'index';
+    $scope.sortReverse = false;
+    $scope.sortWay = 'sesion';
+    $scope.lastSort ='';
+
+    $scope.setSortWay = function(value){
+	$scope.sortWay = value;
+	if(!$scope.lastSort==''){
+	    $scope.sortType = value+'.'+$scope.lastSort;
+	}
+    }
+
+    $scope.setSortTypeByWay = function(value){
+	$scope.lastSort = value;
+	if($scope.sortWay=='sesion'){
+	    $scope.setSorting('sesion.'+value);
+	}
+	else if($scope.sortWay=='semestre'){
+	    $scope.setSorting('semestre.'+value);
+	}
+    }
+    $scope.setSorting = function(value){
+	if($scope.sortType==value){
+	    $scope.sortReverse = !$scope.sortReverse;
+	}
+	else{
+	    $scope.sortType = value;
+	    $scope.sortReverse = false;
+	}
+    }
+
+    $scope.setSortType = function(value){
+	$scope.lastSort='';
+	$scope.setSorting(value);
+    }
+
+	// FIN_Ordenado
+
     PreguntasServices.obtenerPreguntaPorId({'id_pregunta':$stateParams.id_pregunta})
         .then(function (response) {
             $scope.pregunta= _.cloneDeep(response.result);

@@ -7,7 +7,18 @@ router.post('/crearClase', function (req, res) {
     if(!req.body){
         return res.sendStatus(400);
     }else{
-        connection.query('INSERT INTO clase (id_modulo,descripcion,fecha, estado_sesion) VALUES (?,?,?,?)',[req.body.id_modulo,req.body.descripcion,req.body.fecha, req.body.estado_sesion], function (error, result) {
+    //console.log(req.body.fecha);
+    //var fecha = req.body.fecha;
+	//var fecha = req.body.fecha.split("T");
+	//console.log(fecha);
+	//var fecha = fecha[0]+" "+fecha[1];
+	//console.log(fecha);
+	//var fecha = fecha.split(".");
+	//var fecha = fecha[0];
+	//console.log(fecha);
+	//var a='INSERT INTO clase (id_modulo,description,fecha, estado_sesion) VALUES ('+req.body.id_modulo+','+req.body.description+','+fecha[0]+','+req.body.estado_sesion+')';
+	//console.log(a);
+        connection.query('INSERT INTO clase (id_modulo,descripcion,fecha, estado_sesion) VALUES (?,?,str_to_date(?,"%Y-%m-%dT%H:%i:%s.%fZ"),?)',[req.body.id_modulo,req.body.descripcion, req.body.fecha, req.body.estado_sesion], function (error, result) {
             if(!error){
                 return res.json({'success':true, 'id_clase':result.insertId});
             }else{
@@ -57,7 +68,7 @@ router.post('/actualizarClase', function (req, res) {
     if(!req.body){
         return res.sendStatus(400);
     }else{
-        connection.query('UPDATE clase SET id_modulo = ?, descripcion = ?, fecha = ?, estado_sesion = ?  WHERE id_clase = ?',[req.body.id_modulo, req.body.descripcion, req.body.fecha, req.body.estado_sesion, req.body.id_clase], function (error) {
+        connection.query('UPDATE clase SET id_modulo = ?, descripcion = ?, fecha = str_to_date(?,"%Y-%m-%dT%h:%i:%s.%fZ"), estado_sesion = ?  WHERE id_clase = ?',[req.body.id_modulo, req.body.descripcion, req.body.fecha, req.body.estado_sesion, req.body.id_clase], function (error) {
             if(!error){
                 return res.json({'success':true});
             }else{

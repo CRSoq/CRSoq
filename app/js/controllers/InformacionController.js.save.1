@@ -1,0 +1,217 @@
+'use strict';
+crsApp.controller('InformacionController', function ($scope, $stateParams, $mdSidenav, $mdDialog, $timeout, $q, toastr, InformacionServices, CursosServices) {
+    var asignaturas = CursosServices.obtenerCursosLocal();
+    var asignatura = _.findWhere(asignaturas,{'asignatura':$stateParams.nombre_asignatura});
+    $scope.curso = _.findWhere(asignatura.cursos, {'id_curso':Number($stateParams.id_curso)});
+    $scope._ = _;
+    $scope.total = 0;
+    $scope.promesa10;
+    $scope.estudiantesCurso = [];
+    $scope.configurarGrafico = function () {
+        $mdSidenav('right').toggle();
+    };
+    $scope.configurarGrafico2 = function () {
+        $mdSidenav('configGraf2').toggle();
+    };
+    $scope.configurarGraficoPuntosGanados = function () {
+        $mdSidenav('configGrafPuntosGanados').toggle();
+    };
+    $scope.configurarGrafico4 = function () {
+        $mdSidenav('configGraf4').toggle();
+    };
+    $scope.configurarGrafico6 = function () {
+        $mdSidenav('configGraf6').toggle();
+    };
+    $scope.datosPuntosGanados = null;
+    var mostrarDatos = true;
+    var deferedPuntos = $q.defer();
+    var promesaPuntos = deferedPuntos.promise;
+    promesaPuntos.then(function (data) {
+        mostrarDatos = false;
+        $scope.datosPuntosGanados = function () {
+            $mdDialog.show({
+                templateUrl: '/partials/content/asignatura/curso/info/modalPuntosGanados.html',
+                locals:{
+                    datos: data,
+                    curso: $scope.curso
+                },
+                controller: 'ModalPuntosGanadosController'
+            });
+        };
+        $scope.seleccionarEstudiante = function () {
+            $mdDialog.show({
+                templateUrl: '/partials/content/asignatura/curso/info/modalSeleccionarEstudiante.html',
+                locals:{
+                    datos: data,
+                    curso: $scope.curso
+                },
+                controller: 'modalSeleccionarEstudianteController'
+            });
+        };
+    });
+    $scope.general=true;
+    $scope.seleccionPartIntentos = [];
+    var cantidadPreguntasRealizadas = 0;
+    var meta = 0;
+    var totalEstudiantesCurso = 0;
+    var participacionActualCurso = 0;
+    var participacionTotalPosibleCurso = 0;
+    var resultadosPreguntas = [];
+    var preguntasPartIntentos = [];
+    var ganadoresxActividad = [];
+    $scope.fechaInicio = new Date();
+    $scope.fechaFin = new Date();
+    $scope.fechaMin = new Date();
+    $scope.fechaMax = new Date();
+    $scope.preguntaSeleccionada=0;
+    var promesasMeta = [];
+    var promesasPartPromxPreg=[];
+    var promesasPartPromxEst=[];
+    var promesasTotalCurso = [];
+    var promesasIntetosVsPart = [];
+    var promesasResultadoPreguntaPorClase = [];
+    var promesaGanadores = [];
+    var promesasEstGrafoPuntos = [];
+    
+
+    var promesa1 = InformacionServices.obtenerCantidadPreguntasCursoPorEstado($scope.curso,'realizada').then(
+        function (response) {
+            if(response.success){
+                cantidadPreguntasRealizadas = response.result.realizada;
+            }
+        }
+    );
+    promesasPartPromxPreg.push(promesa1);
+    promesasMeta.push(promesa1);
+    var promesa2 = InformacionServices.obtenerMetaCurso($scope.curso).then(
+        function (response) {
+            if(response.success){
+                meta = response.result;
+            }
+        }
+    );
+    promesasMeta.push(promesa2);
+    var promesa3 = InformacionServices.participacionActualCurso($scope.curso).then(function (response) {
+        if(response.success){
+            participacionActualCurso=response.result;
+            console.log(participacionActualCurso);
+        }
+    });
+    promesasTotalCurso.push(promesa3);
+    promesasPartPromxPreg.push(promesa3);
+    promesasPartPromxEst.push(promesa3);
+    var promesa4 = InformacionServices.participacionTotalPosibleCurso($scope.curso).then(function (response) {
+        if(response.success){
+            participacionTotalPosibleCurso=response.result;
+        }
+    });
+    promesasTotalCurso.push(promesa4);
+    var promesa5 = InformacionServic'use strict';
+crsApp.controller('InformacionController', function ($scope, $stateParams, $mdSidenav, $mdDialog, $timeout, $q, toastr, InformacionServices, CursosServices) {
+    var asignaturas = CursosServices.obtenerCursosLocal();
+    var asignatura = _.findWhere(asignaturas,{'asignatura':$stateParams.nombre_asignatura});
+    $scope.curso = _.findWhere(asignatura.cursos, {'id_curso':Number($stateParams.id_curso)});
+    $scope._ = _;
+    $scope.total = 0;
+    $scope.promesa10;
+    $scope.estudiantesCurso = [];
+    $scope.configurarGrafico = function () {
+        $mdSidenav('right').toggle();
+    };
+    $scope.configurarGrafico2 = function () {
+        $mdSidenav('configGraf2').toggle();
+    };
+    $scope.configurarGraficoPuntosGanados = function () {
+        $mdSidenav('configGrafPuntosGanados').toggle();
+    };
+    $scope.configurarGrafico4 = function () {
+        $mdSidenav('configGraf4').toggle();
+    };
+    $scope.configurarGrafico6 = function () {
+        $mdSidenav('configGraf6').toggle();
+    };
+    $scope.datosPuntosGanados = null;
+    var mostrarDatos = true;
+    var deferedPuntos = $q.defer();
+    var promesaPuntos = deferedPuntos.promise;
+    promesaPuntos.then(function (data) {
+        mostrarDatos = false;
+        $scope.datosPuntosGanados = function () {
+            $mdDialog.show({
+                templateUrl: '/partials/content/asignatura/curso/info/modalPuntosGanados.html',
+                locals:{
+                    datos: data,
+                    curso: $scope.curso
+                },
+                controller: 'ModalPuntosGanadosController'
+            });
+        };
+        $scope.seleccionarEstudiante = function () {
+            $mdDialog.show({
+                templateUrl: '/partials/content/asignatura/curso/info/modalSeleccionarEstudiante.html',
+                locals:{
+                    datos: data,
+                    curso: $scope.curso
+                },
+                controller: 'modalSeleccionarEstudianteController'
+            });
+        };
+    });
+    $scope.general=true;
+    $scope.seleccionPartIntentos = [];
+    var cantidadPreguntasRealizadas = 0;
+    var meta = 0;
+    var totalEstudiantesCurso = 0;
+    var participacionActualCurso = 0;
+    var participacionTotalPosibleCurso = 0;
+    var resultadosPreguntas = [];
+    var preguntasPartIntentos = [];
+    var ganadoresxActividad = [];
+    $scope.fechaInicio = new Date();
+    $scope.fechaFin = new Date();
+    $scope.fechaMin = new Date();
+    $scope.fechaMax = new Date();
+    $scope.preguntaSeleccionada=0;
+    var promesasMeta = [];
+    var promesasPartPromxPreg=[];
+    var promesasPartPromxEst=[];
+    var promesasTotalCurso = [];
+    var promesasIntetosVsPart = [];
+    var promesasResultadoPreguntaPorClase = [];
+    var promesaGanadores = [];
+    var promesasEstGrafoPuntos = [];
+    
+
+    var promesa1 = InformacionServices.obtenerCantidadPreguntasCursoPorEstado($scope.curso,'realizada').then(
+        function (response) {
+            if(response.success){
+                cantidadPreguntasRealizadas = response.result.realizada;
+            }
+        }
+    );
+    promesasPartPromxPreg.push(promesa1);
+    promesasMeta.push(promesa1);
+    var promesa2 = InformacionServices.obtenerMetaCurso($scope.curso).then(
+        function (response) {
+            if(response.success){
+                meta = response.result;
+            }
+        }
+    );
+    promesasMeta.push(promesa2);
+    var promesa3 = InformacionServices.participacionActualCurso($scope.curso).then(function (response) {
+        if(response.success){
+            participacionActualCurso=response.result;
+            console.log(participacionActualCurso);
+        }
+    });
+    promesasTotalCurso.push(promesa3);
+    promesasPartPromxPreg.push(promesa3);
+    promesasPartPromxEst.push(promesa3);
+    var promesa4 = InformacionServices.participacionTotalPosibleCurso($scope.curso).then(function (response) {
+        if(response.success){
+            participacionTotalPosibleCurso=response.result;
+        }
+    });
+    promesasTotalCurso.push(promesa4);
+    var promesa5 = InformacionServic

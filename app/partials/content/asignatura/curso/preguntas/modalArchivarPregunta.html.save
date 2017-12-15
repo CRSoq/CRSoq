@@ -1,0 +1,42 @@
+<md-dialog aria-label="Archivar Pregunta" ng-cloak>
+    <form>
+	<md-toolbar>
+	    <div class="md-toolbar-tools">
+		<h2><i class="fa fa-user-plus"></i> Archivar Pregunta</h2>
+		<span flex></span>
+		<md-button aria-label="Canlcelar" class="md-icon-button" ng-click="cancelar()">
+		    <i class="fa fa-times"></i>
+		</md-button>
+	    </div>
+	</md-toolbar>
+	<div ng-controller="TemasController">
+            <div ng-controller="TopicosController">
+		<md-dialog-content>
+	    	    <div class="md-dialog-content">
+                    	<md-input-container>
+                    	    <label> Topico </label>
+                    	    <md-select ng-model="selectedTopico">
+                            	<md-option ng-value="topico.id_topico" ng-repeat="topico in listaTopicos">{{topico.nombre}}</md-option>
+                    	    </md-select>
+                    	</md-input-container>
+             	    </div>
+		</md-dialog-content>
+	    	<md-dialog-content>
+	    	    <div class="md-dialog-content">
+                        <md-input-container>
+                            <label> Tema </label>
+                    	    <md-select ng-model="pregunta.id_tema">
+                                <md-option ng-value="tema.id_tema" ng-repeat="tema in parearTopico(selectedTopico)">{{tema.nombre}}</md-option>
+                    	    </md-select>
+                        </md-input-container>
+             	    </div>
+     	   	</md-dialog-content>
+            </div>
+	</div>
+        <md-dialog-actions layout-align="center center">
+            <md-button aria-label="Aceptar" ng-click="aceptar()" class="md-raised md-primary">Guardar</md-button>
+            <md-button aria-label="Cancelar" ng-click="cancelar()" class="md-raised md-primary">Cancel</md-button>
+        </md-dialog-actions>
+    </form>
+</md-dialog>
+

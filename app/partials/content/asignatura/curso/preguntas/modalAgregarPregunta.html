@@ -1,3 +1,4 @@
+
 <md-dialog aria-label="List dialog" ng-cloak>
     <form>
         <md-toolbar>
@@ -23,7 +24,24 @@
                         <span>{{listaPreguntasSeleccionadas.length}} {{listaPreguntasSeleccionadas.length > 1 ? 'preguntas seleccionadas' : 'pregunta seleccionada'}}</span>
                     </div>
                 </md-toolbar>
-                <md-table-container >
+	    <div ng-controller="TemasController">
+	    <div ng-controller="TopicosController">
+		<div>
+		    <md-input-container>
+		    <label> Topico </label>
+		    <md-select ng-model="selectedTopico">
+		    	<md-option ng-value="topico.id_topico" ng-repeat="topico in listaTopicos">{{topico.nombre}}</md-option>
+		    </md-select>
+		    </md-input-container>
+
+		    <md-input-container>
+		    <label> Tema </label>
+		    <md-select ng-model="selectedTema">
+		    	<md-option ng-value="tema.id_tema" ng-repeat="tema in parearTopico(selectedTopico)">{{tema.nombre}}</md-option>
+		    </md-select>
+		    </md-input-container>
+		</div>
+                <md-table-container>
                     <table md-table md-progress="promesas" md-row-select="true" multiple="true" ng-model="listaPreguntasSeleccionadas">
                         <thead md-head>
                         <tr md-row >
@@ -31,12 +49,14 @@
                         </tr>
                         </thead>
                         <tbody md-body>
-                        <tr md-row md-select="pregunta" ng-repeat="pregunta in listaPreguntasDelCurso">
+                        <tr md-row md-select="pregunta" ng-repeat="pregunta in listaPreguntasDelCurso|filter:{id_tema:selectedTema}">
                             <td md-cell>{{pregunta.pregunta}}</td>
                         </tr>
                         </tbody>
                     </table>
                 </md-table-container>
+	    </div>
+	    </div>
             </div>
         </md-dialog-content>
         <md-dialog-actions layout-align="center center">

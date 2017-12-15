@@ -109,7 +109,14 @@
                     </md-list-item>
                 </md-list>
             </md-list>
-
+	    
+	    <md-button ng-show="mostrarCursosAsignatura(asignatura)" ng-click="cerrarMenu()" class="botonMenu" ui-sref="crsApp.asignatura.configuracion({nombre_asignatura:asignatura.asignatura})">
+                <div layout="row">
+                    <div flex="8"><i class="fa fa-cogs"></i></div>
+                    <div flex="80" align="left">Configuración</div>
+                    <div flex="10" align="right"><i class="fa fa-fw fa-angle-right"></i></div>
+                </div>
+            </md-button>
             <md-button ng-show="mostrarCursosAsignatura(asignatura)" ng-click="cerrarMenu()" class="botonMenu" ui-sref="crsApp.asignatura({nombre_asignatura:asignatura.asignatura})">
                 <div layout="row">
                     <div flex="8"><i class="fa fa-bar-chart"></i></div>

@@ -73,7 +73,7 @@ router.post('/obtenerCursos', function (req, res) {
         return res.sendStatus(400);
     }else{
         if(req.body.tipo == 'profesor'){
-            connection.query('SELECT id_curso, id_asignatura, id_calendario, ano, semestre, nombre_curso, meta FROM curso WHERE id_user = ?',[req.body.id_user], function (error, rows) {
+            connection.query('SELECT id_curso, id_asignatura, id_calendario, ano, semestre, nombre_curso, meta, meta_alumno FROM curso WHERE id_user = ?',[req.body.id_user], function (error, rows) {
                 if(!error){
                     return res.json({'success':true, 'result':ordenar2(rows)});
                 }else{
@@ -157,6 +157,20 @@ router.post('/establecerMeta', function (req, res) {
         return res.sendStatus(400);
     }else{
         connection.query('UPDATE curso SET meta = ? WHERE id_curso = ?',[req.body.meta, req.body.curso.id_curso], function (error) {
+            if(!error){
+                return res.json({'success':true});
+            }else{
+                return res.json({'success':false, 'err':error});
+            }
+        });
+    }
+});
+
+router.post('/establecerMetaEstudiante', function (req, res) {
+    if(!req.body){
+        return res.sendStatus(400);
+    }else{
+        connection.query('UPDATE curso SET meta_alumno = ? WHERE id_curso = ?',[req.body.meta_alumno, req.body.curso.id_curso], function (error) {
             if(!error){
                 return res.json({'success':true});
             }else{

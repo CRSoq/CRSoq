@@ -1,3 +1,6 @@
+
+
+
 'use strict';
 crsApp.controller('PreguntasController', function ($scope, $stateParams, $timeout, $q, $mdDialog, toastr, PreguntasServices, CursosServices, ClasesServices, ModulosServices, TopicosServices) {
     var asignaturas = CursosServices.obtenerCursosLocal();
@@ -398,7 +401,7 @@ crsApp.controller('PreguntasEstudianteController', function ($scope, $stateParam
 
     $scope.promesas = [];
 
-    var promesaPreguntas = PreguntasServices.obtenerPreguntasRealizadas($scope.curso).then(function (response) {
+    var promesaPreguntas = PreguntasServices.obtenerPreguntasCurso($scope.curso).then(function (response) {
         if(response.success){
             $scope.listaPreguntasCurso = _.cloneDeep(response.result);
             cargarClases();

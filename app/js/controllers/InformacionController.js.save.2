@@ -4,7 +4,9 @@ crsApp.controller('InformacionController', function ($scope, $stateParams, $mdSi
     var asignatura = _.findWhere(asignaturas,{'asignatura':$stateParams.nombre_asignatura});
     $scope.curso = _.findWhere(asignatura.cursos, {'id_curso':Number($stateParams.id_curso)});
     $scope._ = _;
-    $scope.alumnoSeleccionado;
+    $scope.total = 0;
+    $scope.promesa10;
+    $scope.estudiantesCurso = [];
     $scope.configurarGrafico = function () {
         $mdSidenav('right').toggle();
     };
@@ -14,7 +16,7 @@ crsApp.controller('InformacionController', function ($scope, $stateParams, $mdSi
     $scope.configurarGraficoPuntosGanados = function () {
         $mdSidenav('configGrafPuntosGanados').toggle();
     };
-    $scope.configurarGrafico4 = function () {   
+    $scope.configurarGrafico4 = function () {
         $mdSidenav('configGraf4').toggle();
     };
     $scope.configurarGrafico6 = function () {
@@ -24,9 +26,7 @@ crsApp.controller('InformacionController', function ($scope, $stateParams, $mdSi
     var mostrarDatos = true;
     var deferedPuntos = $q.defer();
     var promesaPuntos = deferedPuntos.promise;
-    //console.log($scope.data);
     promesaPuntos.then(function (data) {
-        //console.log($scope.curso);
         mostrarDatos = false;
         $scope.datosPuntosGanados = function () {
             $mdDialog.show({
@@ -39,245 +39,16 @@ crsApp.controller('InformacionController', function ($scope, $stateParams, $mdSi
             });
         };
         $scope.seleccionarEstudiante = function () {
-        $mdDialog
-            .show({
+            $mdDialog.show({
                 templateUrl: '/partials/content/asignatura/curso/info/modalSeleccionarEstudiante.html',
-                locals : {
+                locals:{
                     datos: data,
                     curso: $scope.curso
                 },
                 controller: 'modalSeleccionarEstudianteController'
-            })
-            .then(
-            function (listaPreguntaSeleccionadas) {
-                respuestas(listaPreguntaSeleccionadas);
-                participacion(listaPreguntaSeleccionadas);
-                seleccion(listaPreguntaSeleccionadas);
-		$scope.alumnoSeleccionado = listaPreguntaSeleccionadas;
-		console.log($scope.alumnoSeleccionado);
             });
-        };              
+        };
     });
-    var promesaRespuesta=[];
-    var respuestas = function (listaPreguntaSeleccionadas) {
-        var promesas =[];
-        var data =[];
-        var incorrectas;
-        var correctas;
-        var id_user;
-        var rut = listaPreguntaSeleccionadas[0].rut;
-        var id_curso = $scope.curso.id_curso;
-        InformacionServices.estudiante({'rut':rut}).then(function (response) {
-            if(response.success){
-                id_user=response.result;
-            } 
-                var promesa9 = InformacionServices.incorrectaAlumno(id_user, id_curso).then(function (response) {
-                    if(response.success){
-                        incorrectas=response.result;
-                    } 
-                });
-                promesas.push(promesa9);
-                var promesa10 = InformacionServices.correctaAlumno(id_user, id_curso).then(function (response) {
-                    if(response.success){
-                        correctas=response.result;
-                    } 
-                });
-                promesas.push(promesa10);
-                $q.all(promesas).then(function () {
-                var titulo = null;
-                var total = correctas + incorrectas;
-                if(correctas>0){
-                    titulo = ((correctas*100)/total).toFixed(0)+'%';
-                }else{
-                    titulo = '0%'
-                }
-                $scope.dataRespuesta = [
-                    {
-                        key: "correctas",
-                        y: correctas
-                    },
-                    {
-                        key: "Incorrectas",
-                        y: incorrectas
-                    }
-                ];
-                $scope.opcionRespuesta = {
-                    chart: {
-                        type: 'pieChart',
-                        color: ["#448aff","#bbdefb"],
-                        height: 250,
-                        donut: true,
-                        x: function(d){return d.key;},
-                        y: function(d){return d.y;},
-                        showLabels: false,
-                        pie: {
-                        startAngle: function(d) {
-                            return d.startAngle
-                        },
-                        endAngle: function(d) {
-                            return d.endAngle
-                        },
-                        title: titulo
-                    },
-                    duration: 500,
-                    showLegend: true
-                },
-                caption: {
-                    enable: true,
-                    text: 'De un total de '+total+' preguntas seleccionadas fue posible responder correctamente '
-                    +correctas+' '
-                }
-                };
-                });
-        });
-    };
-    var participacion = function (listaPreguntaSeleccionadas) {
-        //console.log(listaPreguntaSeleccionadas);
-        var promesas =[];
-        var data =[];
-        var participacion;
-        var pregunta;
-        var id_user;
-        var rut = listaPreguntaSeleccionadas[0].rut;
-        var id_curso = $scope.curso.id_curso;
-        InformacionServices.estudiante({'rut':rut}).then(function (response) {
-            if(response.success){
-                id_user=response.result;
-            } 
-                var promesa9 = InformacionServices.participacionAlumno(id_user, id_curso).then(function (response) {
-                    if(response.success){
-                        participacion=response.result;
-                    } 
-                });
-                promesas.push(promesa9);
-                var promesa10 = InformacionServices.preguntasRealizadas(id_curso).then(function (response) {
-                    if(response.success){
-                        pregunta=response.result;
-                    } 
-                });
-                promesas.push(promesa10);
-                $q.all(promesas).then(function () {
-                var noParticipacion = pregunta - participacion;
-                var titulo = null;
-                if(participacion>0){
-                    titulo = ((participacion*100)/pregunta).toFixed(0)+'%';
-                }else{
-                    titulo = '0%'
-                }
-                $scope.dataParticipacion = [
-                    {
-                        key: "Participación",
-                        color: "#8BC34A",
-                        y: participacion
-                    },
-                    {
-                        key: "No Participación",
-                        color: "#DCEDC8",
-                        y: noParticipacion
-                    }
-                ];
-                $scope.opcionParticipacion = {
-                    chart: {
-                        type: 'pieChart',
-                        color: ["#448aff","#bbdefb"],
-                        height: 250,
-                        donut: true,
-                        x: function(d){return d.key;},
-                        y: function(d){return d.y;},
-                        showLabels: false,
-                        pie: {
-                        startAngle: function(d) {
-                            return d.startAngle
-                        },
-                        endAngle: function(d) {
-                            return d.endAngle
-                        },
-                        title:titulo
-                    },
-                    duration: 500,
-                    showLegend: true
-                },
-                caption: {
-                    enable: true,
-                    text: 'De un total de '+pregunta+' preguntas realizadas fue posible participar '
-                    +participacion+' preguntas'
-                }
-                };
-                });
-        });
-    };
-    var seleccion = function (listaPreguntaSeleccionadas) {
-        //console.log(listaPreguntaSeleccionadas);
-        var promesas =[];
-        var data =[];
-        var seleccionados;
-        var noSeleccionados;
-        var id_user;
-        var rut = listaPreguntaSeleccionadas[0].rut;
-        var id_curso = $scope.curso.id_curso;
-        InformacionServices.estudiante({'rut':rut}).then(function (response) {
-            if(response.success){
-                id_user=response.result;
-            } 
-                var promesa9 = InformacionServices.preguntasSeleccionada(id_user, id_curso).then(function (response) {
-                    if(response.success){
-                        seleccionados=response.result;
-                    } 
-                });
-                promesas.push(promesa9);
-                var promesa10 = InformacionServices.preguntasNoSeleccionada(id_user, id_curso).then(function (response) {
-                    if(response.success){
-                        noSeleccionados=response.result;
-                    } 
-                });
-                promesas.push(promesa10);
-                $q.all(promesas).then(function () {
-                var titulo = null;
-                var total = seleccionados + noSeleccionados;
-                if(seleccionados>0){
-                    titulo = ((seleccionados*100)/total).toFixed(0)+'%';
-                }else{
-                    titulo = '0%'
-                }
-                $scope.dataSeleccion = [
-                    {
-                        key: "Seleccionado",
-                        y: seleccionados
-                    },
-                    {
-                        key: "No seleccionado",
-                        y: noSeleccionados
-                    }
-                ];
-                $scope.opcionSeleccion = {
-                    chart: {
-                        type: 'pieChart',
-                        color: ["#448aff","#bbdefb"],
-                        height: 250,
-                        donut: true,
-                        x: function(d){return d.key;},
-                        y: function(d){return d.y;},
-                        showLabels: false,
-                        pie: {
-                        startAngle: function(d) {
-                            return d.startAngle
-                        },
-                        endAngle: function(d) {
-                            return d.endAngle
-                        },
-                        title:titulo
-                    },
-                    duration: 500,
-                    showLegend: true
-                },
-                caption: {
-                    enable: true,
-                    text: 'De un total de '+total+' preguntas participadas fue seleccionado '+seleccionados+''
-                }
-                };
-                });
-        });
-    };
     $scope.general=true;
     $scope.seleccionPartIntentos = [];
     var cantidadPreguntasRealizadas = 0;
@@ -301,6 +72,8 @@ crsApp.controller('InformacionController', function ($scope, $stateParams, $mdSi
     var promesasResultadoPreguntaPorClase = [];
     var promesaGanadores = [];
     var promesasEstGrafoPuntos = [];
+    
+
     var promesa1 = InformacionServices.obtenerCantidadPreguntasCursoPorEstado($scope.curso,'realizada').then(
         function (response) {
             if(response.success){
@@ -321,6 +94,7 @@ crsApp.controller('InformacionController', function ($scope, $stateParams, $mdSi
     var promesa3 = InformacionServices.participacionActualCurso($scope.curso).then(function (response) {
         if(response.success){
             participacionActualCurso=response.result;
+            console.log(participacionActualCurso);
         }
     });
     promesasTotalCurso.push(promesa3);
@@ -460,7 +234,7 @@ crsApp.controller('InformacionController', function ($scope, $stateParams, $mdSi
         });
         $scope.optGrafoGrl2 = {
             chart: {
-                type: 'multiBarChart',
+                type: 'stackedAreaChart',
                 height: 450,
                 margin : {
                     top: 20,
@@ -720,7 +494,7 @@ crsApp.controller('InformacionController', function ($scope, $stateParams, $mdSi
         };
     });
 
-    $scope.deshabilitarConfig=false;
+    $scope.deshabilitarConfig=true;
     $scope.existePreguntaEnSeleccion = function (pregunta) {
         return _.findIndex($scope.seleccionPartIntentos,{id_pregunta:pregunta.id_pregunta}) > -1;
     };
@@ -749,7 +523,6 @@ crsApp.controller('InformacionController', function ($scope, $stateParams, $mdSi
 
 /////////////////////////////////////////////////////////7
 var app = angular.module('plunker', ['nvd3']);
-
 app.controller('MainCtrl', function($scope) {
   $scope.options = {
             chart: {
@@ -803,98 +576,7 @@ app.controller('MainCtrl', function($scope) {
             }
         ];
 });
-///////////////////////////////////////////////////
-    /*
-    $scope.nuevaSeleccion  = function (seleccion) {
-        var ganadores = [];
-        var perdedores = [];
-        var noSeleccionados = [];
-        _.forEach(seleccion, function (pregunta) {
-            ganadores.push({label:pregunta.pregunta, value:pregunta.ganadores});
-        });
-        _.forEach(seleccion, function (pregunta) {
-            perdedores.push({label:pregunta.pregunta, value:pregunta.perdedores});
-        });
-        _.forEach(seleccion, function (pregunta) {
-            noSeleccionados.push({label:pregunta.pregunta, value:pregunta.noSeleccionados});
-        });
-        $scope.dataGrafoGrl1 = [
-            {
-                "key": "Ganadores",
-                "color": "#90caf9",
-                "values": ganadores
-            },
-            {
-                "key": "Perdedores",
-                "color": "#ef9a9a",
-                "values": perdedores
-            },
-            {
-                "key": "111111",
-                "color": "#CDDC39",
-                "values": noSeleccionados
-            }
-        ];
-    };
-    $q.all(promesasIntetosVsPart).then(function () {
-        $scope.deshabilitarConfig=false;
-        var ganadores = [];
-        var perdedores = [];
-        var noSeleccionados = [];
-        _.forEach($scope.seleccionPartIntentos, function (pregunta) {
-            ganadores.push({label:pregunta.pregunta, value:pregunta.ganadores});
-        });
-        _.forEach($scope.seleccionPartIntentos, function (pregunta) {
-            perdedores.push({label:pregunta.pregunta, value:pregunta.perdedores});
-        });
-        _.forEach($scope.seleccionPartIntentos, function (pregunta) {
-            noSeleccionados.push({label:pregunta.pregunta, value:pregunta.noSeleccionados});
-        });
-        $scope.optGrafoGrl1 = {
-            chart: {
-                type: 'multiBarHorizontalChart',
-                height: 450,
-                x: function(d){return d.label;},
-                y: function(d){
-                    return d.value;
-                },
 
-                showControls: false,
-                stacked:false,
-                showValues: true,
-                showLegend: true,
-                duration: 500,
-                xAxis: {
-                    showMaxMin: false
-                },
-                yAxis: {
-                    axisLabel: 'Valores',
-                    tickFormat: function(d){
-                        return d3.format('')(d);
-                    }
-                },
-                noData:'Sin información'
-            }
-        };
-
-        $scope.dataGrafoGrl1 = [
-            {
-                "key": "Ganadores",
-                "color": "#90caf9",
-                "values": ganadores
-            },
-            {
-                "key": "Perdedores",
-                "color": "#ef9a9a",
-                "values": perdedores
-            },
-            {
-                "key": "No seleccionados123",
-                "color": "#CDDC39",
-                "values": noSeleccionados
-            }
-        ];
-    });         */
     var resPartEstudiantePregRelEnCurso=[];
     var estudiantesCurso = [];
     var promesasEstGrafo1 = [];
@@ -1006,7 +688,6 @@ app.controller('MainCtrl', function($scope) {
     //data grafo 2 est
     $q.all(promesasEstGrafo2).then(function () {
         var data = [];
-        //console.log("Hola Ale!!");
         _.forEach(estudiantesCurso, function (estudiante) {
             var values = [];
             _.forEach(fechas, function(fecha){
@@ -1337,10 +1018,9 @@ app.controller('MainCtrl', function($scope) {
         }
     });
     $scope.cambiarPregunta = function (id_pregunta_seleccionada) {
-	console.log($scope.dataGrafo6);
         var idx=_.findIndex($scope.dataGrafo6, {'id_pregunta':id_pregunta_seleccionada});
         $scope.preguntaSeleccionada=idx;
-	console.log(idx);
+
         $scope.dataGrafoPreg1 = [
             $scope.dataGrafo6[idx]
         ];
@@ -1350,11 +1030,10 @@ app.controller('MainCtrl', function($scope) {
     $scope.mostrar = false;
 
     $timeout(function() {
-	$scope.mostrar = !$scope.mostrar;
+        $scope.mostrar = !$scope.mostrar;
     }, 1000);
 
 });
-
 crsApp.controller('ResumenController', function ($scope, $stateParams, $timeout, $q, toastr, InformacionServices, CursosServices, ClasesServices) {
     var asignaturas = CursosServices.obtenerCursosLocal();
     $scope.mostrar = false;
@@ -1564,8 +1243,6 @@ crsApp.controller('InformacionEstudianteController', function ($scope, $statePar
         var data = [];
         var sesion = SessionServices.getSessionData();
         var values = [];
-        console.log("Hola Ale");
-        console.log(fechas);
         _.forEach(fechas, function(fecha){
             var participacion = 0;
             _.forEach(resPartEstudiantePregRelEnCurso, function (partPreg) {
@@ -1632,12 +1309,13 @@ crsApp.controller('InformacionEstudianteController', function ($scope, $statePar
 
     });
 });
-crsApp.controller('InformacionAsignaturaController', function ($scope, $stateParams, $mdSidenav, $timeout, $q, toastr, InformacionServices, CursosServices, ClasesServices, SessionServices, AsignaturasServices, PreguntasBibliotecaServices) {
+crsApp.controller('InformacionAsignaturaController', function ($scope, $stateParams, $mdSidenav, $timeout, $q, toastr, InformacionServices, CursosServices, ClasesServices, SessionServices, AsignaturasServices, PreguntasBibliotecaServices, EstudiantesServices) {
     var asignaturas = CursosServices.obtenerCursosLocal();
     var asignatura = _.findWhere(asignaturas,{'asignatura':$stateParams.nombre_asignatura});
     $scope.curso = _.findWhere(asignatura.cursos, {'id_curso':Number($stateParams.id_curso)});
     $scope._ = _;
     $scope.mostrar = false;
+    $scope.estudiantesCurso = [];
     $scope.configurarGrafoAsig1 = function () {
         $mdSidenav('ConfigGrafoAsig1').toggle();
     };
@@ -1677,71 +1355,9 @@ crsApp.controller('InformacionAsignaturaController', function ($scope, $statePar
             });
         }
     });
-    /*var cargarGrafico = function (data) {
-        console.log("Hola Ale!!");
-            //console.log(dataGrafoAsig1);
-        fullData=_.map(
-            _.sortByOrder(fullData, ['ano', 'semestre'], ['asc', 'asc'])
-        );
-        var dataGanadores = [];
-        var dataPerdedores = [];
-
-        _.forEach(fullData, function (curso) {
-            var totalGanadores=0;
-            var ganadores=_.countBy(curso.participaciones, {participacion:'ganador'});
-            if(!_.isUndefined(ganadores.true)){
-                totalGanadores=ganadores.true;
-            }
-            dataGanadores.push({
-                x: curso.ano+' Sem '+curso.semestre,
-                y:totalGanadores
-            });
-            var totalPerdedores=0;
-            var perdedores=_.countBy(curso.participaciones, {participacion:'perdedor'});
-            if(!_.isUndefined(perdedores.true)){
-                totalPerdedores=perdedores.true;
-            }
-            dataPerdedores.push({
-                x: curso.ano+' Sem '+curso.semestre,
-                y:totalPerdedores
-            });
-        });
-        $scope.optGraf0 = {
-            chart: {
-                type: "pieChart",
-                height: 500,
-                showLabels: true,
-                duration: 500,
-                labelThreshold: 0.01,
-                labelSunbeamLayout: true,
-                legend: {
-                    margin: {
-                        top: 5,
-                        right: 35,
-                        bottom: 5,
-                        left: 0
-                    }
-                },
-                x: function (d){return d.key;},
-                y: function (d){return d.y;},
-            },
-
-        };
-        $scope.dataGraf0 = [
-            {
-                key: 'T.Ganadores',
-                values:dataGanadores
-            },
-            {
-                key: 'T.Perdedores',
-                values:dataPerdedores
-            },
-        ];
-    };*/
     promesasGrafoAsig1.push(prom1);
-    promesasGrafoAsig2.push(prom1);
+    promesasGrafoAsig2.push(prom1);                
     var cargarData = function () {
-        //console.log(dataGrafoAsig1);
         fullData=_.map(
             _.sortByOrder(fullData, ['ano', 'semestre'], ['asc', 'asc'])
         );
@@ -1879,11 +1495,115 @@ crsApp.controller('InformacionAsignaturaController', function ($scope, $statePar
                     //crearData3();
                     Ganadores();
                     totalParticipacion();
+		    Correctas();
                 }
             });
 
         });
-    });
+    });    
+    var Correctas = function (){
+	var totalCorrectas = 0;
+	var totalIncorrectas = 0;
+	var totalPregParticipadas = 0;
+	var promesas = [];
+	var tituloCorrectas = null;
+	var data = [];
+	var estudiantes = null;
+        console.log(cursosAsignatura);
+	var cursos=_.map(
+            _.sortByOrder(cursosAsignatura, ['ano', 'semestre'], ['asc', 'asc'])
+        );
+
+	//Flag1
+        $scope.estudiantesCurso = [];
+    	InformacionServices.obtenerEstudiantesPorCurso(cursosAsignatura[0]).then(function (response) {
+            if(response.success){
+                $scope.estudiantesCurso = _.cloneDeep(response.result);
+                estudiantes = _.findWhere($scope.estudiantesCurso,{id_user:40});
+            }
+        });
+        console.log(estudiantes);
+	console.log($scope.estudiantesCurso);
+	_.forEach(cursos, function (curso, index) {
+            var obtenerCantidadCorrectas = 0;
+	    var obtenerCantidadIncorrectas = 0;
+            var obtenerCantidadPreguntasParticipadas = 0;
+            var promesa10 = InformacionServices.numeroCorrectasPreguntasCurso(curso,$scope.estudiantesCurso).then(function (response) {
+		if(response.success){
+                    obtenerCantidadCorrectas=response.result;
+                    totalCorrectas = totalCorrectas + obtenerCantidadCorrectas;
+                }
+            });
+            promesas.push(promesa10);
+	    var promesa11 = InformacionServices.numeroIncorrectasPreguntasCurso(curso,$scope.estudiantesCurso).then(function (response) {
+                if(response.success){
+                    obtenerCantidadIncorrectas=response.result;
+                    totalIncorrectas = totalIncorrectas + obtenerCantidadIncorrectas;
+                }
+            });
+	    promesas.push(promesa11);
+            var promesa12 = InformacionServices.numeroParticipacionPreguntasCurso(curso,$scope.estudiantesCurso).then(function (response) {
+                if(response.success){
+                    obtenerCantidadPreguntasParticipadas=response.result;
+                    totalPregParticipadas = totalPregParticipadas + obtenerCantidadPreguntasParticipadas;
+                }
+            });
+            promesas.push(promesa12);
+        });
+	 $q.all(promesas).then(function () {
+            //var totalCorrectas;
+            //totalGanadores = totalCurso - totalNoGanadores
+            //total = totalNoGanadores+totalGanadores
+            if(totalCorrectas>0){
+                tituloCorrectas = (totalCorrectas)+'%';
+            }else{
+                tituloCorrectas = '0%'
+            }
+            data.push(
+            {
+                key: "Correctas",
+                color: "#FFC107",
+                y: totalCorrectas
+            },
+            {
+                key: "Incorrectas",
+                color: "#FFECB3",
+                y: totalIncorrectas
+            }
+            );
+        cargarCorrectas(data, tituloCorrectas);
+        });
+    };
+    var cargarCorrectas = function (data, tituloCorrectas) {
+	console.log("hola");
+        $scope.opcionCorrectas= {
+            chart: {
+                type: 'pieChart',
+                color: ["#448aff","#bbdefb"],
+                height: 250,
+                donut: true,
+                x: function(d){return d.key;},
+                y: function(d){return d.y;},
+                showLabels: false,
+                pie: {
+                    startAngle: function(d) {
+                        return d.startAngle
+                    },
+                    endAngle: function(d) {
+                        return d.endAngle
+                    },
+                    title: tituloCorrectas
+                },
+                duration: 500,
+                showLegend: true
+            },
+            caption: {
+                enable: true,
+                text: 'La asignatura tiene un porcentaje de '+tituloCorrectas+' de ganadores'
+            }
+        };
+        $scope.dataCorrectas = data;
+    };
     var Ganadores = function () {
         var totalNoGanadores = 0;
         var totalCurso = 0;
@@ -1900,18 +1620,21 @@ crsApp.controller('InformacionAsignaturaController', function ($scope, $statePar
                 if(response.success){
                     obtenerCantidadNoGanadores=response.result;
                     totalNoGanadores = totalNoGanadores + obtenerCantidadNoGanadores;
+		    console.log("Primero");
                 } 
             });
+	    console.log(totalNoGanadores);
             promesas.push(promesa8);
             var promesa9 = InformacionServices.numeroDeEstudiantesPorCurso(curso).then(function (response) {
                 if(response.success){
                     obtenerCantidadCurso=response.result;
                     totalCurso = totalCurso + obtenerCantidadCurso;
-                } 
+                }
             });
             promesas.push(promesa9);
         });
         $q.all(promesas).then(function () {
+	    console.log("segundo");
             var totalGanadores;
             totalGanadores = totalCurso - totalNoGanadores
             total = totalNoGanadores+totalGanadores
@@ -2048,7 +1771,6 @@ crsApp.controller('InformacionAsignaturaController', function ($scope, $statePar
             var values = [];
             _.forEach(dataCursos, function (curso) {
                 var idx = _.findIndex(curso.partPregBiblio, {id_b_pregunta: pregunta.id_b_pregunta});
-                //console.log(curso.totalGanadores);
                 var participacion = 0;
                 if(idx>-1){
                     var part = curso.partPregBiblio[idx].participantes;
@@ -2183,7 +1905,6 @@ crsApp.controller('InformacionAsignaturaController', function ($scope, $statePar
             }
         };
         $scope.dataGrafoAsig2 = data;
-        //cargarGrafo3();
     };
     $timeout(function() {
         $scope.mostrar = !$scope.mostrar;
@@ -2203,16 +1924,18 @@ crsApp.controller('ModalPuntosGanadosController',function($scope, $mdDialog, dat
         $mdDialog.cancel();
     };
 });
-crsApp.controller('modalSeleccionarEstudianteController',function($scope, $stateParams, $mdSidenav, $timeout, $q, toastr, $mdDialog, datos, curso, InformacionServices){
-    $scope.promesas = [];                           
+crsApp.controller('modalSeleccionarEstudianteController',function($scope, $q, $mdDialog, datos, curso, InformacionServices){
+    $scope.promesas = [];
     $scope.listaSeleccionEstudiante = [];
-    var promesasTotalCurso = [];
     $scope.listaEstudiantes = _.cloneDeep(datos);
-    var mostrarDatos = true;
     $scope.cancelar = function() {
         $mdDialog.cancel();
     }
     $scope.aceptar = function () {
+        var obtener;
         $mdDialog.hide($scope.listaSeleccionEstudiante);
+	console.log($scope.listaSeleccionEstudiante.rut);
+        var rut = "19.355.257-9";
+        console.log(rut);
     };
 });

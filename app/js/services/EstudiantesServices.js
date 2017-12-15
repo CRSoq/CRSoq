@@ -16,6 +16,9 @@ crsApp.factory('EstudiantesServices', function ($http, $q) {
         CrearEstudiante: function(estudiante){
             return postHelper('/estudiante/crearEstudiante',estudiante);
         },
+	obtenerAlumnosSistema: function(estudiante){
+	    return postHelper('/estudiante/obtenerAlumnosSistema',estudiante);
+	},
         ObtenerEstudiante: function (estudiante) {
             return postHelper('/estudiante/obtenerEstudiante',estudiante);
         },
@@ -36,6 +39,15 @@ crsApp.factory('EstudiantesServices', function ($http, $q) {
         },
         comprobarUsuarioAdministrador: function (usuario) {
             return postHelper('/estudiante/comprobarUsuarioAdministrador', {usuario:usuario})
+        },
+	editarEstudiante: function(estudiante) {
+	    return postHelper('/estudiante/editarEstudiante', estudiante);
+	},
+	eliminarEstudiante: function(estudiante) {
+	    return postHelper('/estudiante/eliminarEstudiante', estudiante);
+	},
+	eliminarCursosEstudiante: function(estudiante) {
+            return postHelper('/estudiante/eliminarCursosEstudiante', estudiante);
         }
     }
 });

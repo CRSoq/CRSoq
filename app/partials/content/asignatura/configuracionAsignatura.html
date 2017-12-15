@@ -1,0 +1,12 @@
+<div ng-controller="TopicosController">
+    <h1><i class="fa fa-archive"></i> Configuración</h1>
+    <md-tabs md-selected="selectedIndex" md-dynamic-height="true">
+        <md-tab label="Temas" aria-label="Temas">
+            <div ng-include="'partials/content/asignatura/temasAsignatura.html'">
+        </md-tab>
+        <md-tab label="Tópicos" aria-label="Tópicos">
+            <div ng-include="'partials/content/asignatura/topicosAsignatura.html'">
+        </md-tab>
+    </md-tabs>
+</div>
+

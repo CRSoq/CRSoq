@@ -6,8 +6,7 @@ crsApp.controller('PreguntasController', function ($scope, $stateParams, $timeou
 //    var topicos = PreguntasServices.obtenerTopicosAsignatura(asignatura);
 //    var topicos = TopicosServices.obtenerTopicos({'id_asignatura':'2'});
 //    console.log(asignatura.id_asignatura);
-    $scope.selectedTopico = "";
-    $scope.selectedTema = "";
+    $scope.selectedTopico = "Test";
     $scope.curso = _.cloneDeep(curso);
     $scope._ = _;
     $scope.listaPreguntasCurso = [];
@@ -215,25 +214,7 @@ crsApp.controller('PreguntasController', function ($scope, $stateParams, $timeou
         }
     };
 
-
     $scope.archivarPregunta = function (pregunta) {
-        $mdDialog
-            .show({
-                templateUrl: '/partials/content/asignatura/curso/preguntas/modalArchivarPregunta.html',
-                locals : {
-                    pregunta: pregunta,
-		    id_tema: null
-                },
-                controller: 'ModalArchivarPreguntaController'
-            })
-            .then(
-            function (pregunta) {
-                toastr.success('Done');
-	    });
-    };
-
-    /*$scope.archivarPregunta = function (pregunta) {
-	pregunta.id_tema = 1;
         PreguntasServices.archivarPregunta(pregunta)
             .then(function (response) {
                 if(response.success){
@@ -250,7 +231,7 @@ crsApp.controller('PreguntasController', function ($scope, $stateParams, $timeou
 
                 }
             });
-    };*/
+    };
 
     $scope.cancelarPregunta = function (pregunta, index) {
         if(!_.isUndefined(pregunta.nuevo)){
@@ -260,41 +241,6 @@ crsApp.controller('PreguntasController', function ($scope, $stateParams, $timeou
         }
     };
 
-});
-
-crsApp.controller('ModalArchivarPreguntaController', function ($scope, $mdDialog, toastr, pregunta, id_tema, PreguntasServices){
-    if(_.isNull(pregunta)){
-	$scope.pregunta = {};
-    }else{
-	$scope.pregunta = _.clone(pregunta);
-    }
-    $scope.aceptar = function () {
-	//pregunta.id_tema = id_tema;
-	if(!_.isUndefined($scope.pregunta.id_tema)) {
-	    pregunta.id_tema = $scope.pregunta.id_tema;
-	    PreguntasServices.archivarPregunta(pregunta)
-            .then(function (response) {
-                if(response.success){
-                    pregunta.id_b_pregunta = response.id_b_pregunta;
-                    PreguntasServices.actualizarID_B_Pregunta(pregunta)
-                        .then(function (response) {
-                            if(response.success){
-                                toastr.success('Pregunta agregada a la biblioteca de preguntas de la asignatura.');
-				$mdDialog.cancel();
-                            }else{
-                                toastr.error('No se pudo agregar pregunta a la biblioteca de preguntas de la asignatura: '+response.err.code,'Error');
-                            }
-                        });
-                }/*else{
-                }*/
-            });
-	}else{
-	    toastr.error('Debe ingresar todos los datos.','Error');
-	}
-    }
-    $scope.cancelar = function () {
-	$mdDialog.cancel();
-    }
 });
 
 crsApp.controller('ModalAgregarPreguntaClaseController', function ($scope, $mdDialog, toastr, PreguntasServices, id_curso, id_asignatura) {
@@ -398,7 +344,7 @@ crsApp.controller('PreguntasEstudianteController', function ($scope, $stateParam
 
     $scope.promesas = [];
 
-    var promesaPreguntas = PreguntasServices.obtenerPreguntasRealizadas($scope.curso).then(function (response) {
+    var promesaPreguntas = PreguntasServices.obtenerPreguntasCurso($scope.curso).then(function (response) {
         if(response.success){
             $scope.listaPreguntasCurso = _.cloneDeep(response.result);
             cargarClases();

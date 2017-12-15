@@ -1,0 +1,44 @@
+<div ng-controller="AdministracionController" ng-if="user.tipo=='administrador'">
+    <h1><i class="fa fa-users"></i> Alumnos</h1>
+
+    <md-toolbar class="md-table-toolbar md-default">
+        <div class="md-toolbar-tools">
+            <md-button class="md-raised" aria-label="Agregar Estudiante" ng-click="nuevoAlumno()">
+                <i class="fa fa-user-plus"></i> Agregar alumno
+            </md-button>
+        </div>
+    </md-toolbar>   
+        <md-table-container ng-if="listaEstudiantes.length>0">
+            <table md-table md-progress="promesas">
+                <thead md-head>
+                <tr md-row>
+                    <th md-column>Rut</th>
+                    <th md-column>Nombre</th>
+                    <th md-column>Apellido</th>
+                    <th md-column>Usuario</th>
+                    <th md-column>Clave</th>
+                    <th md-column>Acciones</th>
+                </tr>
+                </thead>
+		<tbody md-body>
+                <tr md-row ng-repeat="estudiante in listaEstudiantes">
+                    <td md-cell >{{estudiante.rut}}</td>
+                    <td md-cell >{{estudiante.nombre}}</td>
+                    <td md-cell >{{estudiante.apellido}}</td>
+                    <td md-cell >{{estudiante.usuario}}</td>
+                    <td md-cell >{{estudiante.clave}}</td>
+                    <td class="column-acciones" md-cell>
+                        <md-button aria-label="Editar" class="md-raised md-primary botonAccion" ng-click="editarEstudiante(estudiante)">
+                            <i class="fa fa-pencil"></i>
+                        </md-button>
+			<md-button aria-label="Eliminar" class="md-raised md-primary botonAccion" ng-click="eliminarEstudiante(estudiante, $index)">
+			    <i class="fa fa-close"></i>
+			</md-button>
+                    </td>
+                </tr>
+                </tbody>
+                <tbody md-body>
+                </tbody>
+            </table>
+        </md-table-container>
+</div>

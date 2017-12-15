@@ -135,6 +135,7 @@ crsApp.controller('ConfigCursoController', function ($scope, $rootScope, $state,
     var asignatura = _.findWhere(asignaturas,{'asignatura':$stateParams.nombre_asignatura});
     var curso = _.findWhere(asignatura.cursos, {'id_curso':Number($stateParams.id_curso)});
     $scope.curso= _.cloneDeep(curso);
+    console.log($scope.curso);
     $scope._ = _;
     $scope.modulos = [];
     $scope.modulosEditados = [];
@@ -269,6 +270,17 @@ crsApp.controller('ConfigCursoController', function ($scope, $rootScope, $state,
     $scope.generarClave = true;
     $scope.sugerencia = true;
     $scope.guardar = false;
+
+    // Se implementa el servicio obtenerAlumnosSistema
+    //EstudiantesServices.obtenerAlumnosSistema(estudiante)
+    //    .then(function (response) {
+    //        if (response.success) {
+    //            $scope.listaEstudiantes = _.cloneDeep(response.result);
+    //        }
+    //        else {
+    //            toastr.error('No se pudo conseguir lista de estudiantes:'+response.err.code,'Error.');
+    //        }
+    //    });
 
     EstudiantesServices.obtenerEstudiantesPorCurso(curso)
         .then(function (response) {
@@ -475,6 +487,17 @@ crsApp.controller('ConfigCursoController', function ($scope, $rootScope, $state,
                     toastr.success('Se estableció la meta del curso.');
                 } else {
                     toastr.error('No se pudo establecer la meta del curso: '+response.err.code,'Error');
+                }
+            });
+    };
+    $scope.guardarMetaEstudiante = function () {
+        CursosServices.establecerMetaEstudiante($scope.curso.meta_alumno, $scope.curso).then(
+            function (response) {
+                if (response.success) {
+                    CursosServices.actualizarCursoLocal($scope.curso);
+                    toastr.success('Se estableció la meta del estudiante.');
+                } else {
+                    toastr.error('No se pudo establecer la meta del estudiante: '+response.err.code,'Error');
                 }
             });
     };

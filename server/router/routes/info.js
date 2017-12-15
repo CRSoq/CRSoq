@@ -3,6 +3,110 @@ var router      = express.Router();
 var _           = require('lodash');
 var connection  = require('./connection').database;
 
+router.post('/obtenerCantidadNoGanadores', function (req, res) {
+    if(!req.body){
+        return res.sendStatus(400);
+    }else{
+        connection.query('select count(*) AS obtenerCantidad from pertenece p where p.id_curso = ? and (select meta_alumno from curso where id_curso = ?) > (select count(*) from participan_por_responder pa, pregunta pre where p.id_user = pa.id_user and p.id_curso = pre.id_curso and pa.id_pregunta = pre.id_pregunta and estado_part_preg = "ganador") + (select count(*) from participa par, actividad act where p.id_user = par.id_user and p.id_curso = act.id_curso and par.id_actividad = act.id_actividad and estado_part_act = "ganador") group by p.id_curso' ,[req.body.id_curso,req.body.id_curso], function (error, result) {
+            if(!error){
+                    return res.json({'success':true, 'result':result["0"].obtenerCantidad});
+            }else{
+                return res.json({'success':false, 'err':error});
+            }
+        });
+    }
+});
+router.post('/estudiante', function (req, res) {
+    if(!req.body){
+        return res.sendStatus(400);
+    }else{
+        connection.query('select id_user AS obtenerCantidad from estudiante where rut = ?' ,[req.body.rut], function (error, result) {
+            if(!error){
+                    return res.json({'success':true, 'result':result["0"].obtenerCantidad});
+            }else{
+                return res.json({'success':false, 'err':error});
+            }
+        });
+    }
+});
+router.post('/incorrectaAlumno', function (req, res) {
+    if(!req.body){
+        return res.sendStatus(400);
+    }else{
+        connection.query('select (select count(*) from participan_por_responder pa, pregunta pre where p.id_user = pa.id_user and p.id_curso = pre.id_curso and pa.id_pregunta = pre.id_pregunta and estado_part_preg = "perdedor") AS obtenerCantidad from pertenece p where p.id_user = ? and p.id_curso = ?' ,[req.body.id_user,req.body.id_curso], function (error, result) {
+            if(!error){
+                    return res.json({'success':true, 'result':result["0"].obtenerCantidad});
+            }else{
+                return res.json({'success':false, 'err':error});
+            }
+        });
+    }
+});
+router.post('/correctaAlumno', function (req, res) {
+    if(!req.body){
+        return res.sendStatus(400);
+    }else{
+        connection.query('select (select count(*) from participan_por_responder pa, pregunta pre where p.id_user = pa.id_user and p.id_curso = pre.id_curso and pa.id_pregunta = pre.id_pregunta and estado_part_preg = "ganador") AS obtenerCantidad from pertenece p where p.id_user = ? and p.id_curso = ?' ,[req.body.id_user,req.body.id_curso], function (error, result) {
+            if(!error){
+                    return res.json({'success':true, 'result':result["0"].obtenerCantidad});
+            }else{
+                return res.json({'success':false, 'err':error});
+            }
+        });
+    }
+});
+router.post('/participacionAlumno', function (req, res) {
+    if(!req.body){
+        return res.sendStatus(400);
+    }else{
+        connection.query('select (select count(*) from participan_por_responder pa, pregunta pre where p.id_user = pa.id_user and p.id_curso = pre.id_curso and pa.id_pregunta = pre.id_pregunta and estado_part_preg = "ganador") + (select count(*) from participan_por_responder pa, pregunta pre where p.id_user = pa.id_user and p.id_curso = pre.id_curso and pa.id_pregunta = pre.id_pregunta and estado_part_preg = "perdedor") + (select count(*) from participan_por_responder pa, pregunta pre where p.id_user = pa.id_user and p.id_curso = pre.id_curso and pa.id_pregunta = pre.id_pregunta and estado_part_preg = "noSeleccionado") AS obtenerCantidad from pertenece p where p.id_user = ? and p.id_curso = ?' ,[req.body.id_user,req.body.id_curso], function (error, result) {
+            if(!error){
+                    return res.json({'success':true, 'result':result["0"].obtenerCantidad});
+            }else{
+                return res.json({'success':false, 'err':error});
+            }
+        });
+    }
+});
+router.post('/preguntasRealizadas', function (req, res) {
+    if(!req.body){
+        return res.sendStatus(400);
+    }else{
+        connection.query('select count(*) AS obtenerCantidad from pregunta where estado_pregunta = "realizada" and id_curso = ? group by id_curso' ,[req.body.id_curso], function (error, result) {
+            if(!error){
+                    return res.json({'success':true, 'result':result["0"].obtenerCantidad});
+            }else{
+                return res.json({'success':false, 'err':error});
+            }
+        });
+    }
+});
+router.post('/preguntasSeleccionada', function (req, res) {
+    if(!req.body){
+        return res.sendStatus(400);
+    }else{
+        connection.query('select (select count(*) from participan_por_responder pa, pregunta pre where p.id_user = pa.id_user and p.id_curso = pre.id_curso and pa.id_pregunta = pre.id_pregunta and estado_part_preg = "ganador") + (select count(*) from participan_por_responder pa, pregunta pre where p.id_user = pa.id_user and p.id_curso = pre.id_curso and pa.id_pregunta = pre.id_pregunta and estado_part_preg = "perdedor") AS obtenerCantidad from pertenece p where p.id_user = ? and p.id_curso = ?' ,[req.body.id_user,req.body.id_curso], function (error, result) {
+            if(!error){
+                    return res.json({'success':true, 'result':result["0"].obtenerCantidad});
+            }else{
+                return res.json({'success':false, 'err':error});
+            }
+        });
+    }
+});
+router.post('/preguntasNoSeleccionada', function (req, res) {
+    if(!req.body){
+        return res.sendStatus(400);
+    }else{
+        connection.query('select (select count(*) from participan_por_responder pa, pregunta pre where p.id_user = pa.id_user and p.id_curso = pre.id_curso and pa.id_pregunta = pre.id_pregunta and estado_part_preg = "noSeleccionado") AS obtenerCantidad from pertenece p where p.id_user = ? and p.id_curso = ?' ,[req.body.id_user,req.body.id_curso], function (error, result) {
+            if(!error){
+                    return res.json({'success':true, 'result':result["0"].obtenerCantidad});
+            }else{
+                return res.json({'success':false, 'err':error});
+            }
+        });
+    }
+});
 router.post('/obtenerCantidadPreguntasCursoPorEstado', function (req, res) {
     if(!req.body){
         return res.sendStatus(400);
@@ -47,8 +151,8 @@ router.post('/participacionActualCurso', function (req, res) {
         return res.sendStatus(400);
     }else{
         connection.query(
-            'SELECT COUNT(part.id_user) AS participacionActual'+
-            ' FROM pregunta p'+
+            'select COUNT(part.id_user) AS participacionActual'+
+            ' from pregunta p'+
             ' INNER JOIN participan_por_responder part'+
             ' ON part.id_pregunta=p.id_pregunta'+
             ' WHERE p.id_curso=?',[req.body.id_curso], function (error, result) {

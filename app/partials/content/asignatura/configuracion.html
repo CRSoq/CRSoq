@@ -1,0 +1,29 @@
+<div ng-controller="TopicosController" ng-if="user.tipo=='profesor'">
+    <h1><i class="fa fa-users"></i> Tópicos</h1>
+
+<md-toolbar class="md-table-toolbar md-default">
+        <div class="md-toolbar-tools">
+            <md-button class="md-raised" aria-label="Agregar Tópico" ng-click="nuevoTopico()">
+                <i class="fa fa-user-plus"></i> Agregar tópico
+            </md-button>
+        </div>
+</md-toolbar>
+	<md-table-container ng-if="listaTopicos.length>0">
+	    <table md-table md-progress="promesas">
+            <thead md-head>
+            <tr md-row>
+		<th md-column>#</th>
+                <th md-column>Nombre</th>
+            </tr>
+            </thead>
+            <tbody md-body>
+            <tr md-row ng-repeat="topico in listaTopicos">
+		<td md-cell >{{$index+1}}</td>
+                <td md-cell >{{topico.nombre}}</td>
+            </tr>
+            </tbody>
+            <tbody md-body>
+            </tbody>
+        </table>
+    </md-table-container>
+</div>

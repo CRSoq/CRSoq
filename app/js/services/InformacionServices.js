@@ -57,8 +57,6 @@ crsApp.factory('InformacionServices', function ($http, $q) {
             return postHelper('/info/numeroTotalDeParticipacionPorCurso',curso);
         },
 
-
-
         participacionActualCurso: function (curso) {
             return postHelper('/info/participacionActualCurso',curso);
         },
@@ -73,6 +71,30 @@ crsApp.factory('InformacionServices', function ($http, $q) {
         },
         resultadoPreguntasPorCurso: function(curso){
             return postHelper('/info/resultadoPreguntasPorCurso',curso);
+        },
+        estudiante: function (curso) {
+            return postHelper('/info/estudiante',curso);
+        },
+	       incorrectaAlumno: function (id_user, id_curso) {
+            return postHelper('/info/incorrectaAlumno',{'id_user':id_user, 'id_curso':id_curso});
+        },
+        correctaAlumno: function (id_user, id_curso) {
+            return postHelper('/info/correctaAlumno',{'id_user':id_user, 'id_curso':id_curso});
+        },
+        participacionAlumno: function (id_user, id_curso) {
+            return postHelper('/info/participacionAlumno',{'id_user':id_user, 'id_curso':id_curso});
+        },
+        preguntasSeleccionada: function (id_user, id_curso) {
+            return postHelper('/info/preguntasSeleccionada',{'id_user':id_user, 'id_curso':id_curso});
+        },
+        preguntasNoSeleccionada: function (id_user, id_curso) {
+            return postHelper('/info/preguntasNoSeleccionada',{'id_user':id_user, 'id_curso':id_curso});
+        },
+        preguntasRealizadas: function (id_curso) {
+            return postHelper('/info/preguntasRealizadas',{'id_curso':id_curso});
+        },
+        obtenerCantidadNoGanadores: function(curso){
+            return postHelper('/info/obtenerCantidadNoGanadores',curso);
         },
         pregRealiazadasAgrupadasxClases: function (curso) {
             return postHelper('/info/pregRealiazadasAgrupadasxClases',curso);

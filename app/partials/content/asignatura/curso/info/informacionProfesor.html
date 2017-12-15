@@ -184,9 +184,6 @@
             </div>
         </div>
     </div>
-    <md-toolbar md-scroll-shrink>
-        <div class="md-toolbar-tools">Estadística general</div>
-    </md-toolbar>
     <md-content ng-if="!mostrar">
         <div layout="row" layout-sm="column" layout-align="space-around">
             <md-progress-circular md-mode="indeterminate"></md-progress-circular>
@@ -194,24 +191,6 @@
     </md-content>
     <div layout="column" ng-if="mostrar">
         <div layout="column" layout-margin>
-            <div class="md-whiteframe-4dp">
-                <div layout="row">
-                    <span flex></span>
-                    <span flex>
-                        <h2 class="md-title centrado tituloBox">
-                            Participantes por pregunta
-                        </h2>
-                    </span>
-                    <span flex style="text-align: right">
-                        <md-button class="rotacionInfinitaContenido" aria-label="Config gráfico"
-                                   ng-click="configurarGrafico()" ng-disabled="deshabilitarConfig">
-                            <i class="fa fa-cog rotar"></i>
-                        </md-button>
-                    </span>
-                </div>
-                <md-divider></md-divider>
-                <nvd3 options="optGrafoGrl1" data="dataGrafoGrl1" config="{refreshDataOnly: true, deepWatchData: true}"></nvd3>
-            </div>
             <div></div>
             <div class="md-whiteframe-4dp">
                 <div layout="row">
@@ -262,26 +241,42 @@
         </div>
     </md-content>
     <div layout="column" ng-if="mostrar">
-        <div layout="column" layout-margin>
-            <div class="md-whiteframe-4dp">
-                <div layout="row">
-                    <span flex></span>
+        <div class="md-whiteframe-4dp">
+            <div></div>
+	    <md-toolbar class="md-table-toolbar md-default">
+		    <md-divider></md-divider>
                     <span flex>
                         <h2 class="md-title centrado tituloBox">
-                            Participación por estudiante en preguntas
+                            Resumen Estudiante
                         </h2>
                     </span>
-                    <span flex style="text-align: right">
-                        <md-button class="rotacionInfinitaContenido" aria-label="Config gráfico"
-                                   ng-click="configurarGrafico4()" ng-disabled="deshabilitarConfig">
-                            <i class="fa fa-cog rotar"></i>
+		    <md-divider></md-divider>
+		    <div>
+                    	 <h2 class="md-title centrado titleBox" style="height: 40px"> Alumno Seleccionado: {{alumnoSeleccionado[0].nombre}} {{alumnoSeleccionado[0].apellido}} </h2>
+                    </div>
+                    <div class="md-toolbar-tools">
+			<md-button class="md-raised" aria-label="Seleccionar Estudiante" ng-click="seleccionarEstudiante()">
+                            <i class="fa fa-search"></i> Seleccionar Estudiante
                         </md-button>
-                    </span>
-                </div>
+                    </div>
+            </md-toolbar>
+        <div layout="row" layout-align="space-between none" layout-margin>
+            <div class="md-whiteframe-4dp" flex="24">
+                <h2 class="md-title centrado tituloBox" style="height: 40px"> Total respuestas correctas e incorrectas </h2>
                 <md-divider></md-divider>
-                <nvd3 options="optGrafoEst1" data="dataGrafoEst1" config="{refreshDataOnly: true, deepWatchData: true}"></nvd3>
+                <nvd3 options="opcionRespuesta" data="dataRespuesta"></nvd3>
             </div>
-            <div></div>
+            <div class="md-whiteframe-4dp" flex="24">
+                <h2 class="md-title centrado tituloBox" style="height: 40px"> Total Participación sobre el total de preguntas realizadas </h2>
+                <md-divider></md-divider>
+                <nvd3 options="opcionParticipacion" data="dataParticipacion"></nvd3>
+            </div>
+            <div class="md-whiteframe-4dp" flex="24">
+                <h2 class="md-title centrado tituloBox" style="height: 40px"> Total preguntas seleccionadas y no seleccionadas </h2>
+                <md-divider></md-divider>
+                <nvd3 options="opcionSeleccion" data="dataSeleccion"></nvd3>
+            </div>
+        </div>
             <div class="md-whiteframe-4dp">
                 <div layout="row">
                     <span flex></span>
