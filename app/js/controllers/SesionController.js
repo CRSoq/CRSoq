@@ -28,14 +28,24 @@ crsApp.controller('SesionController', function($scope, $rootScope, $state, $stat
     var infoSesion = {
         ano: Number($stateParams.ano),
         semestre: Number($stateParams.semestre),
+        grupo_curso: String($stateParams.grupo_curs),
         curso: $stateParams.nombre_asignatura,
         id_clase: Number($stateParams.id_clase),
         id_curso: Number($stateParams.id_curso),
-        sala: $stateParams.ano+$stateParams.semestre+$stateParams.nombre_asignatura+$stateParams.id_clase
+        sala: $stateParams.ano+$stateParams.semestre+$stateParams.grupo_curso+$stateParams.nombre_asignatura+$stateParams.id_clase
     };
     SocketServices.emit('SolicitarEstado', infoSesion);
     $rootScope.$on('cargarPregunta', function (event, data) {
-        $state.transitionTo('crsApp.asignatura.curso.clases.sesion.pregunta',{nombre_asignatura:$stateParams.nombre_asignatura,ano:$stateParams.ano,semestre:$stateParams.semestre,id_curso:$stateParams.id_curso,id_clase:$stateParams.id_clase,id_pregunta:data.pregunta.id_pregunta});
+        $state.transitionTo('crsApp.asignatura.curso.clases.sesion.pregunta',
+        {
+            nombre_asignatura:$stateParams.nombre_asignatura,
+            ano:$stateParams.ano,
+            semestre:$stateParams.semestre,
+            grupo_curso:$stateParams.grupo_curso,
+            id_curso:$stateParams.id_curso,
+            id_clase:$stateParams.id_clase,
+            id_pregunta:data.pregunta.id_pregunta
+        });
         //$rootScope.$emit('cargarEstadoPregunta', data);
         event.stopPropagation();
     });
@@ -169,7 +179,7 @@ crsApp.controller('SesionController', function($scope, $rootScope, $state, $stat
         $state.transitionTo('crsApp.asignatura.curso.clases.sesion.pregunta',{nombre_asignatura:$stateParams.nombre_asignatura,ano:$stateParams.ano,semestre:$stateParams.semestre,id_curso:$stateParams.id_curso,id_clase:$stateParams.id_clase,id_pregunta:pregunta.id_pregunta});
         var data = {
             'pregunta'  : pregunta,
-            'sala'      : $stateParams.ano+$stateParams.semestre+$stateParams.nombre_asignatura+$stateParams.id_clase
+            'sala'      : $stateParams.ano+$stateParams.semestre+$stateParams.grupo_curso+$stateParams.nombre_asignatura+$stateParams.id_clase
         };
 
         SocketServices.emit('RealizarPregunta', data);
@@ -206,7 +216,7 @@ crsApp.controller('SesionController', function($scope, $rootScope, $state, $stat
     };
     $scope.finalizarSesion = function () {
         var data ={
-            sala: $stateParams.ano+$stateParams.semestre+$stateParams.nombre_asignatura+$stateParams.id_clase
+            sala: $stateParams.ano+$stateParams.semestre+$stateParams.grupo_curso+$stateParams.nombre_asignatura+$stateParams.id_clase
         };
         SocketServices.emit('finalizarSesion', data);
         var dataClase = {
@@ -218,6 +228,7 @@ crsApp.controller('SesionController', function($scope, $rootScope, $state, $stat
                 $state.transitionTo('crsApp.asignatura.curso.clases', {
                     ano:$stateParams.ano,
                     semestre:$stateParams.semestre,
+                    grupo_curso:$stateParams.grupo_curso,
                     nombre_asignatura:$stateParams.nombre_asignatura,
                     id_curso:$scope.curso.id_curso});
                 SocketServices.emit('actualizarListaClase', curso);
@@ -247,7 +258,7 @@ crsApp.controller('SesionController', function($scope, $rootScope, $state, $stat
             .then(
             function () {
                 SocketServices.emit('registrarIdEspectador',{
-                    sala: $stateParams.ano+$stateParams.semestre+$stateParams.nombre_asignatura+$stateParams.id_clase,
+                    sala: $stateParams.ano+$stateParams.semestre+$stateParams.grupo_curso+$stateParams.nombre_asignatura+$stateParams.id_clase,
                     sesion_id: $scope.sesion_id
                 })
             });

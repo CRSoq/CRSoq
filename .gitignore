@@ -2,9 +2,11 @@ logs/*
 !.gitkeep
 node_modules/
 bower_components/
+!bower_components/file-saver/
 tmp
 .DS_Store
 .idea
 .log
 *.iml
-/server/router/routes/connection.js
+server/config.js
+app/js/config.js

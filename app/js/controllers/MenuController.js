@@ -116,7 +116,7 @@ crsApp.controller('MenuController', function($scope, $rootScope, $stateParams, $
                 if (asignaturas.length > 0) {
                     var asignatura = _.findWhere(asignaturas, {'asignatura': $stateParams.nombre_asignatura});
                     $scope.desplegarMenuAsignatura(asignatura);
-                    if (!_.isUndefined($stateParams.ano) && !_.isUndefined($stateParams.semestre) && !_.isUndefined($stateParams.id_curso)) {
+                    if (!_.isUndefined($stateParams.ano) && !_.isUndefined($stateParams.semestre) && !_.isUndefined($stateParams.grupo_curso) && !_.isUndefined($stateParams.id_curso)) {
                         curso = _.findWhere(asignatura.cursos, {'id_curso': Number($stateParams.id_curso)});
                         $scope.desplegarMenuCurso(curso);
                     }
@@ -128,13 +128,17 @@ crsApp.controller('MenuController', function($scope, $rootScope, $stateParams, $
                 if (!_.isUndefined($stateParams.ano) && !_.isUndefined($stateParams.semestre) && semestres.length > 0) {
                     var semestre = _.findWhere(semestres, {
                         'ano': Number($stateParams.ano),
-                        'semestre': Number($stateParams.semestre)
+                        'semestre': Number($stateParams.semestre),
+                        'grupo_curso': String($stateParams.grupo_curso)
                     });
                     $scope.desplegarMenuSemestre(semestre);
                     if (!_.isUndefined($stateParams.id_curso)) {
                         curso = _.findWhere(semestre.cursos, {'id_curso': Number($stateParams.id_curso)});
                         $scope.desplegarMenuCurso(curso);
                     }
+                }
+                else {
+                    console.log('error_reading_semester');
                 }
 
             }

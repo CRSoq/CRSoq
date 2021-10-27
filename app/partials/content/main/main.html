@@ -13,7 +13,7 @@
 
             <div layout="row" layout-align="space-between none"   layout-margin>
                 <div class="md-whiteframe-4dp" flex="24" ng-repeat="meta in ultimosCursos">
-                    <h2 class="md-title centrado tituloBox" style="height: 40px">Meta {{meta.nombre_curso}} {{meta.ano}} Sem {{meta.semestre}}</h2>
+                    <h2 class="md-title centrado tituloBox" style="height: 40px">Meta {{meta.nombre_curso}} {{meta.ano}} Sem {{meta.semestre}} Gp {{meta.grupo_curso}}</h2>
                     <md-divider></md-divider>
                     <nvd3 options="meta.opcionesMeta" data="meta.dataMeta"></nvd3>
                 </div>

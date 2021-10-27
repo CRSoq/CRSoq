@@ -4,6 +4,6 @@ module.exports.config = {
     db_user     : '',           // usuario de la base de datos
     db_pass     : '',       // clave del usuario de la base de datos
     db_name     : '',          // nombre de la base de datos
-    db_host     : 'localhost',      // ip o host de la base de datos
+    db_host     : '',      // ip o host de la base de datos
     db_port     : 3306              // puerto de la base de datos (3306 puerto por defecto en mysql)
 };

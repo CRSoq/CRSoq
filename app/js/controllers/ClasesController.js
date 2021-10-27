@@ -7,7 +7,7 @@ crsApp.controller('ClasesController', function($scope, $rootScope, $mdDialog, $q
         var curso = _.findWhere(asignatura.cursos, {'id_curso':Number($stateParams.id_curso)});
     }else if($rootScope.user.tipo='estudiante'){
         var semestres = CursosServices.obtenerCursosLocal();
-        var semestre = _.findWhere(semestres,{'ano':Number($stateParams.ano),'semestre':Number($stateParams.semestre)});
+        var semestre = _.findWhere(semestres,{'ano':Number($stateParams.ano),'semestre':Number($stateParams.semestre),'grupo_curso':String($stateParams.grupo_curso)});
         var curso = _.findWhere(semestre.cursos, {'id_curso': Number($stateParams.id_curso)});
     }
     $scope.curso = _.cloneDeep(curso);
@@ -211,10 +211,11 @@ crsApp.controller('ClasesController', function($scope, $rootScope, $mdDialog, $q
         var infoSesion = {
             ano: Number($stateParams.ano),
             semestre: Number($stateParams.semestre),
+            grupo_curso: String($stateParams.grupo_curso),
             curso: $stateParams.nombre_asignatura,
             id_clase: clase.id_clase,
             id_curso: Number($stateParams.id_curso),
-            sala: $stateParams.ano+$stateParams.semestre+$stateParams.nombre_asignatura+clase.id_clase
+            sala: $stateParams.ano+$stateParams.semestre+$stateParams.grupo_curso+$stateParams.nombre_asignatura+clase.id_clase
         };
         //iniciar y cambiar estado a iniciado
         if(clase.estado_sesion=='noIniciada'){
@@ -226,6 +227,7 @@ crsApp.controller('ClasesController', function($scope, $rootScope, $mdDialog, $q
                         nombre_asignatura:curso.nombre_curso,
                         ano:curso.ano,
                         semestre:curso.semestre,
+                        grupo_curso:curso.grupo_curso,
                         id_curso:curso.id_curso,
                         id_clase:clase.id_clase});
                 }else{
@@ -236,7 +238,9 @@ crsApp.controller('ClasesController', function($scope, $rootScope, $mdDialog, $q
         }else if(clase.estado_sesion=='iniciada'){
             $state.transitionTo('crsApp.asignatura.curso.clases.sesion', {
                 nombre_asignatura:curso.nombre_curso,
-                ano:curso.ano,semestre:curso.semestre,
+                ano:curso.ano,
+                semestre:curso.semestre,
+                grupo_curso:curso.grupo_curso,
                 id_curso:curso.id_curso,
                 id_clase:clase.id_clase});
             SocketServices.emit('ContinuarSesion',infoSesion);
@@ -257,6 +261,7 @@ crsApp.controller('ClasesController', function($scope, $rootScope, $mdDialog, $q
                                     nombre_asignatura:curso.nombre_curso,
                                     ano:curso.ano,
                                     semestre:curso.semestre,
+                                    grupo_curso:curso.grupo_curso,
                                     id_curso:curso.id_curso,
                                     id_clase:clase.id_clase});
                             }else{
@@ -268,6 +273,7 @@ crsApp.controller('ClasesController', function($scope, $rootScope, $mdDialog, $q
                             nombre_asignatura:curso.nombre_curso,
                             ano:curso.ano,
                             semestre:curso.semestre,
+                            grupo_curso:curso.grupo_curso,
                             id_curso:curso.id_curso,
                             id_clase:clase.id_clase});
                     }
@@ -285,11 +291,19 @@ crsApp.controller('ClasesController', function($scope, $rootScope, $mdDialog, $q
     });
     $scope.ingresarSesion = function (clase) {
         var data ={
-            sala: $stateParams.ano+$stateParams.semestre+$stateParams.nombre_asignatura+clase.id_clase
+            sala: $stateParams.ano+$stateParams.semestre+$stateParams.grupo_curso+$stateParams.nombre_asignatura+clase.id_clase
         };
 
         SocketServices.emit('IngresarASala', data);
-        $state.transitionTo('crsApp.asignatura.curso.clases.sesion', {nombre_asignatura:curso.nombre_curso,ano:curso.ano,semestre:curso.semestre,id_curso:curso.id_curso,id_clase:clase.id_clase});
+        $state.transitionTo('crsApp.asignatura.curso.clases.sesion', 
+        {
+            nombre_asignatura:curso.nombre_curso,
+            ano:curso.ano,
+            semestre:curso.semestre,
+            grupo_curso:curso.grupo_curso,
+            id_curso:curso.id_curso,
+            id_clase:clase.id_clase
+        });
     };
 
     $rootScope.$on('actualizarListaDeClases', function () {

@@ -46,7 +46,7 @@ router.post('/obtenerListaCursosAsignatura', function (req, res) {
     if(!req.body){
         return res.sendStatus(400);
     }else{
-        connection.query('SELECT id_curso, id_calendario, ano, semestre FROM curso WHERE id_asignatura=?',[req.body.id_asignatura], function (error, rows) {
+        connection.query('SELECT id_curso, id_calendario, ano, semestre, grupo_curso FROM curso WHERE id_asignatura=?',[req.body.id_asignatura], function (error, rows) {
             if(error){
                 return res.json({'success':false, 'err':error});
             }else{

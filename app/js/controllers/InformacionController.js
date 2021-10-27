@@ -1474,7 +1474,7 @@ crsApp.controller('ResumenController', function ($scope, $stateParams, $timeout,
 crsApp.controller('InformacionEstudianteController', function ($scope, $stateParams, $mdSidenav, $timeout, $q, toastr, InformacionServices, CursosServices, ClasesServices, SessionServices) {
     var estudiante = SessionServices.getSessionData();
     var semestres = CursosServices.obtenerCursosLocal();
-    var semestre = _.findWhere(semestres,{'ano':Number($stateParams.ano),'semestre':Number($stateParams.semestre)});
+    var semestre = _.findWhere(semestres,{'ano':Number($stateParams.ano),'semestre':Number($stateParams.semestre),'grupo_curso':String($stateParams.grupo_curso)});
     $scope.curso = _.findWhere(semestre.cursos, {'id_curso': Number($stateParams.id_curso)});
     $scope._ = _;
 
@@ -1564,8 +1564,8 @@ crsApp.controller('InformacionEstudianteController', function ($scope, $statePar
         var data = [];
         var sesion = SessionServices.getSessionData();
         var values = [];
-        console.log("Hola Ale");
-        console.log(fechas);
+        //console.log("Hola Ale");
+        //console.log(fechas);
         _.forEach(fechas, function(fecha){
             var participacion = 0;
             _.forEach(resPartEstudiantePregRelEnCurso, function (partPreg) {
@@ -1663,6 +1663,7 @@ crsApp.controller('InformacionAsignaturaController', function ($scope, $statePar
                         fullData.push({
                             ano: curso.ano,
                             semestre: curso.semestre,
+                            grupo_curso: curso.grupo_curso,
                             id_calendario: curso.id_calendario,
                             id_curso: curso.id_curso,
                             participaciones: participaciones
@@ -1743,7 +1744,7 @@ crsApp.controller('InformacionAsignaturaController', function ($scope, $statePar
     var cargarData = function () {
         //console.log(dataGrafoAsig1);
         fullData=_.map(
-            _.sortByOrder(fullData, ['ano', 'semestre'], ['asc', 'asc'])
+            _.sortByOrder(fullData, ['ano', 'semestre', 'grupo_curso'], ['asc', 'asc', 'desc'])
         );
         var dataGanadores = [];
         var dataPerdedores = [];
@@ -1757,7 +1758,7 @@ crsApp.controller('InformacionAsignaturaController', function ($scope, $statePar
                 totalGanadores=ganadores.true;
             }
             dataGanadores.push({
-                x: curso.ano+' Sem '+curso.semestre,
+                x: curso.ano+' Sem '+curso.semestre+' Gp '+curso.grupo_curso,
                 y:totalGanadores
             });
             var totalPerdedores=0;
@@ -1766,7 +1767,7 @@ crsApp.controller('InformacionAsignaturaController', function ($scope, $statePar
                 totalPerdedores=perdedores.true;
             }
             dataPerdedores.push({
-                x: curso.ano+' Sem '+curso.semestre,
+                x: curso.ano+' Sem '+curso.semestre+' Gp '+curso.grupo_curso,
                 y:totalPerdedores
             });
             var totalNoSeleccionados=0;
@@ -1775,7 +1776,7 @@ crsApp.controller('InformacionAsignaturaController', function ($scope, $statePar
                 totalNoSeleccionados=noSelec.true;
             }
             dataNoSeleccionados.push({
-                x: curso.ano+' Sem '+curso.semestre,
+                x: curso.ano+' Sem '+curso.semestre+' Gp '+curso.grupo_curso,
                 y:totalNoSeleccionados
             });
             var totalNoParticipan=0;
@@ -1784,7 +1785,7 @@ crsApp.controller('InformacionAsignaturaController', function ($scope, $statePar
                 totalNoParticipan=noPart.true;
             }
             dataNoParticipan.push({
-                x: curso.ano+' Sem '+curso.semestre,
+                x: curso.ano+' Sem '+curso.semestre+' Gp '+curso.grupo_curso,
                 y:totalNoParticipan
             });
         });
@@ -1848,7 +1849,7 @@ crsApp.controller('InformacionAsignaturaController', function ($scope, $statePar
     var total;
     $q.all(promesasGrafoAsig2).then(function () {
         var cursos=_.map(
-            _.sortByOrder(cursosAsignatura, ['ano', 'semestre'], ['asc', 'asc'])
+            _.sortByOrder(cursosAsignatura, ['ano', 'semestre', 'grupo_curso'], ['asc', 'asc', 'desc'])
         );
         _.forEach(cursos, function (curso, index) {
             var promesas = [];
@@ -1891,7 +1892,7 @@ crsApp.controller('InformacionAsignaturaController', function ($scope, $statePar
         var tituloGanadores = null;
         var data = [];
         var cursos=_.map(
-            _.sortByOrder(cursosAsignatura, ['ano', 'semestre'], ['asc', 'asc'])
+            _.sortByOrder(cursosAsignatura, ['ano', 'semestre', 'grupo_curso'], ['asc', 'asc', 'desc'])
         );
         _.forEach(cursos, function (curso, index) {
             var obtenerCantidadNoGanadores = 0;
@@ -1971,7 +1972,7 @@ crsApp.controller('InformacionAsignaturaController', function ($scope, $statePar
         var promesas = [];
         var data = [];
         var cursos=_.map(
-            _.sortByOrder(cursosAsignatura, ['ano', 'semestre'], ['asc', 'asc'])
+            _.sortByOrder(cursosAsignatura, ['ano', 'semestre', 'grupo_curso'], ['asc', 'asc', 'desc'])
         );
         _.forEach(cursos, function (curso, index) {
             var obtenerCantidadParticipacion = 0;
@@ -2089,7 +2090,8 @@ crsApp.controller('InformacionAsignaturaController', function ($scope, $statePar
                         if(_.isUndefined(curso)){
                             return d;
                         }else{
-                            return curso.ano+' Sem '+curso.semestre;
+                            return curso.ano+' Sem '+curso.semestre+' Gp '+curso.grupo_curso;
+                            //return curso.ano+' Sem '+curso.semestre;
                         }
                     }
                 },
@@ -2196,7 +2198,7 @@ crsApp.controller('ModalPuntosGanadosController',function($scope, $mdDialog, dat
         var header = '<meta http-equiv="content-type" content="application/vnd.ms-excel; charset=UTF-8">';
         var blob = new Blob([header + document.getElementById('exportable').innerHTML], {
             type: "data:application/vnd.ms-excel;charset=UTF-8"});
-        saveAs(blob, "PuntosGanados_"+curso.asignatura+"_"+curso.ano+"_Sem_"+curso.semestre+".xls");
+        saveAs(blob, "PuntosGanados_"+curso.asignatura+"_"+curso.ano+"_Sem_"+curso.semestre+"_Gp_"+curso.grupo_curso+".xls");
     };
 
     $scope.cancelar = function() {

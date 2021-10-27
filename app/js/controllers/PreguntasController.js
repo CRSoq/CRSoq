@@ -388,7 +388,7 @@ crsApp.controller('ModalEliminarPreguntaController', function ($scope, $mdDialog
 crsApp.controller('PreguntasEstudianteController', function ($scope, $stateParams, $mdDialog, toastr, PreguntasServices, CursosServices, ClasesServices, SessionServices) {
     var semestres = CursosServices.obtenerCursosLocal();
     var estudiante = SessionServices.getSessionData();
-    var semestre = _.findWhere(semestres,{'ano':Number($stateParams.ano),'semestre':Number($stateParams.semestre)});
+    var semestre = _.findWhere(semestres,{'ano':Number($stateParams.ano),'semestre':Number($stateParams.semestre),'grupo_curso':String($stateParams.grupo_curso)});
     $scope.curso = _.findWhere(semestre.cursos, {'id_curso': Number($stateParams.id_curso)});
 
     //preguntas curso

@@ -138,6 +138,7 @@ create table curso
    id_calendario        int not null,
    ano                  int not null,
    semestre             int not null,
+   grupo_asignatura     varchar(10) not null,
    id_user              int not null,
    estado_curso         varchar(250),
    nombre_curso         varchar(250),
