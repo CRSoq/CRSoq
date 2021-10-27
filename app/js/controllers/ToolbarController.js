@@ -8,6 +8,7 @@ crsApp.controller('ToolbarController', function($scope, $rootScope, $stateParams
         $scope.nombre_asignatura = $stateParams.nombre_asignatura;
         $scope.ano = $stateParams.ano;
         $scope.semestre = $stateParams.semestre;
+        $scope.grupo_curso = $stateParams.grupo_curso;
         if($location.path().search('/clases')>0){
             $scope.seccion = 'Clases';
             if($location.path().search('/sesion')>0){

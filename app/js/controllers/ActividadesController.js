@@ -273,7 +273,7 @@ crsApp.controller('ModalGanadoresActiviadController', function ($scope, $mdDialo
 crsApp.controller('ActividadesEstudianteController', function ($scope, $rootScope, $stateParams, $mdDialog, toastr, ActividadesServices, CursosServices, SessionServices, ClasesServices) {
     var estudiante = SessionServices.getSessionData();
     var semestres = CursosServices.obtenerCursosLocal();
-    var semestre = _.findWhere(semestres,{'ano':Number($stateParams.ano),'semestre':Number($stateParams.semestre)});
+    var semestre = _.findWhere(semestres,{'ano':Number($stateParams.ano),'semestre':Number($stateParams.semestre),'grupo_curso':String($stateParams.grupo_curso)});
     $scope.curso = _.findWhere(semestre.cursos, {'id_curso': Number($stateParams.id_curso)});
     $scope.promesas=[];
     $scope.listaActividades=[];

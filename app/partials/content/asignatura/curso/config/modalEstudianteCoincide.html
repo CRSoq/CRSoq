@@ -14,9 +14,11 @@
             <md-toolbar class="md-table-toolbar alternate" ng-hide="listaPreguntasSeleccionadas.length">
                 <div class="md-toolbar-tools">
                     <span>Desea asociar al siguiente estudiante al curso de {{curso}}, año {{ano}},
-                        <span ng-show="semestre==1">primer semestre.</span>
+                        <!--<span ng-show="semestre==1">primer semestre.</span>
                         <span ng-show="semestre==2">segundo semestre.</span>
                         <span ng-show="semestre>2">semestre {{semestre}}.</span>
+                        -->
+                        <span>semestre {{semestre}}, Grupo {{grupo_curso}}</span>
                     </span>
                 </div>
             </md-toolbar>

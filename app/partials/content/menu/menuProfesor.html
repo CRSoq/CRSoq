@@ -50,7 +50,7 @@
                     <md-button class="botonMenu" ng-click="desplegarMenuCurso(curso)">
                         <div layout="row">
                             <div flex="8"><i class="fa fa-graduation-cap"></i></div>
-                            <div flex="80" align="left">{{curso.ano}} Sem {{curso.semestre}}</div>
+                            <div flex="80" align="left">{{curso.ano}} Sem {{curso.semestre}} Grupo {{curso.grupo_curso}}</div>
                             <div flex="10" align="right"><i class="fa fa-fw fa-angle-right"></i></div>
                         </div>
                     </md-button>
@@ -58,7 +58,7 @@
 
                 <md-list class="listaMenu" ng-show="mostrarMenuCurso(curso)">
                     <md-list-item  class="itemListaMenu">
-                        <md-button ng-click="cerrarMenu()" class="botonMenu" ui-sref="crsApp.asignatura.curso.clases({nombre_asignatura:asignatura.asignatura, id_curso:curso.id_curso, semestre:curso.semestre, ano:curso.ano})">
+                        <md-button ng-click="cerrarMenu()" class="botonMenu" ui-sref="crsApp.asignatura.curso.clases({nombre_asignatura:asignatura.asignatura, id_curso:curso.id_curso, grupo_curso:curso.grupo_curso, semestre:curso.semestre, ano:curso.ano})">
                             <div layout="row">
                                 <div flex="8"></div>
                                 <div flex="7"><i class="fa fa-book"></i></div>
@@ -68,7 +68,7 @@
                         </md-button>
                     </md-list-item>
                     <md-list-item  class="itemListaMenu">
-                        <md-button ng-click="cerrarMenu()" class="botonMenu" ui-sref="crsApp.asignatura.curso.preguntas({nombre_asignatura:asignatura.asignatura, id_curso:curso.id_curso, semestre:curso.semestre, ano:curso.ano})">
+                        <md-button ng-click="cerrarMenu()" class="botonMenu" ui-sref="crsApp.asignatura.curso.preguntas({nombre_asignatura:asignatura.asignatura, id_curso:curso.id_curso, grupo_curso:curso.grupo_curso, semestre:curso.semestre, ano:curso.ano})">
                             <div layout="row">
                                 <div flex="8"></div>
                                 <div flex="7"><i class="fa fa-question"></i></div>
@@ -78,7 +78,7 @@
                         </md-button>
                     </md-list-item>
                     <md-list-item  class="itemListaMenu">
-                        <md-button ng-click="cerrarMenu()" class="botonMenu" ui-sref="crsApp.asignatura.curso.actividades({nombre_asignatura:asignatura.asignatura, id_curso:curso.id_curso, semestre:curso.semestre, ano:curso.ano})">
+                        <md-button ng-click="cerrarMenu()" class="botonMenu" ui-sref="crsApp.asignatura.curso.actividades({nombre_asignatura:asignatura.asignatura, id_curso:curso.id_curso, grupo_curso:curso.grupo_curso, semestre:curso.semestre, ano:curso.ano})">
                             <div layout="row">
                                 <div flex="8"></div>
                                 <div flex="7"><i class="fa fa-tasks"></i></div>
@@ -88,7 +88,7 @@
                         </md-button>
                     </md-list-item>
                     <md-list-item  class="itemListaMenu">
-                        <md-button ng-click="cerrarMenu()" class="botonMenu" ui-sref="crsApp.asignatura.curso.info({nombre_asignatura:asignatura.asignatura, id_curso:curso.id_curso, semestre:curso.semestre, ano:curso.ano})">
+                        <md-button ng-click="cerrarMenu()" class="botonMenu" ui-sref="crsApp.asignatura.curso.info({nombre_asignatura:asignatura.asignatura, id_curso:curso.id_curso, grupo_curso:curso.grupo_curso, semestre:curso.semestre, ano:curso.ano})">
                             <div layout="row">
                                 <div flex="8"></div>
                                 <div flex="7"><i class="fa fa-bar-chart"></i></div>
@@ -98,7 +98,7 @@
                         </md-button>
                     </md-list-item>
                     <md-list-item  class="itemListaMenu">
-                        <md-button class="botonMenu" ng-click="cerrarMenu()" ui-sref="crsApp.asignatura.curso.config({nombre_asignatura:asignatura.asignatura, id_curso:curso.id_curso, semestre:curso.semestre, ano:curso.ano})">
+                        <md-button class="botonMenu" ng-click="cerrarMenu()" ui-sref="crsApp.asignatura.curso.config({nombre_asignatura:asignatura.asignatura, id_curso:curso.id_curso, grupo_curso:curso.grupo_curso, semestre:curso.semestre, ano:curso.ano})">
                             <div layout="row">
                                 <div flex="8"></div>
                                 <div flex="7"><i class="fa fa-cogs"></i></div>

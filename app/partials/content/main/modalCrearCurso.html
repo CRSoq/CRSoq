@@ -38,7 +38,15 @@
                                 {{option.semestre}}
                             </md-option>
                         </md-select>
+                    </md-input-container>
 
+                    <md-input-container>
+                        <label>Grupo</label>
+                        <md-select ng-model="grupoSeleccionado" ng-change="" ng-disabled="Ano">
+                            <md-option ng-repeat="option in grupos" ng-value="option">
+                                {{option}}
+                            </md-option>
+                        </md-select>
                     </md-input-container>
 
             </div>

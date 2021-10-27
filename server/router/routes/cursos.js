@@ -7,7 +7,7 @@ router.post('/crearCurso', function (req, res) {
     if(!req.body){
         return res.sendStatus(400);
     }else{
-        connection.query('INSERT INTO curso SET id_asignatura = ?, id_calendario = ?, ano = ?, semestre = ?, id_user = ?, nombre_curso = ? ',[req.body.id_asignatura, req.body.id_calendario, req.body.ano, req.body.semestre, req.body.id_user, req.body.nombre_curso], function (error, result) {
+        connection.query('INSERT INTO curso SET id_asignatura = ?, id_calendario = ?, ano = ?, semestre = ?, grupo_curso = ?, id_user = ?, nombre_curso = ? ',[req.body.id_asignatura, req.body.id_calendario, req.body.ano, req.body.semestre, req.body.grupo_curso, req.body.id_user, req.body.nombre_curso], function (error, result) {
             if(!error){
                 res.status(200);
                 return res.json({'success':true, 'id_curso':result.insertId});
@@ -20,12 +20,12 @@ router.post('/crearCurso', function (req, res) {
 });
 function ordenar (rows){
     //primer se ordenan las filas por ano y semestre (desc ambos)
-    var listaOrdenada = _.map(_.sortByOrder(rows, ['ano', 'semestre'], ['desc', 'desc']));
+    var listaOrdenada = _.map(_.sortByOrder(rows, ['ano', 'semestre', 'grupo_curso'], ['desc', 'desc', 'desc']));
     //luego se mapean agrupandolas por ano y semestre, y se retorna un objeto con el nombre del semestre
     //y los cursos correspondientes
     var lista = _.chain(listaOrdenada)
         .map(function (e) {
-            return _.extend({},e, { anoSemestre: e.ano+' '+ e.semestre });
+            return _.extend({},e, { anoSemestre: e.ano+' '+ e.semestre+' '+e.grupo_curso });
         })
         .groupBy('anoSemestre')
         .pairs()
@@ -33,6 +33,7 @@ function ordenar (rows){
             var test = _.object(_.zip(["nombre","cursos"], current));
             test['ano'] = current[1][0].ano;
             test['semestre'] = current[1][0].semestre;
+            test['grupo_curso'] = current[1][0].grupo_curso;
             return test;
         });
     //finalmente se ordenan porque el proceso anterior no es devuelto 100% ordenado por lodash
@@ -42,7 +43,7 @@ function ordenar (rows){
 };
 function ordenar2 (rows){
     //primer se ordenan las filas por ano y semestre (desc ambos)
-    var listaOrdenada = _.map(_.sortByOrder(rows, ['nombre_curso','ano', 'semestre'], ['desc','desc', 'desc']));
+    var listaOrdenada = _.map(_.sortByOrder(rows, ['nombre_curso','ano', 'semestre', 'grupo_curso'], ['desc','desc', 'desc', 'desc']));
     //luego se mapean agrupandolas por ano y semestre, y se retorna un objeto con el nombre del semestre
     //y los cursos correspondientes
 
@@ -73,7 +74,7 @@ router.post('/obtenerCursos', function (req, res) {
         return res.sendStatus(400);
     }else{
         if(req.body.tipo == 'profesor'){
-            connection.query('SELECT id_curso, id_asignatura, id_calendario, ano, semestre, nombre_curso, meta, meta_alumno FROM curso WHERE id_user = ?',[req.body.id_user], function (error, rows) {
+            connection.query('SELECT id_curso, id_asignatura, id_calendario, ano, semestre, grupo_curso, nombre_curso, meta, meta_alumno FROM curso WHERE id_user = ?',[req.body.id_user], function (error, rows) {
                 if(!error){
                     return res.json({'success':true, 'result':ordenar2(rows)});
                 }else{
@@ -81,7 +82,7 @@ router.post('/obtenerCursos', function (req, res) {
                 }
             });
         }else if(req.body.tipo == 'estudiante'){
-            connection.query('SELECT c.id_curso, c.nombre_curso, c.semestre, c.ano FROM pertenece ec INNER JOIN estudiante e ON ec.id_user=e.id_user INNER JOIN curso c ON ec.id_curso = c.id_curso WHERE e.id_user = ?',[req.body.id_user], function (error, rows) {
+            connection.query('SELECT c.id_curso, c.nombre_curso, c.semestre, c.ano, c.grupo_curso FROM pertenece ec INNER JOIN estudiante e ON ec.id_user=e.id_user INNER JOIN curso c ON ec.id_curso = c.id_curso WHERE e.id_user = ?',[req.body.id_user], function (error, rows) {
                 if (!error) {
                     return res.json({'success':true, 'result':ordenar(rows)});
                 } else {

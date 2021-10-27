@@ -26,6 +26,8 @@ crsApp.controller('ModalCrearCursoController', function ($scope, $mdDialog, toas
     $scope.asignaturaSeleccionada = {};
     $scope.anoSeleccionado = {};
     $scope.semestreSeleccionado = {};
+    $scope.grupoSeleccionado = '';
+    $scope.grupos = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'Ñ', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
     $scope.calendario = [];
     $scope.Asignatura=true;
     $scope.Ano=true;
@@ -88,9 +90,10 @@ crsApp.controller('ModalCrearCursoController', function ($scope, $mdDialog, toas
             id_calendario   : $scope.calendario.id_calendario,
             ano             : $scope.calendario.ano,
             semestre        : $scope.calendario.semestre,
+            grupo_curso     : $scope.grupoSeleccionado,
             id_user         : dataUsuario.id_user
         };
-        if(_.isUndefined($scope.curso.nombre_curso) || _.isUndefined($scope.curso.id_calendario) ){
+        if(_.isUndefined($scope.curso.nombre_curso) || _.isUndefined($scope.curso.id_calendario || $scope.curso.grupo_curso === '') ){
             toastr.error('Todos los campos son obligatorios','Error');
         }else{
             $mdDialog.hide($scope.curso);
@@ -125,7 +128,7 @@ crsApp.controller('CursoGralInfoController', function ($scope, $rootScope, $stat
     }
     function obtenerInfoEstudiante(){
         var semestres = CursosServices.obtenerCursosLocal();
-        var semestre = _.findWhere(semestres,{'ano':Number($stateParams.ano),'semestre':Number($stateParams.semestre)});
+        var semestre = _.findWhere(semestres,{'ano':Number($stateParams.ano),'semestre':Number($stateParams.semestre),'grupo_curso':String($stateParams.grupo_curso)});
         $scope.curso = _.findWhere(semestre.cursos, {'id_curso': Number($stateParams.id_curso)});
     }
 });
@@ -370,7 +373,8 @@ crsApp.controller('ConfigCursoController', function ($scope, $rootScope, $state,
                                             clave: response.result.clave,
                                             curso: curso.nombre_curso,
                                             ano: curso.ano,
-                                            semestre: curso.semestre
+                                            semestre: curso.semestre,
+                                            grupo_curso: curso.grupo_curso
                                         },
                                         controller: 'ModalEstudianteEncontrado'
                                     })
@@ -503,7 +507,7 @@ crsApp.controller('ConfigCursoController', function ($scope, $rootScope, $state,
     };
 });
 
-crsApp.controller('ModalEstudianteEncontrado',function($scope, $mdDialog, rut, nombre, apellido, usuario, clave, curso, ano, semestre){
+crsApp.controller('ModalEstudianteEncontrado',function($scope, $mdDialog, rut, nombre, apellido, usuario, clave, curso, ano, semestre, grupo_curso){
     $scope.rut=rut;
     $scope.nombre=nombre;
     $scope.apellido=apellido;
@@ -512,6 +516,7 @@ crsApp.controller('ModalEstudianteEncontrado',function($scope, $mdDialog, rut, n
     $scope.curso=curso;
     $scope.ano=ano;
     $scope.semestre=semestre;
+    $scope.grupo_curso=grupo_curso;
 
     $scope.cancelar = function() {
         $mdDialog.cancel();

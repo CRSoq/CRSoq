@@ -156,7 +156,7 @@ crsApp.config(function($stateProvider, $urlRouterProvider, toastrConfig) {
             authenticate:true
         })
         .state('crsApp.asignatura.curso', {
-            url: '/:ano/:semestre/:id_curso',
+            url: '/:ano/:semestre/:grupo_curso/:id_curso',
             authenticate:true
         })
         .state('crsApp.asignatura.curso.clases', {

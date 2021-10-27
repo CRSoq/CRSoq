@@ -29,14 +29,14 @@ module.exports = function (io) {
             };
 
             if(req.tipo == 'profesor'){
-                connection.query('SELECT id_curso, id_asignatura, id_calendario, ano, semestre, nombre_curso FROM curso WHERE id_user = ?',[req.id_user], function (error, rows) {
+                connection.query('SELECT id_curso, id_asignatura, id_calendario, ano, semestre, grupo_curso, nombre_curso FROM curso WHERE id_user = ?',[req.id_user], function (error, rows) {
                     if(!error) {
                         ingresoUsuario(rows);
                     }
                 });
 
             }else if(req.tipo == 'estudiante'){
-                    connection.query('SELECT c.id_curso, c.nombre_curso, c.semestre, c.ano FROM pertenece ec INNER JOIN estudiante e ON ec.id_user=e.id_user INNER JOIN curso c ON ec.id_curso = c.id_curso WHERE e.id_user = ?',[req.id_user], function (error, rows) {
+                    connection.query('SELECT c.id_curso, c.nombre_curso, c.grupo_curso, c.semestre, c.ano FROM pertenece ec INNER JOIN estudiante e ON ec.id_user=e.id_user INNER JOIN curso c ON ec.id_curso = c.id_curso WHERE e.id_user = ?',[req.id_user], function (error, rows) {
                         if (!error) {
                             ingresoUsuario(rows);
                         }

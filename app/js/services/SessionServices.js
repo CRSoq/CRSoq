@@ -22,11 +22,18 @@ crsApp.factory('SessionServices', function($http, $q, $localStorage){
             var defered = $q.defer();
             var promise = defered.promise;
             $http.post('/login/checkToken', data)
-                .success(function(response){
+            /*
+                .success(function (response) {
                     defered.resolve(response);
                 })
-                .error(function(error){
+                .error(function (error) {
                     defered.reject(error);
+                });
+            */
+                .then(function onSuccess(response){
+                    defered.resolve(response.data);
+                }, function onError(response){
+                    defered.reject(response.data)
                 });
             return promise;
         },
@@ -35,11 +42,18 @@ crsApp.factory('SessionServices', function($http, $q, $localStorage){
             var promise = defered.promise;
             this.setToken(data);
             $http.post('/login/asignarToken', data)
-                .success(function(response){
+            /*
+                .success(function (response) {
                     defered.resolve(response);
                 })
-                .error(function(error){
+                .error(function (error) {
                     defered.reject(error);
+                });
+            */
+                .then(function onSuccess(response){
+                    defered.resolve(response.data);
+                }, function onError(response){
+                    defered.reject(response.data)
                 });
             return promise;
         },
