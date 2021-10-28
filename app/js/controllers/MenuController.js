@@ -5,7 +5,7 @@ crsApp.controller('MenuController', function($scope, $rootScope, $stateParams, $
     $rootScope.cerrar = $scope.menuCerrado;
     if(!_.isUndefined($localStorage.menuCerrado)){
         $scope.menuCerrado = $localStorage.menuCerrado;
-        $rootScope.cerrar = $scope.menuCerrado;
+        $rootScope.cerrar = $scope.menuCerrado; //a
     }
 
     $scope.listaCursos = [];
