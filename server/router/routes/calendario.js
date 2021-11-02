@@ -42,4 +42,17 @@ router.post('/editarCalendario', function (req, res) {
         });
     }
 });
+router.post('/obtenerGrupos', function (req, res) {
+    if(!req.body){
+        return res.sendStatus(400);
+    }else{
+        connection.query('SELECT grupo_curso FROM curso WHERE id_asignatura = ? AND id_calendario = ?',[req.body.asignatura.id_asignatura, req.body.calendario.id_calendario], function (error, result) {
+            if(error){
+                return res.json({'success':false, 'err':error});
+            }else{
+                return res.json({'success':true, 'result':result});
+            }
+        });
+    }
+});
 module.exports = router;
