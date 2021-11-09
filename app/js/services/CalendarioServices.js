@@ -29,6 +29,9 @@ crsApp.factory('CalendarioServices', function ($http, $q) {
         },
         editarCalendario: function (calendario) {
             return postHelper('/calendario/editarCalendario', calendario);
+        },
+        obtenerGrupos: function (data){
+            return postHelper('/calendario/obtenerGrupos', data);
         }
-    }
+    };
 });

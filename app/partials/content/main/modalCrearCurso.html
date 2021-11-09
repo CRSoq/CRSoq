@@ -33,7 +33,7 @@
 
                     <md-input-container>
                         <label>Semestre</label>
-                        <md-select ng-model="semestreSeleccionado" ng-change="guardarCalendario(semestreSeleccionado.calendario)" ng-disabled="Ano">
+                        <md-select ng-model="semestreSeleccionado" ng-change="guardarCalendario(semestreSeleccionado.calendario);cargarGrupos(asignaturaSeleccionada, semestreSeleccionado)" ng-disabled="Ano">
                             <md-option ng-repeat="option in semestres" ng-value="option">
                                 {{option.semestre}}
                             </md-option>
@@ -42,8 +42,8 @@
 
                     <md-input-container>
                         <label>Grupo</label>
-                        <md-select ng-model="grupoSeleccionado" ng-change="" ng-disabled="Ano">
-                            <md-option ng-repeat="option in grupos" ng-value="option">
+                        <md-select ng-model="grupoSeleccionado" ng-change="" ng-disabled="bGrupo">
+                            <md-option ng-repeat="option in gruposDisponibles" ng-value="option">
                                 {{option}}
                             </md-option>
                         </md-select>

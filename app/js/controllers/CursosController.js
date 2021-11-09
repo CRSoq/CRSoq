@@ -28,9 +28,11 @@ crsApp.controller('ModalCrearCursoController', function ($scope, $mdDialog, toas
     $scope.semestreSeleccionado = {};
     $scope.grupoSeleccionado = '';
     $scope.grupos = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'Ñ', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
+    $scope.gruposDisponibles = [];
     $scope.calendario = [];
     $scope.Asignatura=true;
     $scope.Ano=true;
+    $scope.bGrupo = true;
 
     AsignaturasServices.obtenerAsignaturas()
         .then(function (response) {
@@ -74,6 +76,22 @@ crsApp.controller('ModalCrearCursoController', function ($scope, $mdDialog, toas
             .value();
         $scope.semestres=_.map(_.sortByOrder($scope.semestres, ['semestre'], ['desc']));
         $scope.Ano=false;
+    };
+
+    $scope.cargarGrupos = function (asignatura, semestre) {
+        let data = {'asignatura': asignatura, 'calendario': semestre.calendario[0]};
+        CalendarioServices.obtenerGrupos(data)
+            .then(function (response) {
+                if(response.success){
+                    let diff = _.values(_.mapValues(response.result, function(o) {
+                        return o.grupo_curso;
+                    }));
+                    $scope.gruposDisponibles = _.difference($scope.grupos, diff);
+                    $scope.bGrupo = false;
+                }else{
+                    toastr.error('No se obtuvieron los grupos: '+response.err.code,'Error');
+                }
+            });
     };
 
     $scope.guardarCalendario = function (calendario) {
@@ -138,7 +156,6 @@ crsApp.controller('ConfigCursoController', function ($scope, $rootScope, $state,
     var asignatura = _.findWhere(asignaturas,{'asignatura':$stateParams.nombre_asignatura});
     var curso = _.findWhere(asignatura.cursos, {'id_curso':Number($stateParams.id_curso)});
     $scope.curso= _.cloneDeep(curso);
-    console.log($scope.curso);
     $scope._ = _;
     $scope.modulos = [];
     $scope.modulosEditados = [];

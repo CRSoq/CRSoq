@@ -93,7 +93,6 @@ crsApp.controller('TemasController', function($scope, $rootScope, $mdDialog, $st
 	TopicosServices.obtenerTemas($scope.asignatura).then(function (response) {
        	    if(response.success){
             	$scope.listaTemas = _.cloneDeep(response.result);
-            	console.log($scope.listaTemas);
             }else{
             	toastr.error('No se obtuvo lista de temas: '+response.err.code,'Error');
             }
@@ -129,9 +128,6 @@ crsApp.controller('TemasController', function($scope, $rootScope, $mdDialog, $st
                     if(response.success){
                         tema.id_tema = response.id_tema;
                         tema.id_topico = response.id_topico;
-			//tema.nombre_topico = response.nombre_topico;
-			//console.log(tema);
-                        //$scope.listaTemas.push(tema);
 			$scope.obtenerTemas();
                         toastr.success('Tema agregado correctamente.');
                     }else{
@@ -156,13 +152,12 @@ crsApp.controller('TemasController', function($scope, $rootScope, $mdDialog, $st
                 TopicosServices.editarTema(tema).then(function (response) {
                     if(response.success){
                         var tem = _.findWhere($scope.listaTemas,{id_tema:tema.id_tema});
-                        console.log($scope.listaTemas);
-			tem.id_tema = tema.id_tema;
+			            tem.id_tema = tema.id_tema;
                         tem.nombre = tema.nombre;
                         tem.nombre_topico = tema.nombre_topico;
-			$scope.obtenerTemas();
+			            $scope.obtenerTemas();
                         toastr.success('Tema editado.');
-			//$scope.listaTemas = _.map(_.sortByOrder($scope.listaTemas, ['posicion'], ['asc']));
+			            //$scope.listaTemas = _.map(_.sortByOrder($scope.listaTemas, ['posicion'], ['asc']));
                     }else{
                         toastr.error('No se pudo editar el tema: '+response.err.code,'Error');
                     }
@@ -225,8 +220,6 @@ crsApp.controller('modalAgregarTemaController', function($scope, toastr, $mdDial
     }else{
         $scope.tema = _.clone(tema);
     }
-    console.log($scope.tema);
-    console.log(tema);
     $scope.aceptar = function () {
         if(!_.isUndefined($scope.tema.nombre) && !_.isUndefined($scope.tema.id_topico)) {
             var index = _.findIndex(listaTem, function (tema) {
@@ -265,7 +258,6 @@ crsApp.controller('ConfigTopicosController', function ($scope, $rootScope, $stat
                 $scope.agregarTopico();
             }
     };
-    console.log("ConfigTopicosController");
     var callBackTopicosError = function (error) {
         toastr.error(error.err.code,'Error tópicos');
     };
@@ -367,11 +359,9 @@ crsApp.controller('ConfigTemasController', function ($scope, $rootScope, $state,
                 $scope.temas= _.cloneDeep(response.result);
                 $scope.temas= _.map(_.sortByOrder($scope.temas,['posicion'],['asc']));
             }else {
-		console.log($scope.temas);
                 $scope.agregartema();
             }
     };
-    console.log("ConfigTemasController");
     var callBacktemasError = function (error) {
         toastr.error(error.err.code,'Error temas');
     };

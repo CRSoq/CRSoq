@@ -1,0 +1,30 @@
+<md-dialog aria-label="Edición equipo" ng-cloak>
+    <form>
+        <md-toolbar>
+            <div class="md-toolbar-tools">
+                <h2>Edición equipo</h2>
+                <span flex></span>
+                <md-button aria-label="Cancelar" class="md-icon-button" ng-click="cancelar()">
+                    <i class="fa fa-times"></i>
+                </md-button>
+            </div>
+        </md-toolbar>
+        <md-dialog-content>
+            <md-content class="md-padding" >
+                    <div>
+                        <md-input-container>
+                            <label>Nombre</label>
+                            <input md-maxlength="200"  md-no-asterisk name="description" ng-model="equipo.nombre">
+                            <div ng-messages="nombre.$error">
+                                <div ng-message="md-maxlength">El nombre debe tener menos de 200 caracteres.</div>
+                            </div>
+                        </md-input-container>
+                    </div>
+            </md-content>
+        </md-dialog-content>
+        <md-dialog-actions layout-align="center center">
+            <md-button aria-label="Aceptar" ng-click="aceptar()" class="md-raised md-primary">Guardar</md-button>
+            <md-button aria-label="Cancelar" ng-click="cancelar()" class="md-raised md-primary">Cancelar</md-button>
+        </md-dialog-actions>
+    </form>
+</md-dialog>

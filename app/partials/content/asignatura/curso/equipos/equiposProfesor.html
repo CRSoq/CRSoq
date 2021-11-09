@@ -1,0 +1,59 @@
+<div ng-controller="EquiposController" ng-if="user.tipo=='profesor'" ng-cloak>
+    <h1><i class="fa fa-users"></i> Equipos</h1>
+
+    <md-toolbar class="md-table-toolbar md-default">
+        <div class="md-toolbar-tools">
+            <md-button class="md-raised" aria-label="Agregar Equipo" ng-click="agregarEquipo()">
+                <i class="fa fa-plus"></i> Agregar Equipo
+            </md-button>
+        </div>
+    </md-toolbar>
+
+    <md-content style="width: 80%;" layout-padding>
+        <md-grid-list md-cols="3" md-gutter-gt-md="16px" md-gutter-md="8px" md-gutter="4px" md-row-height="220px">
+            <md-grid-tile ng-repeat="equipo in listaEquipos track by $index">
+                <div class="md-whiteframe-4dp contenedor-tabla-equipo" flex="">
+                    <div class="text-center">
+                        <div class="tabla-equipo" layout="column">
+                            <div class="tabla-equipo-titulo" layout="row" layout-align="center center">
+                                <div ng-if="editingTitle && editingIndex == $index">
+                                    <form name="titleForm">
+                                        <input type="text" name="title" ng-model="title" required>
+                                        <md-button class="md-icon-button" aria-label="guardar" ng-click="guardarNombreEquipo(title, $index)">
+                                            <i class="fa fa-floppy-o"></i>
+                                        </md-button>
+                                    </form>
+                                </div>
+                                <div ng-if="!editingTitle || (editingTitle && editingIndex != $index)">
+                                    <span style="display: inline;">{{equipo.nombre_equipo}}</span>
+                                    <md-button class="md-icon-button" aria-label="editar" ng-click="editarNombreEquipo(equipo, $index)">
+                                        <i class="fa fa-pencil"></i>
+                                    </md-button>
+                                </div>
+                            </div>
+                            <div layout="column" layout-align="center center">
+                                <div class="tabla-equipo-alumnos" flex="">
+                                    <div class="tabla-equipo-op text-center">
+                                        <md-button md-no-ink class="md-no-focus tabla-equipo-op-btn" ng-click="">
+                                            <i class="fa fa-info" style="margin-right: 20px;"></i><span show-gt-xs hide-xs>Información</span>
+                                        </md-button>
+                                    </div>
+                                    <div class="tabla-equipo-op">
+                                        <md-button md-no-ink class="md-no-focus tabla-equipo-op-btn" ng-click="gestionarAlumnos(equipo)">
+                                            <i class="fa fa-users" style="margin-right: 20px;"></i><span show-gt-xs hide-xs>Alumnos</span>
+                                        </md-button>
+                                    </div>
+                                    <div class="tabla-equipo-op">
+                                        <md-button md-no-ink class="md-no-focus tabla-equipo-op-btn" ng-click="">
+                                            <i class="fa fa-times" style="margin-right: 20px;"></i><span show-gt-xs hide-xs>Eliminar</span>
+                                        </md-button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </md-grid-tile>
+        </md-grid-list>
+      </md-content>
+</div>

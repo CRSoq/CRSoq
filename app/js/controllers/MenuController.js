@@ -14,6 +14,7 @@ crsApp.controller('MenuController', function($scope, $rootScope, $stateParams, $
     $scope.listaDeSemestres = [];
     $scope.listaDeAsignaturas = [];
     $scope.listaDeCursos = [];
+    $scope.listaEquipos = [];
     $scope.logOut = function(){
         SessionServices.destroySession();
         $state.transitionTo("crsApp.login");
@@ -138,6 +139,7 @@ crsApp.controller('MenuController', function($scope, $rootScope, $stateParams, $
                     }
                 }
                 else {
+                    // TODO: proper handle to this error
                     console.log('error_reading_semester');
                 }
 

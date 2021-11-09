@@ -58,6 +58,16 @@
 
                 <md-list class="listaMenu" ng-show="mostrarMenuCurso(curso)">
                     <md-list-item  class="itemListaMenu">
+                        <md-button ng-click="cerrarMenu()" class="botonMenu" ui-sref="crsApp.asignatura.curso.equipos({nombre_asignatura:asignatura.asignatura, id_curso:curso.id_curso, grupo_curso:curso.grupo_curso, semestre:curso.semestre, ano:curso.ano})">
+                            <div layout="row">
+                                <div flex="8"></div>
+                                <div flex="7"><i class="fa fa-users"></i></div>
+                                <div flex="75" align="left">Equipos</div>
+                                <div flex="10" align="right"><i class="fa fa-fw fa-angle-right"></i></div>
+                            </div>
+                        </md-button>
+                    </md-list-item>
+                    <md-list-item  class="itemListaMenu">
                         <md-button ng-click="cerrarMenu()" class="botonMenu" ui-sref="crsApp.asignatura.curso.clases({nombre_asignatura:asignatura.asignatura, id_curso:curso.id_curso, grupo_curso:curso.grupo_curso, semestre:curso.semestre, ano:curso.ano})">
                             <div layout="row">
                                 <div flex="8"></div>

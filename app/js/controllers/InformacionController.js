@@ -24,9 +24,7 @@ crsApp.controller('InformacionController', function ($scope, $stateParams, $mdSi
     var mostrarDatos = true;
     var deferedPuntos = $q.defer();
     var promesaPuntos = deferedPuntos.promise;
-    //console.log($scope.data);
     promesaPuntos.then(function (data) {
-        //console.log($scope.curso);
         mostrarDatos = false;
         $scope.datosPuntosGanados = function () {
             $mdDialog.show({
@@ -53,8 +51,7 @@ crsApp.controller('InformacionController', function ($scope, $stateParams, $mdSi
                 respuestas(listaPreguntaSeleccionadas);
                 participacion(listaPreguntaSeleccionadas);
                 seleccion(listaPreguntaSeleccionadas);
-		$scope.alumnoSeleccionado = listaPreguntaSeleccionadas;
-		console.log($scope.alumnoSeleccionado);
+		        $scope.alumnoSeleccionado = listaPreguntaSeleccionadas;
             });
         };              
     });
@@ -132,7 +129,6 @@ crsApp.controller('InformacionController', function ($scope, $stateParams, $mdSi
         });
     };
     var participacion = function (listaPreguntaSeleccionadas) {
-        //console.log(listaPreguntaSeleccionadas);
         var promesas =[];
         var data =[];
         var participacion;
@@ -207,7 +203,6 @@ crsApp.controller('InformacionController', function ($scope, $stateParams, $mdSi
         });
     };
     var seleccion = function (listaPreguntaSeleccionadas) {
-        //console.log(listaPreguntaSeleccionadas);
         var promesas =[];
         var data =[];
         var seleccionados;
@@ -1006,7 +1001,6 @@ app.controller('MainCtrl', function($scope) {
     //data grafo 2 est
     $q.all(promesasEstGrafo2).then(function () {
         var data = [];
-        //console.log("Hola Ale!!");
         _.forEach(estudiantesCurso, function (estudiante) {
             var values = [];
             _.forEach(fechas, function(fecha){
@@ -1337,10 +1331,8 @@ app.controller('MainCtrl', function($scope) {
         }
     });
     $scope.cambiarPregunta = function (id_pregunta_seleccionada) {
-	console.log($scope.dataGrafo6);
         var idx=_.findIndex($scope.dataGrafo6, {'id_pregunta':id_pregunta_seleccionada});
         $scope.preguntaSeleccionada=idx;
-	console.log(idx);
         $scope.dataGrafoPreg1 = [
             $scope.dataGrafo6[idx]
         ];
@@ -1564,8 +1556,6 @@ crsApp.controller('InformacionEstudianteController', function ($scope, $statePar
         var data = [];
         var sesion = SessionServices.getSessionData();
         var values = [];
-        //console.log("Hola Ale");
-        //console.log(fechas);
         _.forEach(fechas, function(fecha){
             var participacion = 0;
             _.forEach(resPartEstudiantePregRelEnCurso, function (partPreg) {
@@ -1742,7 +1732,6 @@ crsApp.controller('InformacionAsignaturaController', function ($scope, $statePar
     promesasGrafoAsig1.push(prom1);
     promesasGrafoAsig2.push(prom1);
     var cargarData = function () {
-        //console.log(dataGrafoAsig1);
         fullData=_.map(
             _.sortByOrder(fullData, ['ano', 'semestre', 'grupo_curso'], ['asc', 'asc', 'desc'])
         );
@@ -2049,7 +2038,6 @@ crsApp.controller('InformacionAsignaturaController', function ($scope, $statePar
             var values = [];
             _.forEach(dataCursos, function (curso) {
                 var idx = _.findIndex(curso.partPregBiblio, {id_b_pregunta: pregunta.id_b_pregunta});
-                //console.log(curso.totalGanadores);
                 var participacion = 0;
                 if(idx>-1){
                     var part = curso.partPregBiblio[idx].participantes;

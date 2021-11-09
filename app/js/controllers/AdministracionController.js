@@ -194,8 +194,8 @@ crsApp.controller('AdministracionController', function($scope, toastr, $mdDialog
             .then(
             function (profesor) {
                 ProfesoresServices.editarProfesor(profesor).then(function (response) {
-                    console.log(profesor);
-		    if(response.success){
+                    
+                    if(response.success){
                         var profe = _.findWhere($scope.listaProfesores,{id_user:profesor.id_user});
                         profe.nombre = profesor.nombre;
                         profe.apellido = profesor.apellido;
@@ -222,12 +222,10 @@ crsApp.controller('AdministracionController', function($scope, toastr, $mdDialog
             .then(
             function (estudiante) {
                 EstudiantesServices.editarEstudiante(estudiante).then(function (response) {
-		    console.log(response);
                     if(response.success){
                         var alum = _.findWhere($scope.listaEstudiantes,{id_user:estudiante.id_user});
-			console.log(alum);
                         alum.rut = estudiante.rut;
-			alum.nombre = estudiante.nombre;
+			            alum.nombre = estudiante.nombre;
                         alum.apellido = estudiante.apellido;
                         alum.usuario = estudiante.usuario;
                         alum.clave = estudiante.clave;
@@ -241,7 +239,6 @@ crsApp.controller('AdministracionController', function($scope, toastr, $mdDialog
     var eliminarEstudianteSistema = function (estudiante, index) {
     	EstudiantesServices.eliminarEstudiante(estudiante)
             .then(function (response) {
-		console.log(response);
                 if (response.success) {
                     $scope.listaEstudiantes.splice(index, 1);
                     toastr.success('Estudiante eliminado del sistema.');
@@ -254,7 +251,6 @@ crsApp.controller('AdministracionController', function($scope, toastr, $mdDialog
         EstudiantesServices.eliminarEstudiante(estudiante)
             .then(function (response) {
                 if (response.success) {
-		    console.log(index);
 		    $scope.listaEstudiantes.splice(index, 1);
                     toastr.success('Estudiante eliminado del sistema.');
                 } else {
