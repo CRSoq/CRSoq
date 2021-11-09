@@ -4,6 +4,7 @@ module.exports = function (app) {
     app.use('/asignaturas', require('./routes/asignaturas'));
     app.use('/cursos', require('./routes/cursos'));
     app.use('/clases', require('./routes/clases'));
+    app.use('/equipos', require('./routes/equipos'));
     app.use('/preguntas', require('./routes/preguntas'));
     app.use('/biblioteca', require('./routes/biblioteca'));
     app.use('/actividades', require('./routes/actividades'));

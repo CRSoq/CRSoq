@@ -156,7 +156,6 @@ crsApp.controller('ConfigCursoController', function ($scope, $rootScope, $state,
     var asignatura = _.findWhere(asignaturas,{'asignatura':$stateParams.nombre_asignatura});
     var curso = _.findWhere(asignatura.cursos, {'id_curso':Number($stateParams.id_curso)});
     $scope.curso= _.cloneDeep(curso);
-    console.log($scope.curso);
     $scope._ = _;
     $scope.modulos = [];
     $scope.modulosEditados = [];

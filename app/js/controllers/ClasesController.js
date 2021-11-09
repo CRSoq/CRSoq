@@ -108,7 +108,6 @@ crsApp.controller('ClasesController', function($scope, $rootScope, $mdDialog, $q
                         $scope.promesas = ClasesServices.crearClase(clase)
                             .then(function (response) {
                                 if(response.success){
-				    console.log(response);
                                     clase.edicion = false;
                                     clase.id_clase = response.id_clase;
                                     SocketServices.emit('actualizarListaClase', curso);
@@ -151,8 +150,6 @@ crsApp.controller('ClasesController', function($scope, $rootScope, $mdDialog, $q
                 delete clase['nuevo'];
                 $scope.promesas = ClasesServices.crearClase(clase)
                     .then(function (response) {
-			console.log($scope.listaClases);
-			console.log(clase);
                         if(response.success){
                             clase.edicion = false;
                             clase.id_clase = response.id_clase;

@@ -1,0 +1,70 @@
+<md-dialog aria-label="Edición Alumnos" ng-cloak>
+
+    <md-toolbar>
+        <div class="md-toolbar-tools">
+            <h2>Edición Alumnos</h2>
+            <span flex></span>
+            <md-button aria-label="Cancelar" class="md-icon-button" ng-click="cancelar()">
+                <i class="fa fa-times"></i>
+            </md-button>
+        </div>
+    </md-toolbar>
+    <md-dialog-content>
+        <div style="width: 810px;">
+            <div class="text-center">
+                <div class="tabla-equipo" layout="column">
+                    <p class="tabla-equipo-titulo">{{equipo.nombre_equipo}}</p>
+                    <div layout="row" layout-xs="column" layout-align="center start">
+                        <div class="tabla-equipo-alumnos" flex="45">
+                            <div class="tabla-equipo-op" ng-repeat="alumno in listaAlumnos track by $index">
+                                <md-button ng-if="alumno.selected" md-no-ink class="md-raised md-no-focus tabla-equipo-op-btn" ng-click="toggleAlumno($index)">
+                                    <i class="fa fa-check" style="color: green;"></i>
+                                    <span>{{alumno.nombre}} {{alumno.apellido}}</span>
+                                    <span>[{{alumno.rut}}]</span>
+                                </md-button>
+                                <md-button ng-if="!alumno.selected" md-no-ink class="md-no-focus tabla-equipo-op-btn" ng-click="toggleAlumno($index)">
+                                    <span>{{alumno.nombre}} {{alumno.apellido}}</span>
+                                    <span>[{{alumno.rut}}]</span>
+                                </md-button>
+                            </div>
+                        </div>
+        
+                        <div class="" layout="column" layout-xs="row" layout-align="center center" flex="">
+                            <md-button show-gt-xs hide-xs class="md-icon-button tabla-equipo-cbtn-l" aria-label="agregar" ng-click="agregarAlumno()">
+                                <i class="fa fa-chevron-left"></i>
+                            </md-button>
+                            <md-button show-gt-xs hide-xs class="md-icon-button tabla-equipo-cbtn-l" aria-label="quitar" ng-click="quitarAlumno()">
+                                <i class="fa fa-chevron-right"></i>
+                            </md-button>
+        
+                            <md-button hide-gt-xs show-xs class="md-icon-button tabla-equipo-cbtn" aria-label="agregar" ng-click="agregarAlumno()">
+                                <i class="fa fa-chevron-up"></i>
+                            </md-button>
+                            <md-button hide-gt-xs show-xs class="md-icon-button tabla-equipo-cbtn" aria-label="quitar" ng-click="quitarAlumno()">
+                                <i class="fa fa-chevron-down"></i>
+                            </md-button>
+                        </div>
+        
+                        <div class="tabla-equipo-alumnos" flex="45">
+                            <div class="tabla-equipo-op" ng-repeat="alumnoSE in listaAlumnosSinEquipo track by $index">
+                                <md-button ng-if="alumnoSE.selected" md-no-ink class="md-raised md-no-focus tabla-equipo-op-btn" ng-click="toggleAlumno2($index)">
+                                    <i class="fa fa-check" style="color: green;"></i>
+                                    <span>{{alumnoSE.nombre}} {{alumnoSE.apellido}}</span>
+                                    <span>[{{alumnoSE.rut}}]</span>
+                                </md-button>
+                                <md-button ng-if="!alumnoSE.selected" md-no-ink class="md-no-focus tabla-equipo-op-btn" ng-click="toggleAlumno2($index)">
+                                    <span>{{alumnoSE.nombre}} {{alumnoSE.apellido}}</span>
+                                    <span>[{{alumnoSE.rut}}]</span>
+                                </md-button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </md-dialog-content>
+    <md-dialog-actions layout-align="center center">
+        <md-button aria-label="Aceptar" ng-click="aceptar()" class="md-raised md-primary">Guardar</md-button>
+        <md-button aria-label="Cancelar" ng-click="cancelar()" class="md-raised md-primary">Cancelar</md-button>
+    </md-dialog-actions>
+</md-dialog>

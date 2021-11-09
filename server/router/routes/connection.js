@@ -18,6 +18,7 @@ manager.on('connect', function(connection) {
 });
 
 manager.on('reconnect', function(connection) {
+    console.log('DB Reconnected');
 });
 
 manager.on('disconnect', function() {

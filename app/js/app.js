@@ -159,6 +159,28 @@ crsApp.config(function($stateProvider, $urlRouterProvider, toastrConfig) {
             url: '/:ano/:semestre/:grupo_curso/:id_curso',
             authenticate:true
         })
+        .state('crsApp.asignatura.curso.equipos', {
+            url: '/equipos',
+            views: {
+                'main@crsApp': {
+                    templateProvider:
+                        function ($rootScope, $http) {
+                            if($rootScope.user.tipo=='estudiante'){
+                                return $http.get('partials/content/asignatura/curso/equipos/equipoEstudiante.html')
+                                    .then(function (template) {
+                                        return  template.data;
+                                    });
+                            }else if($rootScope.user.tipo=='profesor'){
+                                return $http.get('partials/content/asignatura/curso/equipos/equiposProfesor.html')
+                                    .then(function (template) {
+                                        return  template.data;
+                                    });
+                            }
+                        }
+                }
+            },
+            authenticate:true
+        })
         .state('crsApp.asignatura.curso.clases', {
             url: '/clases',
             views: {

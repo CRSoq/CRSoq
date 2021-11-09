@@ -5,7 +5,6 @@ crsApp.controller('PreguntasController', function ($scope, $stateParams, $timeou
     var curso = _.findWhere(asignatura.cursos, {'id_curso':Number($stateParams.id_curso)});
 //    var topicos = PreguntasServices.obtenerTopicosAsignatura(asignatura);
 //    var topicos = TopicosServices.obtenerTopicos({'id_asignatura':'2'});
-//    console.log(asignatura.id_asignatura);
     $scope.selectedTopico = "";
     $scope.selectedTema = "";
     $scope.curso = _.cloneDeep(curso);
@@ -18,7 +17,6 @@ crsApp.controller('PreguntasController', function ($scope, $stateParams, $timeou
     $scope.titulo = curso.nombre_curso;
     $scope.asignatura = curso.id_asignatura;
     $scope.promesas = [];
-//    console.log(topicos.$$state);
 
     $scope.promesas = PreguntasServices.obtenerPreguntasCurso(curso)
         .then(function (response) {

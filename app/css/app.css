@@ -332,3 +332,51 @@ md-icon.fa-stack{
 .menuContainer{
     min-width: 40px;
 }
+
+.text-center{
+    text-align: center;
+}
+
+.tabla-equipo{
+    margin-bottom: 15px;
+    background-color: #ade2fa00;
+}
+
+.tabla-equipo-titulo{
+    background: rgb(63,81,181);
+    color: white;
+}
+
+.tabla-equipo-alumnos{
+    width: 100%;
+    background-color: #c5edff00;
+}
+
+.tabla-equipo-op{
+    position: relative;
+    width: 100%;
+    margin: 1px 0;
+}
+
+.tabla-equipo-op:after{
+    content: "";
+    background: rgb(145, 145, 145);
+    position: absolute;
+    bottom: -1px;
+    left: 10%;
+    height: 1px;
+    width: 80%;
+}
+
+.tabla-equipo-op-btn{
+    width: 100%;
+    margin: 0;
+}
+
+.tabla-equipo-cbtn-l{
+    margin: 10px 0 !important;
+}
+
+.tabla-equipo-cbtn{
+    margin: 0 10px !important;
+}

@@ -57,7 +57,6 @@ module.exports = function (io) {
                 if(socket.id != usuarios[i].socketId){
                     var user = _.findWhere(usuarios[i].cursos, {'id_curso':data.id_curso});
                     if(!_.isUndefined(user)){
-                            //console.log(usuarios[i].usuario);
                             //emitir aviso de ingreso al usuario [i]
                             io.to(usuarios[i].socketId).emit('sesionAbierta', data);
                     }
@@ -219,6 +218,18 @@ module.exports = function (io) {
                 var user = _.findWhere(usuario.cursos,{'id_curso':curso.id_curso});
                 if(!_.isUndefined(user)){
                     io.to(usuario.socketId).emit('actualizarListaClase');
+                }
+            });
+
+        });
+
+        socket.on('actualizarListaEquipo', function (curso) {
+            //avisar a los de la sala que la dejen porque se termino la sesion
+            //yo dejo la sala
+            _.forEach(usuarios, function (usuario) {
+                var user = _.findWhere(usuario.cursos,{'id_curso':curso.id_curso});
+                if(!_.isUndefined(user)){
+                    io.to(usuario.socketId).emit('actualizarListaEquipo');
                 }
             });
 
