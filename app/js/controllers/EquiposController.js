@@ -54,10 +54,20 @@ crsApp.controller('EquiposController', function($scope, $rootScope, $mdDialog, $
     
     $scope.agregarEquipo = function (curso) {
         var equipo = {
+            'id_equipo': null,
             'id_curso': curso.id_curso,
             'nombre_equipo': 'Equipo nuevo',
         };
-        $scope.listaEquipos.push(equipo);
+
+        EquiposServices.crearEquipo(equipo)
+            .then(function (response) {
+                if(response.success){
+                    equipo.id_equipo = response.id_equipo;
+                    $scope.listaEquipos.push(equipo);
+                }else{
+                    toastr.error('No se pudo crear equipo: '+response.err.code,'Error');
+                }
+            });
     };
 
     $scope.guardarEquipo = function (equipo) {
@@ -100,7 +110,24 @@ crsApp.controller('EquiposController', function($scope, $rootScope, $mdDialog, $
     }
 
     $scope.guardarNombreEquipo = function(title, index) {
+        if($scope.listaEquipos[index].nombre_equipo == title) {
+            $scope.editingIndex = -1;
+            $scope.editingTitle = false;
+
+            return;
+        }
+
         $scope.listaEquipos[index].nombre_equipo = title;
+
+        EquiposServices.actualizarEquipo($scope.listaEquipos[index])
+            .then(function (response) {
+                if(response.success){
+                    toastr.success('Nombre actualizado correctamente!');
+                }else{
+                    toastr.error('No se pudo actualizar el nombre de equipo: '+response.err.code,'Error');
+                }
+            });
+
         $scope.editingIndex = -1;
         $scope.title = "";
         $scope.editingTitle = false;
