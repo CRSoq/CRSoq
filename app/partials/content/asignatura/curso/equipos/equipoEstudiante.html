@@ -1,0 +1,26 @@
+<div ng-controller="EquiposController" ng-if="user.tipo=='estudiante'" ng-cloak>
+    <h1><i class="fa fa-users"></i> Equipo</h1>
+
+    <md-content style="height: 800px;overflow-y: scroll;" layout-padding>
+        <div class="tabla-equipo" layout="column" layout-align="center center">
+            <div class="tabla-equipo-titulo text-center" style="width: 100%;">
+                <p style="margin: 15px 0;">{{equipoAlumno.nombre_equipo}}</p>
+            </div>
+            <md-content style="width:100%;">
+                <md-list>
+                    <!--<md-subheader class="text-center" style="background: #dddddd;">{{listaEquipoAlumno.length}} Alumnos</md-subheader>-->
+                    <md-list-item class="md-secondary-button-padding" ng-repeat="alumno in listaEquipoAlumno">
+                        <div class="md-list-item-text text-center" layout="row" layout-xs="column" layout-align="center center">
+                            <i class="fa fa-user"></i>
+                            <p style="width:20rem;overflow-x: hidden;margin: 0 20px;">{{alumno.nombre}} {{alumno.apellido}}</p>
+                            <p>{{alumno.rut}}</p>
+                        </div>
+                        <md-button class="md-secondary" ng-click="">
+                            <i class="fa fa-info"></i>
+                        </md-button>
+                    </md-list-item>
+                </md-list>
+            </md-content>
+        </div>
+    </md-content>
+</div>

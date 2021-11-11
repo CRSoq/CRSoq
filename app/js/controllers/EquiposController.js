@@ -2,6 +2,10 @@ crsApp.controller('EquiposController', function($scope, $rootScope, $mdDialog, $
     $scope.number = 4;
     $scope.listaEquipos = [];
     $scope.promesas = [];
+
+    $scope.equipoAlumno = null;
+    $scope.listaEquipoAlumno = [];
+
     if($rootScope.user.tipo=='profesor'){
         var asignaturas = CursosServices.obtenerCursosLocal();
         var asignatura = _.findWhere(asignaturas,{'asignatura':$stateParams.nombre_asignatura});
@@ -10,6 +14,27 @@ crsApp.controller('EquiposController', function($scope, $rootScope, $mdDialog, $
         var semestres = CursosServices.obtenerCursosLocal();
         var semestre = _.findWhere(semestres,{'ano':Number($stateParams.ano),'semestre':Number($stateParams.semestre),'grupo_curso':String($stateParams.grupo_curso)});
         var curso = _.findWhere(semestre.cursos, {'id_curso': Number($stateParams.id_curso)});
+
+        var dat = {
+            id_curso: curso.id_curso,
+            id_user: $rootScope.user.id_user
+        };
+        EquiposServices.obtenerEquipoAlumno(dat)
+            .then(function (response) {
+                if(response.success){
+                    $scope.equipoAlumno = _.isArray(response.result) ? response.result[0] : response.result;
+                    EquiposServices.obtenerAlumnos($scope.equipoAlumno)
+                    .then(function (response){
+                        if(response.success){
+                                $scope.listaEquipoAlumno = response.result;
+                            } else {
+                                toastr.error('No se pudo obtener alumnos del equipo del alumno: '+response.err.code,'Error');
+                            }
+                        });
+                }else{
+                    toastr.error('No se pudo obtener el equipo del alumno: '+response.err.code,'Error');
+                }
+            });
     }
     $scope.curso = _.cloneDeep(curso);
     $scope.selected = [];
@@ -49,6 +74,7 @@ crsApp.controller('EquiposController', function($scope, $rootScope, $mdDialog, $
                     alumnos: alumnosFixed
                 };
                 EquiposServices.actualizarAlumnos(data);
+                
             });
     };
     
@@ -70,6 +96,7 @@ crsApp.controller('EquiposController', function($scope, $rootScope, $mdDialog, $
             });
     };
 
+    /*
     $scope.guardarEquipo = function (equipo) {
 
         if(_.isUndefined(equipo.nuevo)){
@@ -97,11 +124,12 @@ crsApp.controller('EquiposController', function($scope, $rootScope, $mdDialog, $
                     }
                 });
         }
-    };
-
+    };*/
+    /*
     $scope.cancelarEquipo = function (equipo, index) {
         $scope.listaEquipos.splice(index, 1);
     };
+    */
 
     $scope.editarNombreEquipo = function(equipo, index) {
         $scope.editingIndex = index;

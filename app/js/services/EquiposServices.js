@@ -34,8 +34,17 @@ crsApp.factory('EquiposServices', function ($http, $q) {
         obtenerAlumnosSinEquipo: function(curso) {
             return postHelper('/equipos/obtenerAlumnosSinEquipo', curso);
         },
-        obtenerEquiposPorID: function (equipo) {
-            return postHelper('/equipos/obtenerEquiposPorID',equipo);
+        obtenerEquipoPorID: function (equipo) {
+            return postHelper('/equipos/obtenerEquiposPorID', equipo);
+        },
+        obtenerEquipoAlumno: function(data) {
+            return postHelper('/equipos/obtenerEquipoAlumno', data);
+        },
+        agregarAlumnoAEquipo: function(data) {
+            return postHelper('/equipos/agregarAlumnoEquipo', data);
+        },
+        agregarAlumnosAEquipo: function(data) {
+            return postHelper('/equipos/agregarAlumnoEquipo', data);
         },
         actualizarAlumnos: function(data) {
             return postHelper('/equipos/actualizarAlumnos', data);
