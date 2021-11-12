@@ -47,10 +47,6 @@ router.post('/obtenerAlumnosSinEquipo', function (req, res) {
         return res.sendStatus(400);
     }else{
         connection.query(
-            /*"SELECT e.id_user, e.rut, e.nombre, e.apellido \
-            FROM estudiante e \
-            WHERE e.id_user NOT IN (SELECT id_user FROM equipo_alumnos)\
-            AND e.id_user IN (SELECT id_user FROM pertenece WHERE id_curso = ?)",*/
             "SELECT * FROM estudiante \
             WHERE estudiante.id_user NOT IN \
                 (SELECT ea.id_user FROM equipo_alumnos ea \

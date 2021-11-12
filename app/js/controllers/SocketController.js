@@ -115,6 +115,10 @@ crsApp.controller('SocketController', function ($scope,$rootScope,$location,toas
         $rootScope.$emit('actualizarListaDeClases');
     });
 
+    SocketServices.on('actualizarEquipo', function (data) {
+        $rootScope.$emit('actualizarEquipoAlumno');
+    });
+
     SocketServices.on('actualizarSesion', function (data) {
         if(!_.isNull(data)){
             $rootScope.$emit('sesionEspectador', data);

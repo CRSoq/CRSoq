@@ -222,6 +222,15 @@ module.exports = function (io) {
             });
 
         });
+        socket.on('actualizarEquipo', function (curso) {
+            // avisar a los de la sala que se a actualizado el equipo
+            _.forEach(usuarios, function (usuario) {
+                var user = _.findWhere(usuario.cursos,{'id_curso':curso.id_curso});
+                if(!_.isUndefined(user)){
+                    io.to(usuario.socketId).emit('actualizarEquipo');
+                }
+            });
+        });
 
         socket.on('actualizarListaEquipo', function (curso) {
             //avisar a los de la sala que la dejen porque se termino la sesion

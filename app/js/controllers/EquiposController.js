@@ -1,5 +1,4 @@
 crsApp.controller('EquiposController', function($scope, $rootScope, $mdDialog, $q, $state, $stateParams, toastr, EquiposServices, CursosServices, SessionServices, SocketServices){
-    $scope.number = 4;
     $scope.listaEquipos = [];
     $scope.promesas = [];
 
@@ -43,7 +42,7 @@ crsApp.controller('EquiposController', function($scope, $rootScope, $mdDialog, $
     $scope.editingTitle = false;
     $scope.editingIndex = -1;
 
-    var promesaEquipos = EquiposServices.obtenerEquipos(curso)
+    EquiposServices.obtenerEquipos(curso)
         .then(function (response) {
             if(response.success){
                 $scope.listaEquipos = response.result;
@@ -51,8 +50,6 @@ crsApp.controller('EquiposController', function($scope, $rootScope, $mdDialog, $
                 toastr.error('No se pudo actualizar el equipo: '+response.err.code,'Error');
             }
         });
-
-    $scope.promesas.push(promesaEquipos);
 
     $scope.gestionarAlumnos = function(equipo) {
         $mdDialog.show({
@@ -73,7 +70,15 @@ crsApp.controller('EquiposController', function($scope, $rootScope, $mdDialog, $
                     equipo: response.equipo,
                     alumnos: alumnosFixed
                 };
-                EquiposServices.actualizarAlumnos(data);
+                EquiposServices.actualizarAlumnos(data)
+                    .then(function (response){
+                        if(response.success){
+                            SocketServices.emit('actualizarEquipo', $scope.curso);
+                            toastr.success('Alumnos actualizados correctamente');
+                        }else{
+                            toastr.error('No se pudo actualizar los alumnos del equipo: '+response.err.code,'Error');
+                        }
+                    });
                 
             });
     };
@@ -187,29 +192,34 @@ crsApp.controller('EquiposController', function($scope, $rootScope, $mdDialog, $
                 );
             });
     };*/
-
-    $rootScope.$on('actualizarListaDeEquipos', function () {
+    
+    $rootScope.$on('actualizarEquipoAlumno', function () {
         if($rootScope.user.tipo=='estudiante'){
-            $scope.listaEquipos = [];
-            $scope.promesas = EquiposServices.obtenerEquipos(curso)
+            var dat = {
+                id_curso: $scope.curso.id_curso,
+                id_user: $rootScope.user.id_user
+            };
+            EquiposServices.obtenerEquipoAlumno(dat)
                 .then(function (response) {
-                    var lista = _.cloneDeep(response.result);
-                    if(lista.length>0){
-                        _.forEach(lista, function (item) {
-                            if(_.isArray(item)){
-                                _.forEach(item, function (elemento) {
-                                    $scope.listaClases.push(elemento);
-                                });
-                            }else{
-                                $scope.listaClases.push(item);
-                            }
-                        });
+                    if(response.success){
+                        $scope.equipoAlumno = _.isArray(response.result) ? response.result[0] : response.result;
+                        EquiposServices.obtenerAlumnos($scope.equipoAlumno)
+                        .then(function (response){
+                            if(response.success){
+                                    $scope.listaEquipoAlumno = response.result;
+                                    toastr.success('Equipo sincronizado');
+                                } else {
+                                    toastr.error('No se pudo obtener alumnos del equipo del alumno: '+response.err.code,'Error');
+                                }
+                            });
+                    }else{
+                        toastr.error('No se pudo obtener el equipo del alumno: '+response.err.code,'Error');
                     }
                 });
         }
 
     });
-
+    
 });
 
 /*crsApp.controller('ModalEliminarClaseController',function($scope, $mdDialog, ClasesServices, fecha, descripcion, modulo, estado_sesion){
@@ -237,6 +247,7 @@ crsApp.controller('EquiposController', function($scope, $rootScope, $mdDialog, $
         $mdDialog.hide(opcion);
     };
 });*/
+/*
 crsApp.controller('ModalEdicionEquipoController',function($scope, $mdDialog, equipo){
     $scope.equipo= _.cloneDeep(equipo);
     $scope.cancelar = function() {
@@ -247,6 +258,7 @@ crsApp.controller('ModalEdicionEquipoController',function($scope, $mdDialog, equ
         $mdDialog.hide($scope.equipo);
     };
 });
+*/
 
 crsApp.controller('ModalEdicionAlumnosController', function($scope, $mdDialog, $q, curso, equipo, toastr, EquiposServices) {
     $scope.curso = _.cloneDeep(curso);
