@@ -56,8 +56,10 @@ crsApp.controller('PreguntaSesionController', function ($scope, $rootScope, $sta
             }
             var dataUsuario = SessionServices.getSessionData();
             var indexUser = _.findIndex(data.pregunta.listaParticipantes,{id_user:dataUsuario.id_user});
-
+            
             if(data.pregunta.participacion){
+                // TODO: Comprobación estado_part del alumno
+
                 $scope.participar = true;
                 if(indexUser>=0){
                     $scope.participar = false;
@@ -91,7 +93,7 @@ crsApp.controller('PreguntaSesionController', function ($scope, $rootScope, $sta
     });
 
     //boton responder pregunta
-    $scope.responderPregunta = function (pregunta) {
+    $scope.responderPregunta = function (pregunta) {    
         var dataUsuario = SessionServices.getSessionData();
         dataUsuario.id_pregunta = pregunta.id_pregunta;
         dataUsuario.estado_part_preg = 'noSeleccionado';

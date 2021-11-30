@@ -33,7 +33,7 @@ router.post('/obtenerAlumnos', function (req, res) {
     if(!req.body){
         return res.sendStatus(400);
     }else{
-        connection.query("SELECT ea.id_user, e.rut, e.nombre, e.apellido FROM equipo_alumnos ea INNER JOIN estudiante e WHERE ea.id_equipo = ? AND ea.id_user = e.id_user",[req.body.id_equipo], function (error, rows) {
+        connection.query("SELECT ea.id_user, e.rut, e.nombre, e.apellido, ea.estado_part FROM equipo_alumnos ea INNER JOIN estudiante e WHERE ea.id_equipo = ? AND ea.id_user = e.id_user",[req.body.id_equipo], function (error, rows) {
             if(!error){
                 return res.json({'success':true, 'result':rows});
             }else{

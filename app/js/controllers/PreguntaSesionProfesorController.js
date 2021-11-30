@@ -1,4 +1,4 @@
-crsApp.controller('PreguntaSesionProfesorController', function ($scope, $rootScope, $q, $state, $stateParams, $timeout, SocketServices, PreguntasServices, InformacionServices, EquiposServices) {
+crsApp.controller('PreguntaSesionProfesorController', function ($scope, $rootScope, $mdDialog, $q, $state, $stateParams, $timeout, SocketServices, PreguntasServices, InformacionServices, EquiposServices) {
     $scope.listaParticipantes=[];
     $scope.preguntaFinalizada = false;
     $scope.responder = false;
@@ -197,6 +197,26 @@ crsApp.controller('PreguntaSesionProfesorController', function ($scope, $rootSco
         $scope.estudianteSeleccionado = null;
 
     };
+
+    $rootScope.$on('abrirNominacion', function (event, data) {
+        if($rootScope.user.tipo == 'profesor') {
+            $q.when(EquiposServices.obtenerAlumnos(data.equipo))
+                .then(function (response) {
+                    $mdDialog.show({
+                        templateUrl: '/partials/content/asignatura/curso/equipos/modalEdicionNominado.html',
+                        locals : {
+                            id_curso: $stateParams.id_curso,
+                            equipo: data.equipo
+                        },
+                        controller: 'ModalEdicionNominadoController'
+                    })
+                        .then(function (response) {
+                            
+                        });
+                });
+        }
+    });
+
     var finDePregunta = function (pregunta, continuar) {
         var promesas = [];
 
@@ -228,6 +248,7 @@ crsApp.controller('PreguntaSesionProfesorController', function ($scope, $rootSco
                                                 }
                                             })
                                         );
+
                                     });
                                     _.forEach($scope.listaParticipantes, function (estudiante) {
                                         proms.push(
@@ -237,9 +258,14 @@ crsApp.controller('PreguntaSesionProfesorController', function ($scope, $rootSco
                                     });
 
                                     $q.all(proms).then(function () {
-                                        console.log('finished');
+                                        console.log('finished_winners');
                                         pregunta.estado_pregunta = 'realizada';
                                         PreguntasServices.actualizarEstadoPregunta(pregunta);
+                                        var data = {
+                                            equipo: $scope.equipoAlumno,
+                                            alumnos: response.result
+                                        };
+                                        $rootScope.$emit('abrirNominacion', data);
                                         if(continuar){
                                             $rootScope.$emit('continuarSesionPreguntas');
                                         }else{
@@ -255,6 +281,7 @@ crsApp.controller('PreguntaSesionProfesorController', function ($scope, $rootSco
                                             id_curso:$stateParams.id_curso,
                                             id_clase:$stateParams.id_clase});
                                     });
+
                                 } else {
                                     toastr.error('No se pudo obtener alumnos del equipo del alumno: '+response.err.code,'Error');
                                 }
@@ -275,7 +302,7 @@ crsApp.controller('PreguntaSesionProfesorController', function ($scope, $rootSco
             });
 
             $q.all(promesas).then(function () {
-                console.log('finished');
+                console.log('finished_winners');
                 pregunta.estado_pregunta = 'realizada';
                 PreguntasServices.actualizarEstadoPregunta(pregunta);
                 if(continuar){
@@ -295,4 +322,16 @@ crsApp.controller('PreguntaSesionProfesorController', function ($scope, $rootSco
             });
         }
     }
+});
+
+crsApp.controller('ModalEdicionNominadoController', function($scope, $mdDialog, $q, id_curso, equipo, toastr, EquiposServices) {
+    $scope.equipo = _.cloneDeep(equipo);
+    
+    $scope.cancelar = function() {
+        $mdDialog.cancel();
+    };
+
+    $scope.aceptar = function() {
+        $mdDialog.hide({ equipo: $scope.equipo});
+    };
 });
