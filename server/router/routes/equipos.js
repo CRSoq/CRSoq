@@ -137,7 +137,14 @@ router.post('/actualizarAlumnos', function (req, res) {
             if(!error){
                 var queryString = "INSERT INTO equipo_alumnos VALUES ";
                 _.forEach(req.body.alumnos, function (o) {
-                    queryString = queryString.concat('(', req.body.equipo.id_equipo, ', ', o.id_user, '),');
+                    queryString = queryString.concat(
+                        '(', 
+                        req.body.equipo.id_equipo, 
+                        ', ', 
+                        o.id_user, 
+                        ', ', 
+                        '"',o.estado_part,'"',
+                        '),');
                 });
                 queryString = queryString.slice(0, -1);
                 connection.query(queryString, [], function (error) {

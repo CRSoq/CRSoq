@@ -286,6 +286,7 @@ crsApp.controller('ModalEdicionAlumnosController', function($scope, $mdDialog, $
                 _.forEach(response.result, function (o) {
                     var item = o;
                     _.assign(item, {selected: false});
+                    _.assign(item, {estado_part: 'Disponible'});
                     $scope.listaAlumnosSinEquipo.push(item);
                 });
             } else {
