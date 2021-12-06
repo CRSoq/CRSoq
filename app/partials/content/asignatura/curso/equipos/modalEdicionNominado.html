@@ -16,20 +16,19 @@
                     <div layout="row" layout-xs="column" layout-align="center start">
                         <div class="tabla-equipo-alumnos" flex="45">
                             <div class="tabla-equipo-op" ng-repeat="alumno in listaAlumnos track by $index">
-                                <md-button ng-if="alumno.selected" md-no-ink class="md-raised md-no-focus tabla-equipo-op-btn" ng-click="toggleAlumno($index)">
+                                <md-button ng-if="$index == indexSeleccionado" md-no-ink class="md-raised md-no-focus tabla-equipo-op-btn" ng-click="toggleAlumno($index)">
                                     <i class="fa fa-check" style="color: green;"></i>
                                     <span>{{alumno.nombre}} {{alumno.apellido}}</span>
                                     <span>[{{alumno.rut}}]</span>
                                 </md-button>
-                                <md-button ng-if="!alumno.selected" md-no-ink class="md-no-focus tabla-equipo-op-btn" ng-click="toggleAlumno($index)">
+                                <md-button ng-if="$index != indexSeleccionado" md-no-ink class="md-no-focus tabla-equipo-op-btn" ng-click="toggleAlumno($index)">
                                     <span>{{alumno.nombre}} {{alumno.apellido}}</span>
                                     <span>[{{alumno.rut}}]</span>
                                 </md-button>
                             </div>
                         </div>
                         <div class="" layout="column" layout-xs="row" layout-align="center center" flex="">
-                            <md-button show-gt-xs hide-xs class="md-icon-button tabla-equipo-cbtn-l" aria-label="agregar" ng-click="nominarAl()">
-                                <i class="fa fa-chevron-left"></i>
+                            <md-button show-gt-xs hide-xs class="md-icon-button tabla-equipo-cbtn-l" aria-label="Nominar" ng-click="nominarAl()">Nominar</md-button>
                         </div>
                 </div>
             </div>

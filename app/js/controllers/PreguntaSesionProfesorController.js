@@ -206,7 +206,6 @@ crsApp.controller('PreguntaSesionProfesorController', function ($scope, $rootSco
                         templateUrl: '/partials/content/asignatura/curso/equipos/modalEdicionNominado.html',
                         locals : {
                             id_curso: $stateParams.id_curso,
-                            equipo: data.equipo,
                             datos: data
                         },
                         controller: 'ModalEdicionNominadoController'
@@ -345,11 +344,11 @@ crsApp.controller('PreguntaSesionProfesorController', function ($scope, $rootSco
     }
 });
 
-crsApp.controller('ModalEdicionNominadoController', function($scope, $mdDialog, $q, id_curso, equipo, datos, toastr, EquiposServices) {
-    $scope.equipo = _.cloneDeep(equipo);
+crsApp.controller('ModalEdicionNominadoController', function($scope, $mdDialog, $q, id_curso, datos, toastr, EquiposServices) {
+    $scope.equipo = _.cloneDeep(datos.equipo);
     $scope.listaAlumnos = [];
     $scope.AlumnosSel = 0;
-    var elegido;
+    $scope.indexSeleccionado = -1;
     $q.when(EquiposServices.obtenerAlumnos($scope.equipo))
         .then(function (response){
             if(response.success){
@@ -359,7 +358,7 @@ crsApp.controller('ModalEdicionNominadoController', function($scope, $mdDialog, 
                         return;
                     }
                     else{
-                        _.assign(item, {selected: false});
+                        _.assign(item, {id_equipo: $scope.equipo.id_equipo});
                         $scope.listaAlumnos.push(item);
                     }                  
                 });
@@ -369,6 +368,11 @@ crsApp.controller('ModalEdicionNominadoController', function($scope, $mdDialog, 
         });
 
     $scope.toggleAlumno = function(index) {
+        if($scope.indexSeleccionado == index) {
+            $scope.indexSeleccionado = -1;
+        } else {
+            $scope.indexSeleccionado = index;
+        }
         if($scope.listaAlumnos[index].selected) {
             $scope.listaAlumnos[index].selected = false;
             $scope.AlumnosSel--;
@@ -376,13 +380,10 @@ crsApp.controller('ModalEdicionNominadoController', function($scope, $mdDialog, 
             $scope.listaAlumnos[index].selected = true;
             $scope.AlumnosSel++;
             _.assign($scope.listaAlumnos[index], {id_equipo: datos.equipo.id_equipo})
-            elegido = $scope.listaAlumnos[index];
         }
     };
 
     $scope.nominarAl = function() {
-        if($scope.AlumnosSel < 1)
-            return;
         
         console.log("aca se nomina");
         /*var removedItems = _.remove($scope.listaAlumnos, function(o) {
@@ -402,6 +403,6 @@ crsApp.controller('ModalEdicionNominadoController', function($scope, $mdDialog, 
     };
 
     $scope.aceptar = function() {
-        $mdDialog.hide({alumno: elegido});
+        $mdDialog.hide({alumno: $scope.listaAlumnos[$scope.indexSeleccionado]});
     };
 });
