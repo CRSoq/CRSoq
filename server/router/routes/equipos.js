@@ -173,6 +173,19 @@ router.post('/actualizarEquipo', function (req, res) {
         });
     }
 });
+router.post('/actualizarEstadoEquipo', function (req, res) {
+    if(!req.body){
+        return res.sendStatus(400);
+    }else{
+        connection.query("UPDATE equipo_alumnos SET estado_part = ? WHERE id_equipo = ? AND id_user = ?",[req.body.estado_part, req.body.id_equipo, req.body.id_user], function (error) {
+            if(!error){
+                return res.json({'success':true});
+            }else{
+                return res.json({'success':false, 'err':error});
+            }
+        });
+    }
+});
 router.post('/eliminarEquipo', function (req, res) {
     if(!req.body){
         return res.sendStatus(400);

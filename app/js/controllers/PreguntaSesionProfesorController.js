@@ -206,13 +206,21 @@ crsApp.controller('PreguntaSesionProfesorController', function ($scope, $rootSco
                         templateUrl: '/partials/content/asignatura/curso/equipos/modalEdicionNominado.html',
                         locals : {
                             id_curso: $stateParams.id_curso,
-                            equipo: data.equipo
+                            equipo: data.equipo,
+                            datos: data
                         },
                         controller: 'ModalEdicionNominadoController'
                     })
-                        .then(function (response) {
-                            
-                        });
+                    .then(function (alumno) {
+                        EquiposServices.actualizarEstadoEquipo({estado_part: 'Nominado', id_equipo: alumno.alumno.id_equipo, id_user: alumno.alumno.id_user})
+                            .then(function(response){                                               
+                                if(response.success){
+                                    console.log('Estado del alumno actualizado');
+                                } else {
+                                    console.log('No se pudo actualizar el estado');
+                                }
+                            })
+                    });
                 });
         }
     });
@@ -235,20 +243,31 @@ crsApp.controller('PreguntaSesionProfesorController', function ($scope, $rootSco
                                 if(response.success){
                                     _.forEach(response.result, function(alumno, id) {
                                         if(id == index) {
+                                            _.assign(alumno, {id_pregunta: $scope.listaParticipantes[index].id_pregunta});
+                                            _.assign(alumno, {estado_part_preg: 'ganador'});
+                                            EquiposServices.actualizarEstadoEquipo({estado_part: 'noDisponible', id_equipo: $scope.equipoAlumno.id_equipo, id_user: $scope.listaParticipantes[index].id_user})
+                                                .then(function(response){                                               
+                                                    if(response.success){
+                                                        console.log('Estado del alumno actualizado');
+                                                    } else {
+                                                        console.log('No se pudo actualizar el estado');
+                                                    }
+                                                })
+                                                                                     
+                                            proms.push(
+                                                PreguntasServices.participarEnPregunta(alumno).then(function (response) {
+                                                    if(response.success){
+                                                        console.log(response);
+                                                    } else {
+                                                        console.log('No se pudo añadir');
+                                                    }
+                                                })
+                                            );
+                                        // aqui se le puede asignar un punto al ganador
+                                                                              
                                             return;
                                         }
-                                        _.assign(alumno, {id_pregunta: $scope.listaParticipantes[index].id_pregunta});
-                                        _.assign(alumno, {estado_part_preg: 'ganador'});
-                                        proms.push(
-                                            PreguntasServices.participarEnPregunta(alumno).then(function (response) {
-                                                if(response.success){
-                                                    console.log(response);
-                                                } else {
-                                                    console.log('no se pudo añadir');
-                                                }
-                                            })
-                                        );
-
+                                        //aqui se le puede asignar puntos a los del equipo
                                     });
                                     _.forEach($scope.listaParticipantes, function (estudiante) {
                                         proms.push(
@@ -263,8 +282,10 @@ crsApp.controller('PreguntaSesionProfesorController', function ($scope, $rootSco
                                         PreguntasServices.actualizarEstadoPregunta(pregunta);
                                         var data = {
                                             equipo: $scope.equipoAlumno,
-                                            alumnos: response.result
+                                            alumnos: response.result,
+                                            id_winner: $scope.listaParticipantes[index].id_user
                                         };
+                                        console.log(data);
                                         $rootScope.$emit('abrirNominacion', data);
                                         if(continuar){
                                             $rootScope.$emit('continuarSesionPreguntas');
@@ -324,14 +345,63 @@ crsApp.controller('PreguntaSesionProfesorController', function ($scope, $rootSco
     }
 });
 
-crsApp.controller('ModalEdicionNominadoController', function($scope, $mdDialog, $q, id_curso, equipo, toastr, EquiposServices) {
+crsApp.controller('ModalEdicionNominadoController', function($scope, $mdDialog, $q, id_curso, equipo, datos, toastr, EquiposServices) {
     $scope.equipo = _.cloneDeep(equipo);
+    $scope.listaAlumnos = [];
+    $scope.AlumnosSel = 0;
+    var elegido;
+    $q.when(EquiposServices.obtenerAlumnos($scope.equipo))
+        .then(function (response){
+            if(response.success){
+                _.forEach(response.result, function (o) {
+                    var item = o;
+                    if(item.estado_part == 'noDisponible'){
+                        return;
+                    }
+                    else{
+                        _.assign(item, {selected: false});
+                        $scope.listaAlumnos.push(item);
+                    }                  
+                });
+            } else {
+                toastr.error('No se pudo obtener alumnos del equipo: '+response.err.code,'Error');
+            }
+        });
+
+    $scope.toggleAlumno = function(index) {
+        if($scope.listaAlumnos[index].selected) {
+            $scope.listaAlumnos[index].selected = false;
+            $scope.AlumnosSel--;
+        } else {
+            $scope.listaAlumnos[index].selected = true;
+            $scope.AlumnosSel++;
+            _.assign($scope.listaAlumnos[index], {id_equipo: datos.equipo.id_equipo})
+            elegido = $scope.listaAlumnos[index];
+        }
+    };
+
+    $scope.nominarAl = function() {
+        if($scope.AlumnosSel < 1)
+            return;
+        
+        console.log("aca se nomina");
+        /*var removedItems = _.remove($scope.listaAlumnos, function(o) {
+            if(o.selected){
+                o.selected = false;
+                return true;
+            }
+            return false;
+        });
+
+        $scope.listaAlumnosSinEquipo = _.union($scope.listaAlumnosSinEquipo, removedItems);*/
+    };
+    
     
     $scope.cancelar = function() {
         $mdDialog.cancel();
     };
 
     $scope.aceptar = function() {
-        $mdDialog.hide({ equipo: $scope.equipo});
+        $mdDialog.hide({alumno: elegido});
     };
 });

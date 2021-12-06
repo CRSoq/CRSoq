@@ -52,6 +52,9 @@ crsApp.factory('EquiposServices', function ($http, $q) {
         actualizarEquipo: function (equipo) {
             return postHelper('/equipos/actualizarEquipo',equipo);
         },
+        actualizarEstadoEquipo: function (data) {
+            return postHelper('/equipos/actualizarEstadoEquipo',data);
+        },
         eliminarEquipo: function (equipo) {
             return postHelper('/equipos/eliminarEquipo',equipo);
         },
