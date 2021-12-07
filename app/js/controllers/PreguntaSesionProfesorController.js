@@ -253,7 +253,6 @@ crsApp.controller('PreguntaSesionProfesorController', function ($scope, $rootSco
                                         proms.push(
                                             PreguntasServices.participarEnPregunta(alumno).then(function (response) {
                                                 if(response.success){
-                                                    console.log(response);
                                                 } else {
                                                     console.log('No se pudo añadir');
                                                 }
@@ -307,7 +306,6 @@ crsApp.controller('PreguntaSesionProfesorController', function ($scope, $rootSco
                                         }));
 
                                     $q.all(proms).then(function () {
-                                        console.log('finished_winners');
                                         pregunta.estado_pregunta = 'realizada';
                                         PreguntasServices.actualizarEstadoPregunta(pregunta);
                                         var data = {
@@ -315,7 +313,6 @@ crsApp.controller('PreguntaSesionProfesorController', function ($scope, $rootSco
                                             alumnos: response.result,
                                             id_winner: $scope.listaParticipantes[index].id_user
                                         };
-                                        console.log(data);
                                         $rootScope.$emit('abrirNominacion', data);
                                         if(continuar){
                                             $rootScope.$emit('continuarSesionPreguntas');
@@ -353,7 +350,6 @@ crsApp.controller('PreguntaSesionProfesorController', function ($scope, $rootSco
             });
 
             $q.all(promesas).then(function () {
-                console.log('finished_winners');
                 pregunta.estado_pregunta = 'realizada';
                 PreguntasServices.actualizarEstadoPregunta(pregunta);
                 if(continuar){
@@ -413,21 +409,6 @@ crsApp.controller('ModalEdicionNominadoController', function($scope, $mdDialog, 
             _.assign($scope.listaAlumnos[index], {id_equipo: datos.equipo.id_equipo})
         }
     };
-
-    $scope.nominarAl = function() {
-        
-        console.log("aca se nomina");
-        /*var removedItems = _.remove($scope.listaAlumnos, function(o) {
-            if(o.selected){
-                o.selected = false;
-                return true;
-            }
-            return false;
-        });
-
-        $scope.listaAlumnosSinEquipo = _.union($scope.listaAlumnosSinEquipo, removedItems);*/
-    };
-    
     
     $scope.cancelar = function() {
         $mdDialog.cancel();

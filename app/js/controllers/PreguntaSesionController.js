@@ -64,18 +64,15 @@ crsApp.controller('PreguntaSesionController', function ($scope, $rootScope, $sta
                 } else {
                 // TODO: Comprobación estado_part del alumno
                 $scope.participar = false;
-                console.log($stateParams.id_curso, dataUsuario.id_user);
                 EquiposServices.obtenerEquipoAlumno({id_curso: $stateParams.id_curso, id_user: dataUsuario.id_user})
                     .then(function (response) {
                         $scope.equipoAlumno = _.isArray(response.result) ? response.result[0] : response.result;
                         EquiposServices.obtenerAlumnos({id_equipo: $scope.equipoAlumno.id_equipo})
                             .then(function (response) {
                                 var estadosAlumnos = response.result;
-                                console.log(response);
                                 var indexNominado = _.findIndex(estadosAlumnos, function(alumno) {
                                     return alumno.estado_part == 'Nominado';
                                 });
-                                console.log(indexNominado);
                                 if(indexNominado >= 0) {
                                     if(estadosAlumnos[indexNominado].id_user == dataUsuario.id_user) {
                                         $scope.participar = true;
