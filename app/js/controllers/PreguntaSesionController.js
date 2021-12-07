@@ -1,4 +1,4 @@
-crsApp.controller('PreguntaSesionController', function ($scope, $rootScope, $state, $stateParams, $timeout, PreguntasServices, SocketServices, SessionServices, ClasesServices, toastr) {
+crsApp.controller('PreguntaSesionController', function ($scope, $rootScope, $state, $stateParams, $timeout, PreguntasServices, SocketServices, SessionServices, ClasesServices, EquiposServices, toastr) {
     $scope.listaParticipantes=[];
     //view control
     $scope.esperar = true; //mostar esperar por la pregunta
@@ -58,13 +58,41 @@ crsApp.controller('PreguntaSesionController', function ($scope, $rootScope, $sta
             var indexUser = _.findIndex(data.pregunta.listaParticipantes,{id_user:dataUsuario.id_user});
             
             if(data.pregunta.participacion){
-                // TODO: Comprobación estado_part del alumno
-
-                $scope.participar = true;
                 if(indexUser>=0){
                     $scope.participar = false;
                     $scope.participantes = true;
+                } else {
+                // TODO: Comprobación estado_part del alumno
+                $scope.participar = false;
+                console.log($stateParams.id_curso, dataUsuario.id_user);
+                EquiposServices.obtenerEquipoAlumno({id_curso: $stateParams.id_curso, id_user: dataUsuario.id_user})
+                    .then(function (response) {
+                        $scope.equipoAlumno = _.isArray(response.result) ? response.result[0] : response.result;
+                        EquiposServices.obtenerAlumnos({id_equipo: $scope.equipoAlumno.id_equipo})
+                            .then(function (response) {
+                                var estadosAlumnos = response.result;
+                                console.log(response);
+                                var indexNominado = _.findIndex(estadosAlumnos, function(alumno) {
+                                    return alumno.estado_part == 'Nominado';
+                                });
+                                console.log(indexNominado);
+                                if(indexNominado >= 0) {
+                                    if(estadosAlumnos[indexNominado].id_user == dataUsuario.id_user) {
+                                        $scope.participar = true;
+                                    }
+                                } else {
+                                    var indexDisponible = _.findIndex(estadosAlumnos, function(alumno) {
+                                        return alumno.estado_part == 'Disponible' && alumno.id_user == dataUsuario.id_user;
+                                    });
+
+                                    if(indexDisponible >= 0) {
+                                        $scope.participar = true;
+                                    }
+                                }
+                            });
+                    });
                 }
+                
             }else{
                 $scope.participar = false;
                 $scope.participantes = true;
