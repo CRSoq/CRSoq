@@ -383,28 +383,6 @@ crsApp.controller('ModalEdicionNominadoController', function($scope, $mdDialog, 
     $q.when(EquiposServices.obtenerAlumnos($scope.equipo))
         .then(function (response){
             if(response.success){
-                EquiposServices.obtenerAlumnos({id_equipo: response.result.id_equipo})
-                    .then(function (response) {
-                        var estadosAlumnos = response.result;
-                        
-                        var indexDisponible = _.findIndex(estadosAlumnos, function(alumno) {
-                            return alumno.estado_part != 'noDisponible';
-                        });
-
-                        if(indexNominado >= 0) {
-                            if(estadosAlumnos[indexNominado].id_user == dataUsuario.id_user) {
-                                $scope.participar = true;
-                            }
-                        } else {
-                            var indexDisponible = _.findIndex(estadosAlumnos, function(alumno) {
-                                return alumno.estado_part == 'Disponible' && alumno.id_user == dataUsuario.id_user;
-                            });
-
-                            if(indexDisponible >= 0) {
-                                $scope.participar = true;
-                            }
-                        }
-                    });
                 _.forEach(response.result, function (o) {
                     var item = o;
                     if(item.estado_part == 'noDisponible'){
