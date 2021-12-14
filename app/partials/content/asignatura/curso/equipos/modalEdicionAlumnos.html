@@ -2,7 +2,7 @@
 
     <md-toolbar>
         <div class="md-toolbar-tools">
-            <h2>Edición Alumnos</h2>
+            <h2>Edición Alumnos | {{equipo.nombre_equipo}}</h2>
             <span flex></span>
             <md-button aria-label="Cancelar" class="md-icon-button" ng-click="cancelar()">
                 <i class="fa fa-times"></i>
@@ -13,9 +13,9 @@
         <div style="width: 810px;">
             <div class="text-center">
                 <div class="tabla-equipo" layout="column">
-                    <p class="tabla-equipo-titulo">{{equipo.nombre_equipo}}</p>
                     <div layout="row" layout-xs="column" layout-align="center start">
                         <div class="tabla-equipo-alumnos" flex="45">
+                            <p class="tabla-equipo-subtitulo">En el equipo</p>
                             <div class="tabla-equipo-op" ng-repeat="alumno in listaAlumnos track by $index">
                                 <md-button ng-if="alumno.selected" md-no-ink class="md-raised md-no-focus tabla-equipo-op-btn" ng-click="toggleAlumno($index)">
                                     <i class="fa fa-check" style="color: green;"></i>
@@ -46,6 +46,7 @@
                         </div>
         
                         <div class="tabla-equipo-alumnos" flex="45">
+                            <p class="tabla-equipo-subtitulo">Sin equipo</p>
                             <div class="tabla-equipo-op" ng-repeat="alumnoSE in listaAlumnosSinEquipo track by $index">
                                 <md-button ng-if="alumnoSE.selected" md-no-ink class="md-raised md-no-focus tabla-equipo-op-btn" ng-click="toggleAlumno2($index)">
                                     <i class="fa fa-check" style="color: green;"></i>

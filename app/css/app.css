@@ -347,6 +347,12 @@ md-icon.fa-stack{
     color: white;
 }
 
+.tabla-equipo-subtitulo{
+    background: rgb(63,81,181);
+    color: white;
+    margin: 5px 0;
+}
+
 .tabla-equipo-alumnos{
     width: 100%;
     background-color: #c5edff00;

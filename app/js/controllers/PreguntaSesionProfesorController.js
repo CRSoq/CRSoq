@@ -188,6 +188,11 @@ crsApp.controller('PreguntaSesionProfesorController', function ($scope, $rootSco
         var estudiante = _.findWhere($scope.listaParticipantes, {id_user:$scope.estudianteSeleccionado.id_user});
         estudiante.estado_part_preg = 'perdedor';
         $scope.responder = false;
+
+        // TODO: Sumar un error en tabla pertenece, en la respuesta de la consulta debe ir el total
+        // si el total es 2, Quitar al alumno del equipo.
+        
+
         //notificar al estudiante del resultado
         var data = {
             participante: $scope.estudianteSeleccionado,
@@ -235,108 +240,135 @@ crsApp.controller('PreguntaSesionProfesorController', function ($scope, $rootSco
             $q.when(EquiposServices.obtenerEquipoAlumno({id_curso: $stateParams.id_curso, id_user:$scope.listaParticipantes[index].id_user}))
                 .then(function (response) {
                     if(response.success){
-                        $scope.equipoAlumno = _.isArray(response.result) ? response.result[0] : response.result;
-                        return $q.when(EquiposServices.obtenerAlumnos($scope.equipoAlumno))
-                            .then(function (response){
-                                var proms = [];
-                                if(response.success){
-                                    var idGanador = -1;
-                                    _.forEach(response.result, function(alumno, id) {
-                                        if(alumno.id_user == $scope.listaParticipantes[index].id_user) {  
-                                            idGanador = id;
-                                            return;
-                                        }
-                                        
-                                        _.assign(alumno, {id_pregunta: $scope.listaParticipantes[index].id_pregunta});
-                                        _.assign(alumno, {estado_part_preg: 'ganador'});
-                                                                                 
-                                        proms.push(
-                                            PreguntasServices.participarEnPregunta(alumno).then(function (response) {
-                                                if(response.success){
-                                                } else {
-                                                    console.log('No se pudo añadir');
-                                                }
-                                            })
-                                        );
-                                    });
-                                    _.forEach($scope.listaParticipantes, function (estudiante) {
-                                        proms.push(
-                                            PreguntasServices.participarEnPregunta(estudiante).then(function (response) {
-                                            })
-                                        );
-                                    });
+                        if(_.isEmpty(response.result)){
+                            $scope.equipoAlumno = null;
+                        } else {
+                            $scope.equipoAlumno = _.isArray(response.result) ? response.result[0] : response.result;
+                        }
 
-                                    proms.push(EquiposServices.actualizarEstadoEquipo(
-                                        {
-                                            estado_part: 'noDisponible',
-                                            id_equipo: $scope.equipoAlumno.id_equipo,
-                                            id_user: $scope.listaParticipantes[index].id_user
-                                        })
-                                        .then(function(response_dep){                                               
-                                            if(response_dep.success){
-                                                console.log('Estado del alumno actualizado');
-                                                $scope.listaParticipantes[index].estado_part = 'noDisponible';
-                                                response.result[idGanador].estado_part = 'noDisponible';
-                                                var indexDisp = _.findIndex(response.result, function(alum) {
-                                                    return alum.estado_part == 'Disponible';
-                                                });
-                                                if(indexDisp < 0) {
-                                                    _.forEach(response.result, function (o, i) {
-                                                        if(o.id_user != $scope.listaParticipantes[index].id_user) {
-                                                            o.estado_part = 'Disponible';
-                                                            proms.push(EquiposServices.actualizarEstadoEquipo(
-                                                                {
-                                                                    estado_part: o.estado_part,
-                                                                    id_equipo: $scope.equipoAlumno.id_equipo,
-                                                                    id_user: o.id_user
-                                                                }
-                                                            )
-                                                                .then(function (response) {
-                                                                    if(response.success) {
-                                                                    } else {
-                                                                        console.log('Error actualizando estado');
-                                                                    }
-                                                                }));
-                                                        }
-                                                    });
-                                                }
-                                            } else {
-                                                console.log('No se pudo actualizar el estado');
-                                            }
-                                        }));
-
-                                    $q.all(proms).then(function () {
-                                        pregunta.estado_pregunta = 'realizada';
-                                        PreguntasServices.actualizarEstadoPregunta(pregunta);
-                                        var data = {
-                                            equipo: $scope.equipoAlumno,
-                                            alumnos: response.result,
-                                            id_winner: $scope.listaParticipantes[index].id_user
-                                        };
-                                        $rootScope.$emit('abrirNominacion', data);
-                                        if(continuar){
-                                            $rootScope.$emit('continuarSesionPreguntas');
-                                        }else{
-                                            var sala = $stateParams.ano+$stateParams.semestre+$stateParams.grupo_curso+$stateParams.nombre_asignatura+$stateParams.id_clase;
-                                            SocketServices.emit('FinalizarPregunta', sala);
-                                        }
+                        if($scope.equipoAlumno == null) {
+                            // TODO: ver si tiene errores, restar si tiene, sumar un punto
                             
-                                        $state.transitionTo('crsApp.asignatura.curso.clases.sesion', {
-                                            nombre_asignatura:$stateParams.nombre_asignatura,
-                                            grupo_curso:$stateParams.grupo_curso,
-                                            semestre:$stateParams.semestre,
-                                            ano:$stateParams.ano,
-                                            id_curso:$stateParams.id_curso,
-                                            id_clase:$stateParams.id_clase});
-                                    });
-
-                                } else {
-                                    toastr.error('No se pudo obtener alumnos del equipo del alumno: '+response.err.code,'Error');
+                            $q.all(proms).then(function () {
+                                pregunta.estado_pregunta = 'realizada';
+                                PreguntasServices.actualizarEstadoPregunta(pregunta);
+                                var data = {
+                                    equipo: $scope.equipoAlumno,
+                                    alumnos: response.result,
+                                    id_winner: $scope.listaParticipantes[index].id_user
+                                };
+                                $rootScope.$emit('abrirNominacion', data);
+                                if(continuar){
+                                    $rootScope.$emit('continuarSesionPreguntas');
+                                }else{
+                                    var sala = $stateParams.ano+$stateParams.semestre+$stateParams.grupo_curso+$stateParams.nombre_asignatura+$stateParams.id_clase;
+                                    SocketServices.emit('FinalizarPregunta', sala);
                                 }
-
-                                return proms;
-                                
+                    
+                                $state.transitionTo('crsApp.asignatura.curso.clases.sesion', {
+                                    nombre_asignatura:$stateParams.nombre_asignatura,
+                                    grupo_curso:$stateParams.grupo_curso,
+                                    semestre:$stateParams.semestre,
+                                    ano:$stateParams.ano,
+                                    id_curso:$stateParams.id_curso,
+                                    id_clase:$stateParams.id_clase});
                             });
+                        } else {
+                            return $q.when(EquiposServices.obtenerAlumnos($scope.equipoAlumno))
+                                .then(function (response){
+                                    var proms = [];
+                                    if(response.success){
+                                        var idGanador = -1;
+                                        _.forEach(response.result, function(alumno, id) {
+                                            if(alumno.id_user == $scope.listaParticipantes[index].id_user) {  
+                                                idGanador = id;
+                                            }
+                                            
+                                            // TODO: Implementar asignarPunto 
+                                            /*$q.when(EquiposServices.asignarPunto({id_user: alumno.id_user, id_curso: $stateParams.id_curso}))
+                                                .then(function(response) {
+
+                                                });*/
+                                        });
+                                        _.forEach($scope.listaParticipantes, function (estudiante) {
+                                            proms.push(
+                                                PreguntasServices.participarEnPregunta(estudiante).then(function (response) {
+                                                })
+                                            );
+                                        });
+
+                                        proms.push(EquiposServices.actualizarEstadoEquipo(
+                                            {
+                                                estado_part: 'noDisponible',
+                                                id_equipo: $scope.equipoAlumno.id_equipo,
+                                                id_user: $scope.listaParticipantes[index].id_user
+                                            })
+                                            .then(function(response_dep){                                               
+                                                if(response_dep.success){
+                                                    console.log('Estado del alumno actualizado');
+                                                    $scope.listaParticipantes[index].estado_part = 'noDisponible';
+                                                    response.result[idGanador].estado_part = 'noDisponible';
+                                                    var indexDisp = _.findIndex(response.result, function(alum) {
+                                                        return alum.estado_part == 'Disponible';
+                                                    });
+                                                    if(indexDisp < 0) {
+                                                        _.forEach(response.result, function (o, i) {
+                                                            if(o.id_user != $scope.listaParticipantes[index].id_user) {
+                                                                o.estado_part = 'Disponible';
+                                                                proms.push(EquiposServices.actualizarEstadoEquipo(
+                                                                    {
+                                                                        estado_part: o.estado_part,
+                                                                        id_equipo: $scope.equipoAlumno.id_equipo,
+                                                                        id_user: o.id_user
+                                                                    }
+                                                                )
+                                                                    .then(function (response) {
+                                                                        if(response.success) {
+                                                                        } else {
+                                                                            console.log('Error actualizando estado');
+                                                                        }
+                                                                    }));
+                                                            }
+                                                        });
+                                                    }
+                                                } else {
+                                                    console.log('No se pudo actualizar el estado');
+                                                }
+                                            }));
+
+                                        $q.all(proms).then(function () {
+                                            pregunta.estado_pregunta = 'realizada';
+                                            PreguntasServices.actualizarEstadoPregunta(pregunta);
+                                            var data = {
+                                                equipo: $scope.equipoAlumno,
+                                                alumnos: response.result,
+                                                id_winner: $scope.listaParticipantes[index].id_user
+                                            };
+                                            $rootScope.$emit('abrirNominacion', data);
+                                            if(continuar){
+                                                $rootScope.$emit('continuarSesionPreguntas');
+                                            }else{
+                                                var sala = $stateParams.ano+$stateParams.semestre+$stateParams.grupo_curso+$stateParams.nombre_asignatura+$stateParams.id_clase;
+                                                SocketServices.emit('FinalizarPregunta', sala);
+                                            }
+                                
+                                            $state.transitionTo('crsApp.asignatura.curso.clases.sesion', {
+                                                nombre_asignatura:$stateParams.nombre_asignatura,
+                                                grupo_curso:$stateParams.grupo_curso,
+                                                semestre:$stateParams.semestre,
+                                                ano:$stateParams.ano,
+                                                id_curso:$stateParams.id_curso,
+                                                id_clase:$stateParams.id_clase});
+                                        });
+
+                                    } else {
+                                        toastr.error('No se pudo obtener alumnos del equipo del alumno: '+response.err.code,'Error');
+                                    }
+
+                                    return proms;
+                                    
+                                })
+                        };
                     }else{
                         toastr.error('No se pudo obtener el equipo del alumno: '+response.err.code,'Error');
                     }
