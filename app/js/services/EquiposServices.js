@@ -58,5 +58,8 @@ crsApp.factory('EquiposServices', function ($http, $q) {
         eliminarEquipo: function (equipo) {
             return postHelper('/equipos/eliminarEquipo',equipo);
         },
+        eliminarAlumnoEquipo: function (data) {
+            return postHelper('/equipos/eliminarAlumnoEquipo',data);
+        }
     }
 });

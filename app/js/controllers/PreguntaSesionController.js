@@ -62,11 +62,16 @@ crsApp.controller('PreguntaSesionController', function ($scope, $rootScope, $sta
                     $scope.participar = false;
                     $scope.participantes = true;
                 } else {
-                // TODO: Comprobación estado_part del alumno
                 $scope.participar = false;
                 EquiposServices.obtenerEquipoAlumno({id_curso: $stateParams.id_curso, id_user: dataUsuario.id_user})
                     .then(function (response) {
-                        $scope.equipoAlumno = _.isArray(response.result) ? response.result[0] : response.result;
+                        if(_.isEmpty(response.result)) {
+                            $scope.participar = true;
+                            return;
+                        } else {
+                            $scope.equipoAlumno = response.result[0];
+                        }
+
                         EquiposServices.obtenerAlumnos({id_equipo: $scope.equipoAlumno.id_equipo})
                             .then(function (response) {
                                 var estadosAlumnos = response.result;
@@ -87,6 +92,7 @@ crsApp.controller('PreguntaSesionController', function ($scope, $rootScope, $sta
                                     }
                                 }
                             });
+                        
                     });
                 }
                 

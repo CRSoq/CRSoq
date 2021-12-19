@@ -180,4 +180,56 @@ router.post('/establecerMetaEstudiante', function (req, res) {
         });
     }
 });
+router.post('/obtenerAlumnoCurso', function (req, res) {
+    if(!req.body){
+        return res.sendStatus(400);
+    }else{
+        connection.query('SELECT * FROM pertenece WHERE id_user = ? AND id_curso = ?',[req.body.id_user, req.body.id_curso], function (error, rows) {
+            if(!error){
+                return res.json({'success':true, 'result': rows});
+            }else{
+                return res.json({'success':false, 'err':error});
+            }
+        });
+    }
+});
+router.post('/actualizarErrores', function (req, res) {
+    if(!req.body){
+        return res.sendStatus(400);
+    }else{
+        connection.query('UPDATE pertenece SET errores = ? WHERE id_user = ? AND id_curso = ?',[req.body.errores, req.body.id_user, req.body.id_curso], function (error) {
+            if(!error){
+                return res.json({'success':true});
+            }else{
+                return res.json({'success':false, 'err':error});
+            }
+        });
+    }
+});
+router.post('/actualizarPuntos', function (req, res) {
+    if(!req.body){
+        return res.sendStatus(400);
+    }else{
+        connection.query('UPDATE pertenece SET puntos = ? WHERE id_user = ? AND id_curso = ?',[req.body.puntos, req.body.id_user, req.body.id_curso], function (error) {
+            if(!error){
+                return res.json({'success':true});
+            }else{
+                return res.json({'success':false, 'err':error});
+            }
+        });
+    }
+});
+router.post('/actualizarUltEquipo', function (req, res) {
+    if(!req.body){
+        return res.sendStatus(400);
+    }else{
+        connection.query('UPDATE pertenece SET id_ult_equipo = ? WHERE id_user = ? AND id_curso = ?',[req.body.id_ult_equipo, req.body.id_user, req.body.id_curso], function (error) {
+            if(!error){
+                return res.json({'success':true});
+            }else{
+                return res.json({'success':false, 'err':error});
+            }
+        });
+    }
+});
 module.exports = router;

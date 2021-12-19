@@ -51,8 +51,20 @@ crsApp.factory('CursosServices', function ($http, $q, $localStorage) {
         establecerMeta: function (meta, curso) {
             return postHelper('/cursos/establecerMeta',{'curso': curso, 'meta': meta});
         },
-	establecerMetaEstudiante: function (meta_alumno, curso) {
-	    return postHelper('/cursos/establecerMetaEstudiante',{'curso': curso, 'meta_alumno': meta_alumno});
-	}
+        establecerMetaEstudiante: function (meta_alumno, curso) {
+            return postHelper('/cursos/establecerMetaEstudiante',{'curso': curso, 'meta_alumno': meta_alumno});
+        },
+        obtenerAlumnoCurso: function (data) {
+            return postHelper('/cursos/obtenerAlumnoCurso', data);
+        },
+        actualizarErrores: function (data) {
+            return postHelper('/cursos/actualizarErrores', data);
+        },
+        actualizarPuntos: function (data) {
+            return postHelper('/cursos/actualizarPuntos', data);
+        },
+        actualizarUltEquipo: function(data) {
+            return postHelper('/cursos/actualizarUltEquipo', data);
+        }
     }
 });

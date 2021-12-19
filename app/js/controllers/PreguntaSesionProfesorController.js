@@ -1,4 +1,4 @@
-crsApp.controller('PreguntaSesionProfesorController', function ($scope, $rootScope, $mdDialog, $q, $state, $stateParams, $timeout, SocketServices, PreguntasServices, InformacionServices, EquiposServices) {
+crsApp.controller('PreguntaSesionProfesorController', function ($scope, $rootScope, $mdDialog, $q, $state, $stateParams, $timeout, toastr, SocketServices, PreguntasServices, InformacionServices, EquiposServices, CursosServices) {
     $scope.listaParticipantes=[];
     $scope.preguntaFinalizada = false;
     $scope.responder = false;
@@ -189,8 +189,106 @@ crsApp.controller('PreguntaSesionProfesorController', function ($scope, $rootSco
         estudiante.estado_part_preg = 'perdedor';
         $scope.responder = false;
 
-        // TODO: Sumar un error en tabla pertenece, en la respuesta de la consulta debe ir el total
-        // si el total es 2, Quitar al alumno del equipo.
+        CursosServices.obtenerAlumnoCurso({id_user: estudiante.id_user, id_curso: $stateParams.id_curso})
+            .then(function (response){
+                if(response.success) {
+                    if(response.result[0].errores < 1) {
+                        $q.when(CursosServices.actualizarErrores(
+                            {
+                                id_user: estudiante.id_user, 
+                                id_curso: $stateParams.id_curso, 
+                                errores: response.result[0].errores + 1
+                            }))
+                            .then(function (response){
+                                if(response.success) {
+                                    toastr.info('Error sumado al alumno!', 'Info');
+                                } else {
+                                    toastr.error('Error al actualizar errores!', 'Error');
+                                }
+                            });
+                    } else {
+                        $q.when(CursosServices.actualizarErrores(
+                            {
+                                id_user: estudiante.id_user, 
+                                id_curso: $stateParams.id_curso, 
+                                errores: response.result[0].errores + 1
+                            }))
+                            .then(function (response){
+                                if(response.success) {
+                                    toastr.warning('El alumno ya tiene 2 errores, se le removera del equipo!', 'Errores');
+                                    EquiposServices.obtenerEquipoAlumno({id_curso: $stateParams.id_curso, id_user:estudiante.id_user})
+                                        .then(function (response) {
+                                            if(response.success){
+                                                if(_.isEmpty(response.result)){
+                                                    $scope.equipoAlumno = null;
+                                                } else {
+                                                    $scope.equipoAlumno = _.isArray(response.result) ? response.result[0] : response.result;
+                                                }
+                                                
+                                                EquiposServices.eliminarAlumnoEquipo({id_equipo: $scope.equipoAlumno.id_equipo, id_user: estudiante.id_user})
+                                                    .then(function (response){
+                                                        if(response.success) {
+                                                            CursosServices.actualizarUltEquipo(
+                                                                {
+                                                                    id_user: estudiante.id_user, 
+                                                                    id_curso:$stateParams.id_curso, 
+                                                                    id_ult_equipo: $scope.equipoAlumno.id_equipo
+                                                                })
+                                                                .then(function(response){
+                                                                    if(response.success) {
+                                                                        console.log('Ultimo equipo actualizado correctamente!');
+                                                                    } else {
+                                                                        toastr.error('Error al actualizar ultimo equipo!', 'ERROR');
+                                                                    }
+                                                                });
+
+                                                            toastr.warning('Alumno quitado del equipo por tener 2 errores', 'Intentos agotados');
+                                                        } else {
+                                                            toastr.error('Error al quitar de equipo!', 'Error');
+                                                        }
+                                                    });
+
+                                                var data = {
+                                                    equipo: $scope.equipoAlumno,
+                                                    id_winner: estudiante.id_user,
+                                                    id_curso: $stateParams.id_curso
+                                                };
+                                                $mdDialog.show({
+                                                    templateUrl: '/partials/content/asignatura/curso/equipos/modalEdicionNominado.html',
+                                                    locals : {
+                                                        datos: data
+                                                    },
+                                                    controller: 'ModalEdicionNominadoController'
+                                                })
+                                                .then(function (response) {
+                                                    if(response.alumno) {
+                                                        var alumnoANominar = response.alumno;
+                                                        console.log(response);
+                                                        EquiposServices.actualizarEstadoEquipo({estado_part: 'Nominado', id_equipo: alumnoANominar.id_equipo, id_user: alumnoANominar.id_user})
+                                                            .then(function(response){                                               
+                                                                if(response.success){
+                                                                    console.log('Estado del alumno actualizado');
+                                                                } else {
+                                                                    console.log('No se pudo actualizar el estado');
+                                                                }
+                                                            });
+                                                    } else {
+                                                        toastr.error('Error en la nominación! no se pudo quitar del equipo al alumno por falta de nominación', 'Error');
+                                                    }
+                                                });
+                                            } else {
+                                                toastr.error('Error al solicitar equipo alumno (r-incorrecta)', 'Error');
+                                            }
+                                        });
+                                } else {
+                                    toastr.error('Error al actualizar errores!', 'Error');
+                                }
+                            });
+                    }
+                } else {
+                    toastr.error('Error al solicitar puntos y errores!', 'Error');
+                }
+            });
         
 
         //notificar al estudiante del resultado
@@ -205,27 +303,23 @@ crsApp.controller('PreguntaSesionProfesorController', function ($scope, $rootSco
 
     $rootScope.$on('abrirNominacion', function (event, data) {
         if($rootScope.user.tipo == 'profesor') {
-            $q.when(EquiposServices.obtenerAlumnos(data.equipo))
-                .then(function (response) {
-                    $mdDialog.show({
-                        templateUrl: '/partials/content/asignatura/curso/equipos/modalEdicionNominado.html',
-                        locals : {
-                            id_curso: $stateParams.id_curso,
-                            datos: data
-                        },
-                        controller: 'ModalEdicionNominadoController'
+            $mdDialog.show({
+                templateUrl: '/partials/content/asignatura/curso/equipos/modalEdicionNominado.html',
+                locals : {
+                    datos: data,
+                },
+                controller: 'ModalEdicionNominadoController'
+            })
+            .then(function (alumno) {
+                EquiposServices.actualizarEstadoEquipo({estado_part: 'Nominado', id_equipo: alumno.alumno.id_equipo, id_user: alumno.alumno.id_user})
+                    .then(function(response){                                               
+                        if(response.success){
+                            console.log('Estado del alumno actualizado');
+                        } else {
+                            console.log('No se pudo actualizar el estado');
+                        }
                     })
-                    .then(function (alumno) {
-                        EquiposServices.actualizarEstadoEquipo({estado_part: 'Nominado', id_equipo: alumno.alumno.id_equipo, id_user: alumno.alumno.id_user})
-                            .then(function(response){                                               
-                                if(response.success){
-                                    console.log('Estado del alumno actualizado');
-                                } else {
-                                    console.log('No se pudo actualizar el estado');
-                                }
-                            })
-                    });
-                });
+            });
         }
     });
 
@@ -247,15 +341,48 @@ crsApp.controller('PreguntaSesionProfesorController', function ($scope, $rootSco
                         }
 
                         if($scope.equipoAlumno == null) {
-                            // TODO: ver si tiene errores, restar si tiene, sumar un punto
+                            var proms = [];
+                            proms.push($q.when(CursosServices.obtenerAlumnoCurso({id_user: $scope.listaParticipantes[index].id_user, id_curso: $stateParams.id_curso}))
+                                .then(function (response){
+                                    if(response.success) {
+                                        if(response.result[0].errores > 0) {
+                                            $q.when(CursosServices.actualizarErrores(
+                                                {
+                                                    id_user: $scope.listaParticipantes[index].id_user, 
+                                                    id_curso: $stateParams.id_curso, 
+                                                    errores: response.result[0].errores - 1
+                                                }))
+                                                .then(function (response){
+                                                    if(response.success) {
+                                                    } else {
+                                                        toastr.error('Error al actualizar errores!', 'Error');
+                                                    }
+                                                });
+                                        }
+
+                                        $q.when(CursosServices.actualizarPuntos(
+                                            {
+                                                id_user: $scope.listaParticipantes[index].id_user, 
+                                                id_curso: $stateParams.id_curso, 
+                                                puntos: response.result[0].puntos + 1
+                                            }))
+                                            .then(function (response) {
+                                                toastr.success('Punto por ganar asignado correctamente!', 'Correcto');
+                                            });
+
+
+                                    } else {
+                                        toastr.error('Error al solicitar puntos y errores!', 'Error');
+                                    }
+                                }));
                             
                             $q.all(proms).then(function () {
                                 pregunta.estado_pregunta = 'realizada';
                                 PreguntasServices.actualizarEstadoPregunta(pregunta);
                                 var data = {
                                     equipo: $scope.equipoAlumno,
-                                    alumnos: response.result,
-                                    id_winner: $scope.listaParticipantes[index].id_user
+                                    id_winner: $scope.listaParticipantes[index].id_user,
+                                    id_curso: $stateParams.id_curso
                                 };
                                 $rootScope.$emit('abrirNominacion', data);
                                 if(continuar){
@@ -283,12 +410,6 @@ crsApp.controller('PreguntaSesionProfesorController', function ($scope, $rootSco
                                             if(alumno.id_user == $scope.listaParticipantes[index].id_user) {  
                                                 idGanador = id;
                                             }
-                                            
-                                            // TODO: Implementar asignarPunto 
-                                            /*$q.when(EquiposServices.asignarPunto({id_user: alumno.id_user, id_curso: $stateParams.id_curso}))
-                                                .then(function(response) {
-
-                                                });*/
                                         });
                                         _.forEach($scope.listaParticipantes, function (estudiante) {
                                             proms.push(
@@ -403,7 +524,7 @@ crsApp.controller('PreguntaSesionProfesorController', function ($scope, $rootSco
     }
 });
 
-crsApp.controller('ModalEdicionNominadoController', function($scope, $mdDialog, $q, id_curso, datos, toastr, EquiposServices) {
+crsApp.controller('ModalEdicionNominadoController', function($scope, $mdDialog, $q, datos, toastr, EquiposServices) {
     $scope.equipo = _.cloneDeep(datos.equipo);
     $scope.listaAlumnos = [];
     $scope.AlumnosSel = 0;
@@ -415,9 +536,7 @@ crsApp.controller('ModalEdicionNominadoController', function($scope, $mdDialog, 
                     var item = o;
                     if(item.estado_part == 'noDisponible'){
                         return;
-                    }
-                    else{
-                        _.assign(item, {id_equipo: $scope.equipo.id_equipo});
+                    }else{
                         $scope.listaAlumnos.push(item);
                     }                  
                 });
@@ -447,6 +566,10 @@ crsApp.controller('ModalEdicionNominadoController', function($scope, $mdDialog, 
     };
 
     $scope.aceptar = function() {
-        $mdDialog.hide({alumno: $scope.listaAlumnos[$scope.indexSeleccionado]});
+        if($scope.indexSeleccionado >= 0) {
+            $mdDialog.hide({alumno: $scope.listaAlumnos[$scope.indexSeleccionado]});
+        } else {
+            $mdDialog.hide({alumno: null});
+        }
     };
 });

@@ -63,6 +63,14 @@ crsApp.controller('EquiposController', function($scope, $rootScope, $mdDialog, $
             .then(function (response) {
                 var alumnosFixed = [];
                 _.forEach(response.alumnos, function(o){
+                    if(o.id_ult_equipo != null) {
+                        CursosServices.actualizarUltEquipo({id_ult_equipo: null, id_user: o.id_user, id_curso: $scope.curso.id_curso})
+                            .then(function (response){
+                                if(response.success) {
+                                    console.log('Se removio el ultimo equipo correctamente');
+                                }
+                            });
+                    }
                     var obj = _.omit(o, ['selected']);
                     alumnosFixed.push(obj);
                 });
@@ -74,7 +82,7 @@ crsApp.controller('EquiposController', function($scope, $rootScope, $mdDialog, $
                     .then(function (response){
                         if(response.success){
                             SocketServices.emit('actualizarEquipo', $scope.curso);
-                            toastr.success('Alumnos actualizados correctamente');
+                            toastr.success('Alumnos actualizados correctamente', 'Equipos');
                         }else{
                             toastr.error('No se pudo actualizar los alumnos del equipo: '+response.err.code,'Error');
                         }
@@ -260,7 +268,7 @@ crsApp.controller('ModalEdicionEquipoController',function($scope, $mdDialog, equ
 });
 */
 
-crsApp.controller('ModalEdicionAlumnosController', function($scope, $mdDialog, $q, curso, equipo, toastr, EquiposServices) {
+crsApp.controller('ModalEdicionAlumnosController', function($scope, $mdDialog, $q, curso, equipo, toastr, EquiposServices, CursosServices) {
     $scope.curso = _.cloneDeep(curso);
     $scope.equipo = _.cloneDeep(equipo);
     $scope.listaAlumnos = [];
@@ -284,10 +292,28 @@ crsApp.controller('ModalEdicionAlumnosController', function($scope, $mdDialog, $
         .then(function (response){
             if(response.success){
                 _.forEach(response.result, function (o) {
-                    var item = o;
-                    _.assign(item, {selected: false});
-                    _.assign(item, {estado_part: 'Disponible'});
-                    $scope.listaAlumnosSinEquipo.push(item);
+                    var habilitado = false;
+                    CursosServices.obtenerAlumnoCurso({id_user: o.id_user, id_curso: $scope.curso.id_curso})
+                        .then(function(response) {
+                            if(response.success) {
+                                if(response.result[0].errores <= 0 && response.result[0].id_ult_equipo != $scope.equipo.id_equipo) {
+                                    habilitado = true;
+                                    console.log('habilitado');
+                                }
+                            } else {
+                                toastr.error('Error al obtener puntos para habilitar alumno', 'ERROR');
+                            }
+
+                            if(habilitado) {
+                                var item = o;
+                                _.assign(item, {selected: false});
+                                _.assign(item, {estado_part: 'Disponible'});
+                                _.assign(item, {id_ult_equipo: response.result[0].id_ult_equipo});
+                                $scope.listaAlumnosSinEquipo.push(item);
+                            }
+                        });
+
+                    
                 });
             } else {
                 toastr.error('No se pudo obtener alumnos sin equipo: '+response.err.code,'Error');

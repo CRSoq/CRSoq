@@ -33,7 +33,7 @@ router.post('/obtenerAlumnos', function (req, res) {
     if(!req.body){
         return res.sendStatus(400);
     }else{
-        connection.query("SELECT ea.id_user, e.rut, e.nombre, e.apellido, ea.estado_part FROM equipo_alumnos ea INNER JOIN estudiante e WHERE ea.id_equipo = ? AND ea.id_user = e.id_user",[req.body.id_equipo], function (error, rows) {
+        connection.query("SELECT ea.id_equipo, ea.id_user, e.rut, e.nombre, e.apellido, ea.estado_part FROM equipo_alumnos ea INNER JOIN estudiante e WHERE ea.id_equipo = ? AND ea.id_user = e.id_user",[req.body.id_equipo], function (error, rows) {
             if(!error){
                 return res.json({'success':true, 'result':rows});
             }else{
@@ -190,17 +190,24 @@ router.post('/eliminarEquipo', function (req, res) {
     if(!req.body){
         return res.sendStatus(400);
     }else{
-        connection.query('DELETE FROM equipo_integrantes WHERE id_equipo = ?',[req.body.id_equipo], function (error) {
+        connection.query('DELETE FROM equipo_alumnos WHERE id_equipo = ?',[req.body.id_equipo], function (error) {
             if(error){
                 return res.json({'success':false, 'err':error});
             }else{
-                connection.query('DELETE FROM clase WHERE id_clase = ?',[req.body.id_clase], function (error) {
-                    if(error){
-                        return res.json({'success':false, 'err':error});
-                    }else{
-                        return res.json({'success':true});
-                    }
-                });
+                return res.json({'success':true});
+            }
+        });
+    }
+});
+router.post('/eliminarAlumnoEquipo', function (req, res) {
+    if(!req.body){
+        return res.sendStatus(400);
+    }else{
+        connection.query('DELETE FROM equipo_alumnos WHERE id_equipo = ? AND id_user = ?',[req.body.id_equipo, req.body.id_user], function (error) {
+            if(error){
+                return res.json({'success':false, 'err':error});
+            }else{
+                return res.json({'success':true});
             }
         });
     }
