@@ -10,3 +10,4 @@ tmp
 *.iml
 server/config.js
 app/js/config.js
+server/crs.sql
