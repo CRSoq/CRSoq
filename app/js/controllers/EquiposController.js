@@ -101,6 +101,40 @@ crsApp.controller('EquiposController', function($scope, $rootScope, $mdDialog, $
             });
     };
 
+    $scope.EliminarEquipo = function(equipo) {
+        $mdDialog.show({
+            templateUrl: '/partials/content/asignatura/curso/equipos/modalEliminarEquipo.html',
+            locals : {
+                curso: $scope.curso,
+                equipo: equipo
+            },
+            controller: 'ModalEliminarEquipoController'
+            })
+            .then(function (response) {
+                var data = {
+                    equipo: response.equipo,
+                    curso: response.curso
+                };
+                EquiposServices.eliminarEquipo(data).then(                    
+                    function (response) {  
+                    if(response.success){
+                            toastr.success('Equipo eliminado.');
+                            EquiposServices.obtenerEquipos(response)
+                                .then(function (response) {
+                                    if(response.success){
+                                        $scope.listaEquipos = response.result;
+                                    }else{
+                                        toastr.error('No se pudo actualizar los equipos: '+response.err.code,'Error');
+                                    }
+                                });
+                        }else{
+                            toastr.error('No se pudo eliminar al equipo: '+response.err.code,'Error');
+                        }
+                    }
+                );
+            });
+    }
+
     /*
     $scope.guardarEquipo = function (equipo) {
 
@@ -165,33 +199,6 @@ crsApp.controller('EquiposController', function($scope, $rootScope, $mdDialog, $
         $scope.title = "";
         $scope.editingTitle = false;
     }
-
-    /*$scope.eliminarEquipo = function (equipo) {
-        $mdDialog.show({
-            templateUrl: '/partials/content/asignatura/curso/clases/modalEliminarEquipo.html',
-            locals : {
-                fecha: clase.fecha,
-                modulo: clase.modulo,
-                descripcion: clase.descripcion,
-                estado_sesion: clase.estado_sesion
-            },
-            controller: 'ModalEliminarClaseController'
-            })
-            .then(
-            function () {
-                ClasesServices.eliminarClase(clase).then(
-                    function (response) {
-                        if(response.success){
-                            toastr.success('Clase eliminada.');
-                            SocketServices.emit('actualizarListaClase', curso);
-                            $scope.listaClases.splice(_.findIndex($scope.listaClases,{'id_clase':clase.id_clase}), 1);
-                        }else{
-                            toastr.error('No se pudo eliminar la clase: '+response.err.code,'Error.');
-                        }
-                    }
-                );
-            });
-    };*/
     
     $rootScope.$on('actualizarEquipoAlumno', function () {
         if($rootScope.user.tipo=='estudiante'){
@@ -222,20 +229,18 @@ crsApp.controller('EquiposController', function($scope, $rootScope, $mdDialog, $
     
 });
 
-/*crsApp.controller('ModalEliminarClaseController',function($scope, $mdDialog, ClasesServices, fecha, descripcion, modulo, estado_sesion){
-    $scope.fecha=fecha;
-    $scope.descripcion=descripcion;
-    $scope.modulo=modulo;
-    $scope.estado_sesion=estado_sesion;
-
+crsApp.controller('ModalEliminarEquipoController',function($scope, $mdDialog, $q, curso, equipo, toastr, EquiposServices){
+    $scope.curso = _.cloneDeep(curso);
+    $scope.equipo = _.cloneDeep(equipo);
+    console.log($scope.equipo);
     $scope.cancelar = function() {
         $mdDialog.cancel();
     };
 
     $scope.aceptar = function() {
-        $mdDialog.hide();
+        $mdDialog.hide({equipo: $scope.equipo, curso: $scope.curso});
     };
-});*/
+});
 
 
 /*crsApp.controller('modalSesionCerradaController',function($scope, $mdDialog){
