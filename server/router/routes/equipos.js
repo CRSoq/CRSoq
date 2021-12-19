@@ -190,11 +190,18 @@ router.post('/eliminarEquipo', function (req, res) {
     if(!req.body){
         return res.sendStatus(400);
     }else{
-        connection.query('DELETE FROM equipo_alumnos WHERE id_equipo = ?',[req.body.id_equipo], function (error) {
-            if(error){
-                return res.json({'success':false, 'err':error});
+        var id = req.body.curso.id_curso;
+        connection.query('DELETE FROM equipo_alumnos WHERE id_equipo = ?',[req.body.equipo.id_equipo], function (error) {
+            if(!error){
+                connection.query('DELETE FROM equipo WHERE id_equipo = ?',[req.body.equipo.id_equipo], function (error) {
+                    if(!error){
+                        return res.json({'success':true, id_curso: id});
+                    }else{
+                        return res.json({'success':false, 'err':error});
+                    }
+                });                
             }else{
-                return res.json({'success':true});
+                return res.json({'success':false, 'err':error});
             }
         });
     }
