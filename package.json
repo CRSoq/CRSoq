@@ -13,7 +13,7 @@
     "http-server": "^0.9.0"
   },
   "scripts": {
-    "postinstall": "./node_modules/bower/bin/bower install",
+    "postinstall": "bower install",
     "prestart": "npm install",
     "start": "node ./server/server.js"
   },
