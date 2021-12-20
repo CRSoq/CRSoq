@@ -109,6 +109,17 @@ crsApp.controller('EquiposController', function($scope, $rootScope, $mdDialog, $
             });
     };
 
+    $scope.InfoAlumnos = function(equipo) {
+        $mdDialog.show({
+            templateUrl: '/partials/content/asignatura/curso/equipos/modalInfoAlumnos.html',
+            locals : {
+                curso: $scope.curso,
+                equipo: equipo
+            },
+            controller: 'ModalInfoAlumnosController'
+            })
+    }
+
     $scope.EliminarEquipo = function(equipo) {
         $mdDialog.show({
             templateUrl: '/partials/content/asignatura/curso/equipos/modalEliminarEquipo.html',
@@ -237,6 +248,26 @@ crsApp.controller('EquiposController', function($scope, $rootScope, $mdDialog, $
     
 });
 
+crsApp.controller('ModalInfoAlumnosController',function($scope, $mdDialog, $q, curso, equipo, toastr, EquiposServices){
+    $scope.curso = _.cloneDeep(curso);
+    $scope.equipo = _.cloneDeep(equipo);
+    EquiposServices.obtenerAlumnos($scope.equipo)
+        .then(function (response){
+            if(response.success){
+                    $scope.listaEquipoAlumno = response.result;
+                } else {
+                    toastr.error('No se pudo obtener alumnos del equipo del alumno: '+response.err.code,'Error');
+                }
+            });
+    $scope.cancelar = function() {
+        $mdDialog.cancel();
+    };
+
+    $scope.aceptar = function() {
+        $mdDialog.hide();
+    };
+});
+
 crsApp.controller('ModalEliminarEquipoController',function($scope, $mdDialog, $q, curso, equipo, toastr, EquiposServices){
     $scope.curso = _.cloneDeep(curso);
     $scope.equipo = _.cloneDeep(equipo);
@@ -318,7 +349,7 @@ crsApp.controller('ModalEdicionAlumnosController', function($scope, $mdDialog, $
                             }
                         });
 
-                    
+            
                 });
             } else {
                 toastr.error('No se pudo obtener alumnos sin equipo: '+response.err.code,'Error');

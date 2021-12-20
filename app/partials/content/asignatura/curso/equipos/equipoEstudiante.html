@@ -13,11 +13,10 @@
                         <div class="md-list-item-text text-center" layout="row" layout-xs="column" layout-align="center center">
                             <i class="fa fa-user"></i>
                             <p style="width:20rem;overflow-x: hidden;margin: 0 20px;">{{alumno.nombre}} {{alumno.apellido}}</p>
-                            <p>{{alumno.rut}}</p>
+                            <p style="width:20rem;overflow-x: hidden;margin: 0 20px;">Puntos Ganados: {{alumno.puntos}}</p>
+                            <p style="width:20rem;overflow-x: hidden;margin: 0 20px;">Errores: {{alumno.errores}}</p>
+                            <p style="width:20rem;overflow-x: hidden;margin: 0 20px;">{{alumno.rut}}</p> 
                         </div>
-                        <md-button class="md-secondary" ng-click="">
-                            <i class="fa fa-info"></i>
-                        </md-button>
                     </md-list-item>
                 </md-list>
             </md-content>
