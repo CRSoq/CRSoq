@@ -22,7 +22,7 @@ crsApp.controller('EquiposController', function($scope, $rootScope, $mdDialog, $
             .then(function (response) {
                 if(response.success){
                     $scope.equipoAlumno = _.isArray(response.result) ? response.result[0] : response.result;
-                    EquiposServices.obtenerAlumnos($scope.equipoAlumno)
+                    EquiposServices.obtenerAlumnos({id_equipo: $scope.equipoAlumno.id_equipo, id_curso: $scope.curso.id_curso})
                     .then(function (response){
                         if(response.success){
                                 $scope.listaEquipoAlumno = response.result;
@@ -229,7 +229,7 @@ crsApp.controller('EquiposController', function($scope, $rootScope, $mdDialog, $
                 .then(function (response) {
                     if(response.success){
                         $scope.equipoAlumno = _.isArray(response.result) ? response.result[0] : response.result;
-                        EquiposServices.obtenerAlumnos($scope.equipoAlumno)
+                        EquiposServices.obtenerAlumnos({id_equipo: $scope.equipoAlumno.id_equipo, id_curso: $scope.curso.id_curso})
                         .then(function (response){
                             if(response.success){
                                     $scope.listaEquipoAlumno = response.result;
@@ -251,7 +251,7 @@ crsApp.controller('EquiposController', function($scope, $rootScope, $mdDialog, $
 crsApp.controller('ModalInfoAlumnosController',function($scope, $mdDialog, $q, curso, equipo, toastr, EquiposServices){
     $scope.curso = _.cloneDeep(curso);
     $scope.equipo = _.cloneDeep(equipo);
-    EquiposServices.obtenerAlumnos($scope.equipo)
+    EquiposServices.obtenerAlumnos({id_equipo: $scope.equipo.id_equipo, id_curso: $scope.curso.id_curso})
         .then(function (response){
             if(response.success){
                     $scope.listaEquipoAlumno = response.result;
@@ -311,7 +311,7 @@ crsApp.controller('ModalEdicionAlumnosController', function($scope, $mdDialog, $
     $scope.listaAlumnosSinEquipo = [];
     $scope.AlumnosSel = 0;
     $scope.AlumnosSESel = 0;
-    $q.when(EquiposServices.obtenerAlumnos($scope.equipo))
+    $q.when(EquiposServices.obtenerAlumnos({id_equipo: $scope.equipo.id_equipo, id_curso: $scope.curso.id_curso}))
         .then(function (response){
             if(response.success){
                 _.forEach(response.result, function (o) {

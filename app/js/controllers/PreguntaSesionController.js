@@ -56,7 +56,6 @@ crsApp.controller('PreguntaSesionController', function ($scope, $rootScope, $sta
             }
             var dataUsuario = SessionServices.getSessionData();
             var indexUser = _.findIndex(data.pregunta.listaParticipantes,{id_user:dataUsuario.id_user});
-            
             if(data.pregunta.participacion){
                 if(indexUser>=0){
                     $scope.participar = false;
@@ -71,8 +70,7 @@ crsApp.controller('PreguntaSesionController', function ($scope, $rootScope, $sta
                         } else {
                             $scope.equipoAlumno = response.result[0];
                         }
-
-                        EquiposServices.obtenerAlumnos({id_equipo: $scope.equipoAlumno.id_equipo})
+                        EquiposServices.obtenerAlumnos({id_equipo: $scope.equipoAlumno.id_equipo, id_curso: $stateParams.id_curso})
                             .then(function (response) {
                                 var estadosAlumnos = response.result;
                                 var indexNominado = _.findIndex(estadosAlumnos, function(alumno) {
