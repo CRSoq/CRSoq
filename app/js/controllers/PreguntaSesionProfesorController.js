@@ -345,12 +345,13 @@ crsApp.controller('PreguntaSesionProfesorController', function ($scope, $rootSco
                             proms.push($q.when(CursosServices.obtenerAlumnoCurso({id_user: $scope.listaParticipantes[index].id_user, id_curso: $stateParams.id_curso}))
                                 .then(function (response){
                                     if(response.success) {
-                                        if(response.result[0].errores > 0) {
+                                        var errores = response.result[0].errores;
+                                        if(errores > 0) {
                                             $q.when(CursosServices.actualizarErrores(
                                                 {
                                                     id_user: $scope.listaParticipantes[index].id_user, 
                                                     id_curso: $stateParams.id_curso, 
-                                                    errores: response.result[0].errores - 1
+                                                    errores: errores - 1
                                                 }))
                                                 .then(function (response){
                                                     if(response.success) {

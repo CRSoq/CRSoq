@@ -46,6 +46,8 @@ crsApp.controller('PreguntaSesionController', function ($scope, $rootScope, $sta
             $scope.pregunta = _.clone(data.pregunta);
             $scope.esperar = false;
             $scope.preguntaRealizada = true;
+            $scope.participar = false;
+            $scope.participantes = true;
             if(data.pregunta.listaParticipantes.length>0){
                 $scope.listaParticipantes = _.cloneDeep(data.pregunta.listaParticipantes);
                 _.forEach($scope.listaParticipantes, function (estudiante) {
@@ -57,8 +59,6 @@ crsApp.controller('PreguntaSesionController', function ($scope, $rootScope, $sta
             var dataUsuario = SessionServices.getSessionData();
             var indexUser = _.findIndex(data.pregunta.listaParticipantes,{id_user:dataUsuario.id_user});
             if(data.pregunta.participacion){
-                $scope.participar = false;
-                $scope.participantes = true;
                 if(indexUser < 0){
                     EquiposServices.obtenerEquipoAlumno({id_curso: $stateParams.id_curso, id_user: dataUsuario.id_user})
                         .then(function (response) {
@@ -84,7 +84,7 @@ crsApp.controller('PreguntaSesionController', function ($scope, $rootScope, $sta
                                         var indexDisponible = _.findIndex(estadosAlumnos, function(alumno) {
                                             return alumno.estado_part == 'Disponible' && alumno.id_user == dataUsuario.id_user;
                                         });
-
+                                        
                                         if(indexDisponible >= 0) {
                                             $scope.participar = true;
                                             $scope.participantes = false;
@@ -113,6 +113,7 @@ crsApp.controller('PreguntaSesionController', function ($scope, $rootScope, $sta
         $scope.esperar = false;
         $scope.participar = true;
         $scope.preguntaRealizada = true;
+        SocketServices.emit('SolicitarEstado', infoSesion);
     });
 
     $rootScope.$on('finParticipacionEstudiantes', function () {
