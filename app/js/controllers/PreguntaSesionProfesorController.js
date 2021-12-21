@@ -319,6 +319,8 @@ crsApp.controller('PreguntaSesionProfesorController', function ($scope, $rootSco
                             console.log('No se pudo actualizar el estado');
                         }
                     })
+            }).catch(function(error) {
+                console.log('error en nominación:', error);
             });
         }
     });
@@ -463,9 +465,10 @@ crsApp.controller('PreguntaSesionProfesorController', function ($scope, $rootSco
                                             var data = {
                                                 equipo: $scope.equipoAlumno,
                                                 alumnos: response.result,
-                                                id_winner: $scope.listaParticipantes[index].id_user
+                                                id_winner: $scope.listaParticipantes[index].id_user,
+                                                sala: $stateParams.ano+$stateParams.semestre+$stateParams.grupo_curso+$stateParams.nombre_asignatura+$stateParams.id_clase
                                             };
-                                            $rootScope.$emit('abrirNominacion', data);
+                                            SocketServices.emit('abrirNominacionEquipo', data);
                                             if(continuar){
                                                 $rootScope.$emit('continuarSesionPreguntas');
                                             }else{
@@ -525,6 +528,7 @@ crsApp.controller('PreguntaSesionProfesorController', function ($scope, $rootSco
 });
 
 crsApp.controller('ModalEdicionNominadoController', function($scope, $mdDialog, $q, datos, toastr, EquiposServices) {
+    console.log('nominado controller');
     $scope.equipo = _.cloneDeep(datos.equipo);
     $scope.listaAlumnos = [];
     $scope.AlumnosSel = 0;
@@ -569,7 +573,7 @@ crsApp.controller('ModalEdicionNominadoController', function($scope, $mdDialog, 
         if($scope.indexSeleccionado >= 0) {
             $mdDialog.hide({alumno: $scope.listaAlumnos[$scope.indexSeleccionado]});
         } else {
-            $mdDialog.hide({alumno: null});
+            toastr.warning('Debe seleccionar un nominado!', 'error');
         }
     };
 });

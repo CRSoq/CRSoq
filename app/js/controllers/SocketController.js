@@ -117,7 +117,6 @@ crsApp.controller('SocketController', function ($scope,$rootScope,$location,toas
     SocketServices.on('actualizarEquipo', function (data) {
         $rootScope.$emit('actualizarEquipoAlumno');
     });
-
     SocketServices.on('actualizarSesion', function (data) {
         if(!_.isNull(data)){
             $rootScope.$emit('sesionEspectador', data);
@@ -125,6 +124,11 @@ crsApp.controller('SocketController', function ($scope,$rootScope,$location,toas
             $rootScope.$emit('sesionEspectadorFallida');
         }
 
+    });
+    SocketServices.on('abrirNominacion', function(data) {
+        if($rootScope.user.tipo == 'profesor') {
+            $rootScope.$emit('abrirNominacion', data);
+        }
     });
 
 });

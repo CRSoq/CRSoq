@@ -260,5 +260,9 @@ module.exports = function (io) {
                 io.to(socket.rooms[0]).emit('actualizarSesion', null);
             }
         });
+
+        socket.on('abrirNominacionEquipo', function (data) {
+            io.to(data.sala).emit('abrirNominacion', data);
+        });
     });
 };
