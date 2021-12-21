@@ -32,7 +32,7 @@ crsApp.controller('PreguntaSesionController', function ($scope, $rootScope, $sta
     var infoSesion = {
         ano: Number($stateParams.ano),
         semestre: Number($stateParams.semestre),
-        grupo_curso:String($stateParams.grupo_curso),
+        grupo_curso:$stateParams.grupo_curso,
         curso: $stateParams.nombre_asignatura,
         id_clase: Number($stateParams.id_clase),
         id_curso: Number($stateParams.id_curso),
@@ -57,11 +57,10 @@ crsApp.controller('PreguntaSesionController', function ($scope, $rootScope, $sta
             var dataUsuario = SessionServices.getSessionData();
             var indexUser = _.findIndex(data.pregunta.listaParticipantes,{id_user:dataUsuario.id_user});
             if(data.pregunta.participacion){
+                $scope.participar = false;
                 if(indexUser>=0){
-                    $scope.participar = false;
                     $scope.participantes = true;
                 } else {
-                $scope.participar = false;
                 EquiposServices.obtenerEquipoAlumno({id_curso: $stateParams.id_curso, id_user: dataUsuario.id_user})
                     .then(function (response) {
                         if(_.isEmpty(response.result)) {

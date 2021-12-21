@@ -126,11 +126,11 @@ crsApp.controller('MenuController', function($scope, $rootScope, $stateParams, $
         } else if (_.size($stateParams) > 0 && $rootScope.user.tipo == 'estudiante') {
             if (!_.isUndefined($stateParams.nombre_asignatura)) {
                 var semestres = CursosServices.obtenerCursosLocal();
-                if (!_.isUndefined($stateParams.ano) && !_.isUndefined($stateParams.semestre) && semestres.length > 0) {
+                if (!_.isUndefined($stateParams.ano) && !_.isUndefined($stateParams.semestre) && !_.isUndefined($stateParams.grupo_curso) && semestres.length > 0) {
                     var semestre = _.findWhere(semestres, {
                         'ano': Number($stateParams.ano),
                         'semestre': Number($stateParams.semestre),
-                        'grupo_curso': String($stateParams.grupo_curso)
+                        'grupo_curso': $stateParams.grupo_curso
                     });
                     $scope.desplegarMenuSemestre(semestre);
                     if (!_.isUndefined($stateParams.id_curso)) {

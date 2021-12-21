@@ -28,7 +28,7 @@ crsApp.controller('SesionController', function($scope, $rootScope, $state, $stat
     var infoSesion = {
         ano: Number($stateParams.ano),
         semestre: Number($stateParams.semestre),
-        grupo_curso: String($stateParams.grupo_curs),
+        grupo_curso: $stateParams.grupo_curso,
         curso: $stateParams.nombre_asignatura,
         id_clase: Number($stateParams.id_clase),
         id_curso: Number($stateParams.id_curso),
@@ -176,10 +176,19 @@ crsApp.controller('SesionController', function($scope, $rootScope, $state, $stat
 
     //boton lanzar pregunta
     $scope.lanzarPregunta = function (pregunta) {
-        $state.transitionTo('crsApp.asignatura.curso.clases.sesion.pregunta',{nombre_asignatura:$stateParams.nombre_asignatura,ano:$stateParams.ano,semestre:$stateParams.semestre,id_curso:$stateParams.id_curso,id_clase:$stateParams.id_clase,id_pregunta:pregunta.id_pregunta});
+        $state.transitionTo('crsApp.asignatura.curso.clases.sesion.pregunta',
+        {
+            nombre_asignatura:$stateParams.nombre_asignatura,
+            ano:$stateParams.ano,
+            semestre:$stateParams.semestre,
+            grupo_curso:$stateParams.grupo_curso,
+            id_curso:$stateParams.id_curso,
+            id_clase:$stateParams.id_clase,
+            id_pregunta:pregunta.id_pregunta
+        });
         var data = {
-            'pregunta'  : pregunta,
-            'sala'      : $stateParams.ano+$stateParams.semestre+$stateParams.grupo_curso+$stateParams.nombre_asignatura+$stateParams.id_clase
+            pregunta  : pregunta,
+            sala      : $stateParams.ano+$stateParams.semestre+$stateParams.grupo_curso+$stateParams.nombre_asignatura+$stateParams.id_clase
         };
 
         SocketServices.emit('RealizarPregunta', data);

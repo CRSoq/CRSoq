@@ -107,8 +107,7 @@ crsApp.controller('SocketController', function ($scope,$rootScope,$location,toas
     });
 
     SocketServices.on('finSesion', function (data) {
-        toastr.success('Sesión de preguntas finalizada');
-        SocketServices.emit('SalirSala', data);
+        console.log('Fin sesión!');
         $rootScope.$emit('SalirSesion', data);
     });
     SocketServices.on('actualizarListaClase', function (data) {

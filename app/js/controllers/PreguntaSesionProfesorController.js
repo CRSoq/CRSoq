@@ -384,7 +384,6 @@ crsApp.controller('PreguntaSesionProfesorController', function ($scope, $rootSco
                                     id_winner: $scope.listaParticipantes[index].id_user,
                                     id_curso: $stateParams.id_curso
                                 };
-                                $rootScope.$emit('abrirNominacion', data);
                                 if(continuar){
                                     $rootScope.$emit('continuarSesionPreguntas');
                                 }else{

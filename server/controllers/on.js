@@ -201,7 +201,6 @@ module.exports = function (io) {
             }
 
         });
-
         socket.on('finalizarSesion', function (data) {
             //avisar a los de la sala que la dejen porque se termino la sesion
             //yo dejo la sala

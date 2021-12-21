@@ -11,7 +11,7 @@ crsApp.controller('EquiposController', function($scope, $rootScope, $mdDialog, $
         var curso = _.findWhere(asignatura.cursos, {'id_curso':Number($stateParams.id_curso)});
     }else if($rootScope.user.tipo='estudiante'){
         var semestres = CursosServices.obtenerCursosLocal();
-        var semestre = _.findWhere(semestres,{'ano':Number($stateParams.ano),'semestre':Number($stateParams.semestre),'grupo_curso':String($stateParams.grupo_curso)});
+        var semestre = _.findWhere(semestres,{'ano':Number($stateParams.ano),'semestre':Number($stateParams.semestre),'grupo_curso':$stateParams.grupo_curso});
         var curso = _.findWhere(semestre.cursos, {'id_curso': Number($stateParams.id_curso)});
 
         var dat = {
