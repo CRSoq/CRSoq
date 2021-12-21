@@ -564,10 +564,6 @@ crsApp.controller('ModalEdicionNominadoController', function($scope, $mdDialog, 
             _.assign($scope.listaAlumnos[index], {id_equipo: datos.equipo.id_equipo})
         }
     };
-    
-    $scope.cancelar = function() {
-        $mdDialog.cancel();
-    };
 
     $scope.aceptar = function() {
         if($scope.indexSeleccionado >= 0) {
