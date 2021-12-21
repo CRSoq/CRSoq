@@ -1,4 +1,4 @@
-crsApp.controller('PreguntaSesionController', function ($scope, $rootScope, $state, $stateParams, $timeout, PreguntasServices, SocketServices, SessionServices, ClasesServices, EquiposServices, toastr) {
+crsApp.controller('PreguntaSesionController', function ($scope, $rootScope, $state, $stateParams, $timeout, PreguntasServices, SocketServices, SessionServices, ClasesServices, EquiposServices, CursosServices, toastr) {
     $scope.listaParticipantes=[];
     //view control
     $scope.esperar = true; //mostar esperar por la pregunta
@@ -58,39 +58,41 @@ crsApp.controller('PreguntaSesionController', function ($scope, $rootScope, $sta
             var indexUser = _.findIndex(data.pregunta.listaParticipantes,{id_user:dataUsuario.id_user});
             if(data.pregunta.participacion){
                 $scope.participar = false;
-                if(indexUser>=0){
-                    $scope.participantes = true;
-                } else {
-                EquiposServices.obtenerEquipoAlumno({id_curso: $stateParams.id_curso, id_user: dataUsuario.id_user})
-                    .then(function (response) {
-                        if(_.isEmpty(response.result)) {
-                            $scope.participar = true;
-                            return;
-                        } else {
-                            $scope.equipoAlumno = response.result[0];
-                        }
-                        EquiposServices.obtenerAlumnos({id_equipo: $scope.equipoAlumno.id_equipo, id_curso: $stateParams.id_curso})
-                            .then(function (response) {
-                                var estadosAlumnos = response.result;
-                                var indexNominado = _.findIndex(estadosAlumnos, function(alumno) {
-                                    return alumno.estado_part == 'Nominado';
-                                });
-                                if(indexNominado >= 0) {
-                                    if(estadosAlumnos[indexNominado].id_user == dataUsuario.id_user) {
-                                        $scope.participar = true;
-                                    }
-                                } else {
-                                    var indexDisponible = _.findIndex(estadosAlumnos, function(alumno) {
-                                        return alumno.estado_part == 'Disponible' && alumno.id_user == dataUsuario.id_user;
+                $scope.participantes = true;
+                if(indexUser < 0){
+                    EquiposServices.obtenerEquipoAlumno({id_curso: $stateParams.id_curso, id_user: dataUsuario.id_user})
+                        .then(function (response) {
+                            if(_.isEmpty(response.result)) {
+                                $scope.participar = true;
+                                $scope.participantes = false;
+                                return;
+                            } else {
+                                $scope.equipoAlumno = response.result[0];
+                            }
+                            EquiposServices.obtenerAlumnos({id_equipo: $scope.equipoAlumno.id_equipo, id_curso: $stateParams.id_curso})
+                                .then(function (response) {
+                                    var estadosAlumnos = response.result;
+                                    var indexNominado = _.findIndex(estadosAlumnos, function(alumno) {
+                                        return alumno.estado_part == 'Nominado';
                                     });
+                                    if(indexNominado >= 0) {
+                                        if(estadosAlumnos[indexNominado].id_user == dataUsuario.id_user) {
+                                            $scope.participar = true;
+                                            $scope.participantes = false;
+                                        }
+                                    } else {
+                                        var indexDisponible = _.findIndex(estadosAlumnos, function(alumno) {
+                                            return alumno.estado_part == 'Disponible' && alumno.id_user == dataUsuario.id_user;
+                                        });
 
-                                    if(indexDisponible >= 0) {
-                                        $scope.participar = true;
+                                        if(indexDisponible >= 0) {
+                                            $scope.participar = true;
+                                            $scope.participantes = false;
+                                        }
                                     }
-                                }
-                            });
-                        
-                    });
+                                });
+                            
+                        });
                 }
                 
             }else{
@@ -126,10 +128,20 @@ crsApp.controller('PreguntaSesionController', function ($scope, $rootScope, $sta
         dataUsuario.id_pregunta = pregunta.id_pregunta;
         dataUsuario.estado_part_preg = 'noSeleccionado';
         dataUsuario.sala=$stateParams.ano+$stateParams.semestre+$stateParams.grupo_curso+$stateParams.nombre_asignatura+$stateParams.id_clase;
-        SocketServices.emit('responderPregunta', dataUsuario);
-        //PreguntasServices.participarEnPregunta(data);
-        $scope.participar = false;
-        $scope.participantes = true;
+        CursosServices.obtenerAlumnoCurso({id_user:dataUsuario.id_user , id_curso: $stateParams.id_curso})
+            .then(function (response){
+                if(response.success) {
+                    dataUsuario.puntos = response.result[0].puntos;
+                    dataUsuario.errores = response.result[0].errores;
+
+                    SocketServices.emit('responderPregunta', dataUsuario);
+                    //PreguntasServices.participarEnPregunta(data);
+                    $scope.participar = false;
+                    $scope.participantes = true;
+                } else {
+                    toastr.error('no se pudo obtener los puntos y errores!', 'ERROR');
+                }
+            });
     };
 
     //actualizar la lista de participantes

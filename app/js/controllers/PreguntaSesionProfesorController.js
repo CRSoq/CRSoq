@@ -215,13 +215,13 @@ crsApp.controller('PreguntaSesionProfesorController', function ($scope, $rootSco
                             }))
                             .then(function (response){
                                 if(response.success) {
-                                    toastr.warning('El alumno ya tiene 2 errores, se le removera del equipo!', 'Errores');
                                     EquiposServices.obtenerEquipoAlumno({id_curso: $stateParams.id_curso, id_user:estudiante.id_user})
                                         .then(function (response) {
                                             if(response.success){
                                                 if(_.isEmpty(response.result)){
                                                     $scope.equipoAlumno = null;
                                                 } else {
+                                                    toastr.warning('El alumno ya tiene 2 errores, se le removera del equipo!', 'Errores');
                                                     $scope.equipoAlumno = _.isArray(response.result) ? response.result[0] : response.result;
                                                 }
                                                 
